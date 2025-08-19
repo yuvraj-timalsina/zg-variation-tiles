@@ -1,0 +1,25 @@
+p.form-field.variable_pricing_field.form-row {
+  padding: 5px 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+.form-field.variable_pricing_field.form-row label {
+  font-weight: bolder;
+  padding-right: 20px;
+}
+body.wc-wp-version-gte-53 .select2.select2-container .select2-selection--multiple {
+  background-color: #fff;
+}
+ul.select2-choices {
+  padding-right: 30px !important;
+}
+
+ul.select2-choices:after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 5px solid #333;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
