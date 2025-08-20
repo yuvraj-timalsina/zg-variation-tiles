@@ -449,7 +449,7 @@ span.raw-badge {
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
   width: 100% !important;
   height: auto;
-  min-height: 250px;
+  min-height: 280px; /* Increased to accommodate price area */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1168,13 +1168,17 @@ html .tile-offer,
   opacity: 1 !important;
 }
 
-/* Bundle-specific price styling */
+/* Bundle-specific price styling - let CommerceKit handle content, we just prevent layout shifts */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
   text-align: center;
   margin-top: 10px;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  min-height: 24px !important; /* Prevent layout shifts */
+  line-height: 1.2 !important; /* Consistent line height */
+  font-size: 14px !important; /* Consistent font size */
+  transition: opacity 0.2s ease !important; /* Smooth transitions */
 }
 
 /* Hide the "Total:" prefix in prices */
@@ -1223,6 +1227,11 @@ html .tile-offer,
   color: var(--vt-accent);
   font-weight: 700;
   text-decoration: none;
+}
+
+/* Price transitions to prevent layout shifts */
+.tile-price {
+  transition: opacity 0.2s ease !important;
 }
 
 /* Let CommerceKit handle price styling naturally */
