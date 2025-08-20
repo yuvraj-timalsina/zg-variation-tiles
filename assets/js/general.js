@@ -116,88 +116,7 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  // Function to show/hide badges based on deals
-  function updateVariationBadges() {
-    // Get current selections
-    var $form = $(".variations_form");
-    var currentSelections = {};
-
-    $form.find("select").each(function () {
-      var $select = $(this);
-      var attrName = $select.attr("name");
-      var attrValue = $select.val();
-      if (attrName && attrValue) {
-        currentSelections[attrName] = attrValue;
-      }
-    });
-
-    // Get variations data
-    var variations = $form.data("product_variations");
-    if (!variations) {
-      return;
-    }
-
-    // Remove all existing badges first
-    $(".tile-offer").remove();
-
-    // Check each bundle for valid offers with current combination
-    var bundles = ["basic-bundle", "pro-bundle", "grill-only"];
-
-    bundles.forEach(function (bundle) {
-      // Create a test combination with this bundle
-      var testSelections = Object.assign({}, currentSelections);
-      testSelections["attribute_pa_bundles"] = bundle;
-
-      // For grill-only, always set front-bench to "none"
-      if (bundle === "grill-only") {
-        testSelections["attribute_pa_front-bench"] = "none";
-      }
-
-      // Find matching variation for this bundle combination
-      var matchingVariation = null;
-      for (var i = 0; i < variations.length; i++) {
-        var variation = variations[i];
-        var matches = true;
-
-        for (var attr in testSelections) {
-          if (variation.attributes && variation.attributes[attr] !== testSelections[attr]) {
-            matches = false;
-            break;
-          }
-        }
-
-        if (matches) {
-          matchingVariation = variation;
-          break;
-        }
-      }
-
-      // Check if this bundle has an offer
-      if (matchingVariation) {
-        var offerLabel =
-          matchingVariation.vt_offer_label ||
-          matchingVariation._vt_offer_label ||
-          matchingVariation.offer_label ||
-          matchingVariation.variation_offer_label;
-
-        if (offerLabel && offerLabel.trim() !== "") {
-          // Add badge to this bundle card
-          var $bundleCard = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]').find(
-            '.cgkit-swatch[data-attribute-value="' + bundle + '"]'
-          );
-
-          if ($bundleCard.length) {
-            var $badge = $(
-              '<span class="tile-offer" style="position: absolute !important; top: 8px !important; right: 8px !important; background: var(--vt-accent) !important; color: #fff !important; font-weight: 700 !important; border-radius: 12px !important; padding: 3px 6px !important; font-size: 10px !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; z-index: 999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
-                offerLabel +
-                "</span>"
-            );
-            $bundleCard.append($badge);
-          }
-        }
-      }
-    });
-  }
+  // Badge function completely removed
 
   function captureCurrentSelections() {
     var selections = {};
@@ -284,7 +203,7 @@ jQuery(document).ready(function ($) {
 
       // Update badges and savings after CommerceKit update
       setTimeout(function () {
-        updateVariationBadges(); // Update badges when variation changes
+        // Badge update removed
         enforceSelectionStates(); // Enforce proper click states
       }, 100);
 
@@ -1555,8 +1474,7 @@ jQuery(document).ready(function ($) {
     // Update badges less frequently for better performance
     if (!window.lastBadgeCheck || Date.now() - window.lastBadgeCheck > 3000) {
       window.lastBadgeCheck = Date.now();
-      // Only update badges, not savings (savings handled by variation events)
-      updateVariationBadges();
+      // Badge update removed
     }
 
     // Preserve controller selections (less frequently to avoid interference)
@@ -1600,14 +1518,7 @@ jQuery(document).ready(function ($) {
 
   // Monitor badges, savings, and selection states - check every 2 seconds
   setInterval(function () {
-    // Check if badges exist and are visible
-    $(".tile-offer").each(function () {
-      var $badge = $(this);
-      if (!$badge.is(":visible") || $badge.css("position") !== "absolute" || $badge.css("opacity") === "0") {
-        updateVariationBadges();
-        return false; // Break the loop
-      }
-    });
+    // Badge monitoring removed
 
     // Continuously enforce selection states
     enforceSelectionStates();
@@ -1704,7 +1615,7 @@ jQuery(document).ready(function ($) {
   var originalRemove = $.fn.remove;
   $.fn.remove = function () {
     var $this = $(this);
-    if (($this.hasClass("tile-offer") || $this.attr("id") === "vt-total-savings") && !window.isRemovingBadges) {
+    if ($this.attr("id") === "vt-total-savings" && !window.isRemovingBadges) {
       return this;
     }
     return originalRemove.apply(this, arguments);
@@ -1734,15 +1645,6 @@ jQuery(document).ready(function ($) {
 
   // Hook into WooCommerce variation events
   $(document).on("found_variation", function (event, variation) {
-    console.log("🎯 found_variation event triggered");
-
-    console.log("Variation details:");
-    console.log("- ID:", variation.variation_id);
-    console.log("- Price:", variation.price);
-    console.log("- Display Price:", variation.display_price);
-    console.log("- Regular Price:", variation.regular_price);
-    console.log("- Attributes:", variation.attributes);
-
     var $form = $(event.target);
     var currentSelections = {};
     $form.find("select").each(function () {
@@ -1754,8 +1656,6 @@ jQuery(document).ready(function ($) {
       }
     });
 
-    console.log("Current form selections:", currentSelections);
-
     // Update ATC button text with price
     var $atcButton = $form.find(".single_add_to_cart_button");
     if ($atcButton.length) {
@@ -1763,17 +1663,13 @@ jQuery(document).ready(function ($) {
       var regularPrice = variation.display_regular_price || variation.regular_price;
 
       if (price) {
-        console.log("💰 Using display_price:", price);
         var formattedPrice = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(price);
 
-        console.log("💰 Final formatted price:", formattedPrice);
-
         var buttonText = "Add to cart - " + formattedPrice;
         $atcButton.text(buttonText);
-        console.log("✅ Updated ATC button text:", buttonText);
       }
     }
 
@@ -1783,7 +1679,6 @@ jQuery(document).ready(function ($) {
     var currentFrontBench = currentSelections["attribute_pa_front-bench"];
 
     if (variations && controllerValue) {
-      console.log("💰 Updating bundle prices after variation change with controller:", controllerValue);
       // Skip grill-only for found_variation events to prevent flickering
       // Grill-only should only update when controller actually changes
       updateBundleCardPrices(variations, controllerValue, currentFrontBench);
@@ -1807,8 +1702,7 @@ jQuery(document).ready(function ($) {
   });
 
   $(document).on("reset_data", function () {
-    console.log("🎯 reset_data event triggered");
-    updateVariationBadges();
+    // Badge update removed
     enforceSelectionStates();
 
     // Update bundle prices when variation is reset
@@ -1818,7 +1712,6 @@ jQuery(document).ready(function ($) {
     var currentFrontBench = $form.find('select[name="attribute_pa_front-bench"]').val();
 
     if (variations && controllerValue) {
-      console.log("💰 Updating bundle prices after reset with controller:", controllerValue);
       updateBundleCardPrices(variations, controllerValue, currentFrontBench);
     }
   });
@@ -1877,8 +1770,7 @@ jQuery(document).ready(function ($) {
       // Add selection to clicked swatch
       $swatch.addClass("cgkit-swatch-selected");
 
-      // Update badges and savings
-      updateVariationBadges();
+      // Badge update removed
 
       // Enforce selection states
       enforceSelectionStates();

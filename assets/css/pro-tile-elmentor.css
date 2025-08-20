@@ -383,12 +383,7 @@ label.variable-item {
   }
 }
 /* V4 */
-.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-button .tile-offer {
-  display: none !important;
-}
-.variations .cgkit-chosen-attribute span.tile-offer {
-  display: none !important;
-}
+/* Badge CSS removed */
 span.raw-badge {
   clear: both;
   display: block;
@@ -433,16 +428,6 @@ span.raw-badge {
   padding: 0 !important;
 }
 
-/* Remove the duplicate label - the original label is already there */
-
-/* Selected Bundle Card */
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-selected,
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.cgkit-swatch-selected {
-  border-color: #bc3116;
-  background: linear-gradient(to bottom, #ffffff 0%, #fff5f5 100%);
-}
-
-/* Bundle Card Button - Remove all borders and backgrounds */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
   width: 100% !important;
   height: auto;
@@ -564,17 +549,7 @@ span.raw-badge {
   margin-top: 5px;
 }
 
-.cgkit-attribute-swatch.cgkit-image .tile-offer {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #ba3116;
-  color: white;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 600;
-}
+/* Badge CSS removed */
 
 .cgkit-attribute-swatch.cgkit-image .sale-badge-price {
   position: absolute;
@@ -847,7 +822,7 @@ span.raw-badge {
   width: 100%;
 }
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
-  margin: 0;
+  margin: 0 auto;
 }
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch {
   width: 100%;
@@ -873,7 +848,6 @@ span.raw-badge {
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
   .cgkit-attribute-swatch
   .cgkit-swatch.cgkit-swatch-selected {
-  background: #fff5f5 !important;
   box-shadow: none;
   transform: none;
 }
@@ -935,19 +909,7 @@ span.raw-badge {
   display: none !important;
 }
 
-/* Badge (e.g., Best Value) */
-.cgkit-attribute-swatches .tile-offer {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  background: var(--vt-accent);
-  color: #fff;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 11px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-}
+/* Badge CSS removed */
 
 .product .cart .single_add_to_cart_button.elementor-button {
   width: 100% !important;
@@ -1036,65 +998,9 @@ span.raw-badge {
   line-height: 1.5;
 }
 
-/* Tile badge */
-.tile-offer {
-  position: absolute !important;
-  top: 8px !important;
-  right: 8px !important;
-  background: var(--vt-accent) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  border-radius: 12px !important;
-  padding: 3px 6px !important;
-  font-size: 10px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-  z-index: 999 !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  white-space: nowrap !important;
-  line-height: 1 !important;
-}
+/* Badge CSS removed */
 
-/* Prevent any CSS from hiding the badge */
-.tile-offer,
-.tile-offer *,
-.tile-offer::before,
-.tile-offer::after {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: absolute !important;
-  z-index: 999 !important;
-}
-
-/* Override any theme or plugin CSS that might hide the badge */
-body .tile-offer,
-html .tile-offer,
-* .tile-offer {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: absolute !important;
-  z-index: 999 !important;
-}
-
-/* Best Value Badge for Pro Bundle */
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-offer {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #bc3116;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  z-index: 10;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
+/* Badge CSS completely removed */
 
 /* Tile title (bundle name) */
 .tile-title {
@@ -1156,8 +1062,7 @@ html .tile-offer,
 
 /* Ensure swatch button content is visible */
 .cgkit-swatch .tile-title,
-.cgkit-swatch .tile-price,
-.cgkit-swatch .tile-offer {
+.cgkit-swatch .tile-price {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -1167,8 +1072,7 @@ html .tile-offer,
 
 /* Force display for bundle swatches specifically */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title,
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price,
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-offer {
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -1176,8 +1080,7 @@ html .tile-offer,
 
 /* Ensure tile elements are visible */
 .cgkit-attribute-swatches .tile-title,
-.cgkit-attribute-swatches .tile-price,
-.cgkit-attribute-swatches .tile-offer {
+.cgkit-attribute-swatches .tile-price {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -1256,6 +1159,7 @@ html .tile-offer,
 
 /* Add border for image swatches without ::before */
 .cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch {
-  border-radius: 8px !important;
+  border-radius: 10px !important;
+  border: 0;
   box-sizing: border-box !important;
 }

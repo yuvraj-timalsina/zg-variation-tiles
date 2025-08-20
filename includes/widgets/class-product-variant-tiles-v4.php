@@ -2143,9 +2143,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             // print_r($_variations[$attribute_raw][$item_attri_val]['variation']);
             $swatch_html = '';
-            if(isset($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label']) && !empty($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'])){
-                $swatch_html .= '<span class="tile-offer">' . $_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'] . '</span>';
-            }
+            // Badge rendering completely removed - admin field only
             // if('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['save']) && filter_var(wp_strip_all_tags($_variations[$attribute_raw][$item_attri_val]['variation']['save']), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) > 360){
             //     $swatch_html .= '<div class="sale-badge-price top"><span>Save ' . ($_variations[$attribute_raw][$item_attri_val]['variation']['save']) . '</span></div>';
             // }
@@ -2183,28 +2181,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 }
             }
 
-            // Badge from custom meta _vt_offer_label
-            $variation_id = $_variations[$attribute_raw][$item_attri_val]['variation']['variation_id'];
-            $tile_offer = isset($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label']) ? $_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'] : get_post_meta($variation_id, '_vt_offer_label', true);
-
-            // Debug logging for tile-offer badge
-            error_log("DEBUG: Checking tile-offer for variation_id: " . $variation_id . ", attribute: " . $attribute_raw . ", value: " . $item_attri_val);
-            error_log("DEBUG: tile_offer value: " . ($tile_offer ? $tile_offer : 'EMPTY'));
-            error_log("DEBUG: From variations array: " . (isset($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label']) ? $_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'] : 'NOT SET'));
-            error_log("DEBUG: From post_meta: " . get_post_meta($variation_id, '_vt_offer_label', true));
-
-            if ( $tile_offer ) {
-                $swatch_html .= '<span class="tile-offer">' . esc_html($tile_offer) . '</span>';
-                error_log("DEBUG: Added tile-offer badge: " . esc_html($tile_offer));
-            } else {
-                error_log("DEBUG: No tile-offer badge added - value was empty");
-
-                // TEMPORARY TEST: Force add badge for pro-bundle to test HTML generation
-                if ( $item_attri_val === 'pro-bundle' ) {
-                    $swatch_html .= '<span class="tile-offer">BEST VALUE</span>';
-                    error_log("DEBUG: FORCED ADDED tile-offer badge for pro-bundle");
-                }
-            }
+            // Badge admin field exists but no rendering - admin field only
 
             if('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['save'])){
 
@@ -2390,8 +2367,7 @@ class ProductVariantTilesV4 extends  Widget_Base
     }
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
-        // Attach custom meta for badge and accordion
-        $variation_data['_vt_offer_label'] = get_post_meta($variation->get_id(), '_vt_offer_label', true);
+        // Attach custom meta for accordion only - badge completely removed
         $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
         $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
 
@@ -2541,17 +2517,14 @@ class ProductVariantTilesV4 extends  Widget_Base
                     var variations = $form.data('product_variations');
                     if (!variations) return;
 
-                    console.log('Current selected attributes:', selectedAttributes);
+
 
                     // Update each bundle swatch image - target bundles attribute specifically
                     $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-image').each(function() {
                         var $swatch = $(this);
                         var bundleValue = $swatch.data('attribute-value') || $swatch.find('button').data('attribute-value');
 
-                        console.log('Processing swatch:', $swatch);
-                        console.log('Bundle value from data-attribute-value:', $swatch.data('attribute-value'));
-                        console.log('Bundle value from button data-attribute-value:', $swatch.find('button').data('attribute-value'));
-                        console.log('Final bundle value:', bundleValue);
+
 
                         // Skip if we can't find the bundle value
                         if (!bundleValue) {
@@ -2571,10 +2544,10 @@ class ProductVariantTilesV4 extends  Widget_Base
                         // Special handling for Grill Only - it should always use "none" for front bench
                         if (bundleValue === 'grill-only') {
                             targetCombination['attribute_pa_front-bench'] = 'none';
-                            console.log('Special handling for grill-only: setting front-bench to none');
+
                         }
 
-                        console.log('Looking for combination for bundle ' + bundleValue + ':', targetCombination);
+
 
                         // Find matching variation
                         var matchingVariation = null;
@@ -2594,7 +2567,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                             if (isMatch) {
                                 matchingVariation = var_data;
-                                console.log('Found matching variation for bundle ' + bundleValue + ':', var_data.variation_id);
+
                                 break;
                             }
                         }
@@ -2603,7 +2576,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                         if (matchingVariation && matchingVariation.image) {
                             var $swatchImg = $swatch.find('img');
                             if ($swatchImg.length) {
-                                console.log('Updating image for bundle ' + bundleValue + ' to:', matchingVariation.image.src);
+
                                 $swatchImg.attr('src', matchingVariation.image.src);
                                 $swatchImg.attr('srcset', matchingVariation.image.srcset || '');
                                 $swatchImg.attr('sizes', matchingVariation.image.sizes || '');
@@ -2615,18 +2588,18 @@ class ProductVariantTilesV4 extends  Widget_Base
                     });
                 }
 
-                // Also trigger image updates when Controller or Front Bench changes via WooCommerce events
+                // Also trigger image and badge updates when Controller or Front Bench changes via WooCommerce events
                 $(document).on('woocommerce_variation_select_change', function(event, attribute, value) {
-                    // Only update images if Controller or Front Bench changed, NOT bundle
+                    // Only update images and badges if Controller or Front Bench changed, NOT bundle
                     if (attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench') {
-                        console.log('WooCommerce event: ' + attribute + ' changed to ' + value);
+
                         setTimeout(function() {
                             updateAllBundleSwatchImages();
                         }, 100);
                     }
                 });
 
-                // Trigger image updates on page load to set initial state
+                // Trigger image and badge updates on page load to set initial state
                 $(document).ready(function() {
                     setTimeout(function() {
                         updateAllBundleSwatchImages();
@@ -2635,14 +2608,14 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                                 // Additional event handlers to catch Controller and Front Bench changes ONLY
                 $(document).on('change', 'select[name="attribute_pa_controller"]', function() {
-                    console.log('Controller changed, updating all bundle images');
+
                     setTimeout(function() {
                         updateAllBundleSwatchImages();
                     }, 100);
                 });
 
                 $(document).on('change', 'select[name="attribute_pa_front-bench"]', function() {
-                    console.log('Front Bench changed, updating all bundle images');
+
                     setTimeout(function() {
                         updateAllBundleSwatchImages();
                     }, 100);
@@ -2652,6 +2625,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 $(document.body).on('reset_data', function() {
                     setTimeout(function() {
                         updateAllBundleSwatchImages();
+
                     }, 100);
                 });
 
@@ -2694,26 +2668,11 @@ class ProductVariantTilesV4 extends  Widget_Base
                     // Always update "Now $X Only" price
                     $savingsSection.find('.zg-current-price').text('Now $' + Math.round(salePrice || regularPrice) + ' Only');
 
-                    // Update badge visibility based on selected variation
-                    updateBadgeVisibility(variation);
-                }
-
-                function updateBadgeVisibility(variation) {
-                    // Hide all badges first
-                    $('.tile-offer').hide();
-
-                    // Show badge only for the currently selected variation
-                    if (variation.variation_id) {
-                        $('[data-variation-id="' + variation.variation_id + '"] .tile-offer').show();
-                    }
-                }
+                                                        }
 
                 function resetAccordionContent() {
                     // Reset to default content if needed
                     // This will be handled by the initial PHP content
-
-                    // Hide all badges when variation is reset
-                    $('.tile-offer').hide();
 
                     // Reset accordion savings section visibility - always show section, conditionally show savings line
                     var $savingsSection = $('.zg-accordion-savings');
