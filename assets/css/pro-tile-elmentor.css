@@ -639,20 +639,6 @@ span.raw-badge {
   padding: 10px;
 }
 
-/* Total Savings Display */
-#total-savings-dv {
-  font-weight: 600;
-  font-family: "Inter", sans-serif;
-  font-size: 16px;
-  color: #333;
-  margin: 15px 0;
-  text-align: left;
-  padding: 10px 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-}
-
-/* Ensure savings display is positioned correctly */
 .single_add_to_cart_button {
   margin-top: 10px;
 }
@@ -963,21 +949,6 @@ span.raw-badge {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Savings + CTA */
-#total-savings-dv {
-  font-weight: 700;
-  font-size: 14px;
-  color: #111;
-  margin: 10px 0;
-  border-top: 1px solid var(--vt-border);
-  border-bottom: 1px solid var(--vt-border);
-  padding: 8px 0;
-}
-#total-savings-dv b,
-#total-savings-dv strong,
-#total-savings-dv span {
-  color: var(--vt-accent);
-}
 .product .cart .single_add_to_cart_button.elementor-button {
   width: 100% !important;
   background: var(--vt-accent) !important;
@@ -1237,14 +1208,7 @@ html .tile-offer,
 .vt-acc-pricing {
   margin-bottom: 8px;
 }
-.vt-acc-pricing .vt-savings {
-  font-weight: 700;
-  color: #111;
-  margin-bottom: 6px;
-}
-.vt-acc-pricing .vt-savings b {
-  color: var(--vt-accent);
-}
+
 .vt-acc-pricing .vt-msrp {
   color: #6b7280;
   font-style: italic;

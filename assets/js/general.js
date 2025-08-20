@@ -4,12 +4,8 @@ jQuery(document).ready(function ($) {
 
   // Comprehensive initialization function
   function initializeProductPage() {
-    console.log("🚀 Initializing product page...");
-
     // Wait for CommerceKit to be ready
     if (typeof window.cgkitUpdateAvailableAttributes === "function") {
-      console.log("✅ CommerceKit ready, initializing...");
-
       // Apply initial selections
       enforceInitialSelections();
 
@@ -23,8 +19,6 @@ jQuery(document).ready(function ($) {
       setTimeout(function () {
         ensureGrillOnlyPrice();
       }, 1000);
-
-      console.log("✅ Product page initialization complete");
     } else {
       // If CommerceKit not ready, wait and retry
       setTimeout(function () {
@@ -43,7 +37,6 @@ jQuery(document).ready(function ($) {
 
   // Enforce initial selections
   function enforceInitialSelections() {
-    console.log("🔧 Enforcing initial selections...");
     var $form = $(".variations_form");
 
     // Get default selections from the form
@@ -54,7 +47,6 @@ jQuery(document).ready(function ($) {
       var attrValue = $select.val();
       if (attrName && attrValue) {
         defaultSelections[attrName] = attrValue;
-        console.log("📋 Default selection:", attrName, "=", attrValue);
       }
     });
 
@@ -67,14 +59,12 @@ jQuery(document).ready(function ($) {
 
       if ($swatch.length) {
         $swatch.addClass("cgkit-swatch-selected");
-        console.log("✅ Applied default selection:", attrName, "=", attrValue);
       }
     });
   }
 
   // Trigger initial variation update
   function triggerInitialVariationUpdate() {
-    console.log("🔄 Triggering initial variation update...");
     var $form = $(".variations_form");
     var variations = $form.data("product_variations");
     var currentSelections = {};
@@ -111,7 +101,6 @@ jQuery(document).ready(function ($) {
 
       // Trigger found_variation event
       if (matchingVariation) {
-        console.log("✅ Found initial variation:", matchingVariation.variation_id);
         $form.trigger("found_variation", [matchingVariation]);
       }
 
@@ -122,119 +111,92 @@ jQuery(document).ready(function ($) {
         currentSelections["attribute_pa_front-bench"] || $form.find('select[name="attribute_pa_front-bench"]').val();
 
       if (controllerValue) {
-        console.log("💰 Updating bundle prices for initial load with controller:", controllerValue);
         updateBundleCardPrices(variations, controllerValue, currentFrontBench);
       }
     }
   }
 
-  // Function to show/hide badges and total savings based on deals
+  // Function to show/hide badges based on deals
   function updateVariationBadges() {
-    // Get current form selections
+    // Get current selections
+    var $form = $(".variations_form");
     var currentSelections = {};
-    $(".variations select").each(function () {
+
+    $form.find("select").each(function () {
       var $select = $(this);
-      var attribute = $select.attr("name");
-      var value = $select.val();
-      if (attribute && value) {
-        currentSelections[attribute] = value;
+      var attrName = $select.attr("name");
+      var attrValue = $select.val();
+      if (attrName && attrValue) {
+        currentSelections[attrName] = attrValue;
       }
     });
 
-    // Find the matching variation
-    var $variationForm = $("form.variations_form");
-    var productId = $variationForm.data("product_id");
+    // Get variations data
+    var variations = $form.data("product_variations");
+    if (!variations) {
+      return;
+    }
 
-    if (productId) {
-      // Get variation data from WooCommerce
-      var variationData = $variationForm.data("product_variations");
+    // Remove all existing badges first
+    $(".tile-offer").remove();
 
-      if (variationData) {
-        // Find matching variation
-        var matchingVariation = null;
-        for (var i = 0; i < variationData.length; i++) {
-          var variation = variationData[i];
-          var matches = true;
+    // Check each bundle for valid offers with current combination
+    var bundles = ["basic-bundle", "pro-bundle", "grill-only"];
 
-          // Check if all current selections match this variation
-          for (var attr in currentSelections) {
-            if (variation.attributes && variation.attributes[attr] !== currentSelections[attr]) {
-              matches = false;
-              break;
-            }
-          }
+    bundles.forEach(function (bundle) {
+      // Create a test combination with this bundle
+      var testSelections = Object.assign({}, currentSelections);
+      testSelections["attribute_pa_bundles"] = bundle;
 
-          if (matches) {
-            matchingVariation = variation;
+      // For grill-only, always set front-bench to "none"
+      if (bundle === "grill-only") {
+        testSelections["attribute_pa_front-bench"] = "none";
+      }
+
+      // Find matching variation for this bundle combination
+      var matchingVariation = null;
+      for (var i = 0; i < variations.length; i++) {
+        var variation = variations[i];
+        var matches = true;
+
+        for (var attr in testSelections) {
+          if (variation.attributes && variation.attributes[attr] !== testSelections[attr]) {
+            matches = false;
             break;
           }
         }
 
-        // Check for offer label
+        if (matches) {
+          matchingVariation = variation;
+          break;
+        }
+      }
+
+      // Check if this bundle has an offer
+      if (matchingVariation) {
         var offerLabel =
           matchingVariation.vt_offer_label ||
           matchingVariation._vt_offer_label ||
           matchingVariation.offer_label ||
           matchingVariation.variation_offer_label;
 
-        // Remove ALL existing badges first
-        window.isRemovingBadges = true;
-        $(".tile-offer").remove();
-        window.isRemovingBadges = false;
+        if (offerLabel && offerLabel.trim() !== "") {
+          // Add badge to this bundle card
+          var $bundleCard = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]').find(
+            '.cgkit-swatch[data-attribute-value="' + bundle + '"]'
+          );
 
-        // Remove existing badges
-        window.isRemovingBadges = true;
-        $(".tile-offer").remove();
-        window.isRemovingBadges = false;
-
-        // Add badge if deal exists
-        if (matchingVariation && offerLabel && offerLabel.trim() !== "") {
-          var selectedBundle = currentSelections["attribute_pa_bundles"];
-          if (selectedBundle) {
-            var $selectedButton = $(
-              '[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button[data-attribute-value="' +
-                selectedBundle +
-                '"]'
+          if ($bundleCard.length) {
+            var $badge = $(
+              '<span class="tile-offer" style="position: absolute !important; top: 8px !important; right: 8px !important; background: var(--vt-accent) !important; color: #fff !important; font-weight: 700 !important; border-radius: 12px !important; padding: 3px 6px !important; font-size: 10px !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; z-index: 999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
+                offerLabel +
+                "</span>"
             );
-
-            if ($selectedButton.length) {
-              var $newBadge = $(
-                '<span class="tile-offer" style="position: absolute !important; top: 10px !important; right: 10px !important; background: #bc3116 !important; color: #fff !important; font-weight: 700 !important; border-radius: 12px !important; padding: 4px 8px !important; font-size: 11px !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; z-index: 999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
-                  offerLabel +
-                  "</span>"
-              );
-              $selectedButton.append($newBadge);
-            }
+            $bundleCard.append($badge);
           }
         }
-
-        // Always update total savings (calculated for every combination)
-        var regularPrice = matchingVariation.display_regular_price;
-        var salePrice = matchingVariation.display_price;
-        var savingsText = "";
-
-        if (regularPrice && salePrice && regularPrice > salePrice) {
-          var savings = regularPrice - salePrice;
-          var savingsFormatted = "$" + savings.toFixed(0);
-          savingsText = "TOTAL SAVINGS: " + savingsFormatted;
-        } else {
-          savingsText = "TOTAL SAVINGS: $0";
-        }
-
-        // Update or create savings display
-        var $existingSavings = $("#vt-total-savings");
-        if ($existingSavings.length) {
-          $existingSavings.text(savingsText);
-        } else {
-          var $savingsHtml = $(
-            '<div id="vt-total-savings" style="font-weight: 600; font-family: Inter; font-size: 16px; margin: 10px 0; text-align: left; width: 100%; display: block;">' +
-              savingsText +
-              "</div>"
-          );
-          $(".single_add_to_cart_button").before($savingsHtml);
-        }
       }
-    }
+    });
   }
 
   function captureCurrentSelections() {
@@ -314,9 +276,6 @@ jQuery(document).ready(function ($) {
       var attr_name = parent.getAttribute("data-attribute");
       var attr_value = input.getAttribute("data-attribute-value");
 
-      console.log("CommerceKit processing:", attr_name, "=", attr_value);
-      console.log("Before selections:", beforeSelections);
-
       // CRITICAL: Ensure all options exist BEFORE CommerceKit processes
       ensureAllVariationsEnabled();
 
@@ -340,7 +299,6 @@ jQuery(document).ready(function ($) {
           // CRITICAL: Ensure controller is preserved from beforeSelections
           var preservedController = beforeSelections["attribute_pa_controller"];
           if (preservedController) {
-            console.log("🔧 Preserving controller for grill-only:", preservedController);
             $("#pa_controller").val(preservedController);
             $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch').removeClass(
               "cgkit-swatch-selected"
@@ -359,7 +317,6 @@ jQuery(document).ready(function ($) {
             // Double-check controller is still set before triggering variation lookup
             var currentController = $("#pa_controller").val();
             if (!currentController && preservedController) {
-              console.log("🔧 Re-setting controller before variation lookup:", preservedController);
               $("#pa_controller").val(preservedController);
             }
 
@@ -378,8 +335,6 @@ jQuery(document).ready(function ($) {
                 "attribute_pa_front-bench": "none",
               };
 
-              console.log("🔍 Looking for grill-only variation with attributes:", targetAttributes);
-
               var correctVariation = null;
               for (var i = 0; i < variations.length; i++) {
                 var variation = variations[i];
@@ -394,12 +349,7 @@ jQuery(document).ready(function ($) {
 
                 if (matches) {
                   correctVariation = variation;
-                  console.log(
-                    "✅ Found correct grill-only variation:",
-                    variation.variation_id,
-                    "price:",
-                    variation.display_price || variation.price
-                  );
+
                   break;
                 }
               }
@@ -408,18 +358,12 @@ jQuery(document).ready(function ($) {
               if (correctVariation) {
                 setTimeout(function () {
                   $form.trigger("found_variation", [correctVariation]);
-                  console.log("🎯 Manually triggered correct grill-only variation");
                 }, 50);
               }
 
               // Update bundle card prices
               updateBundleCardPrices(variations, finalController);
             }
-
-            console.log(
-              "Triggered variation lookup and bundle price update for grill-only with controller:",
-              finalController
-            );
           }, 100);
         } else if (attr_name === "attribute_pa_bundles" && attr_value !== "grill-only" && attr_value !== "") {
           // For non-grill-only bundles: just show front bench (preserve whatever was selected)
@@ -427,18 +371,10 @@ jQuery(document).ready(function ($) {
 
           // Get the CURRENT front bench value (not the preserved one)
           var currentFrontBench = $("#pa_front-bench").val();
-          console.log("🪵 Current front bench when switching to", attr_value, ":", currentFrontBench);
-          console.log("🪵 Type of currentFrontBench:", typeof currentFrontBench);
-          console.log("🪵 Boolean check - !currentFrontBench:", !currentFrontBench);
-          console.log("🪵 Boolean check - currentFrontBench === 'none':", currentFrontBench === "none");
 
           // Also check what the visual swatch shows
           var selectedSwatch = $(
             '.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] .cgkit-swatch-selected'
-          );
-          console.log(
-            "🪵 Visual swatch selected:",
-            selectedSwatch.length ? selectedSwatch.data("attribute-value") : "none"
           );
 
           // CRITICAL FIX: Check visual swatch selection, not just dropdown value
@@ -447,10 +383,7 @@ jQuery(document).ready(function ($) {
           var shouldUseDefault =
             (!currentFrontBench || currentFrontBench === "none") && (!visuallySelected || visuallySelected === "none");
 
-          console.log("🪵 Should use stainless-steel default?", shouldUseDefault);
-
           if (shouldUseDefault) {
-            console.log("🪵 Setting default stainless-steel because front bench was:", currentFrontBench);
             $("#pa_front-bench").val("stainless-steel");
             $('.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] .cgkit-swatch').removeClass(
               "cgkit-swatch-selected"
@@ -461,7 +394,6 @@ jQuery(document).ready(function ($) {
           } else {
             // User has a valid selection (wood, stainless-steel, etc.) - preserve it
             var valueToPreserve = visuallySelected || currentFrontBench;
-            console.log("🪵 Preserving user's front bench selection:", valueToPreserve);
 
             // Update the dropdown to match the visual selection
             $("#pa_front-bench").val(valueToPreserve);
@@ -482,7 +414,6 @@ jQuery(document).ready(function ($) {
             var $form = $(".variations_form");
             $form.trigger("woocommerce_variation_select_change");
             $form.trigger("check_variations");
-            console.log("Triggered variation lookup for bundle change");
           }, 100);
         }
 
@@ -510,8 +441,6 @@ jQuery(document).ready(function ($) {
                 "cgkit-swatch-selected"
               );
               $preservedSwatch.addClass("cgkit-swatch-selected");
-
-              console.log("Restored lost selection:", preservedAttr, "=", preservedValue);
             }
           }
         });
@@ -521,7 +450,6 @@ jQuery(document).ready(function ($) {
 
         // Update global state
         globalSelectionState = captureCurrentSelections();
-        console.log("After selections:", globalSelectionState);
       }, 50);
 
       return result;
@@ -532,11 +460,8 @@ jQuery(document).ready(function ($) {
   if (typeof window.cgkitUpdateAvailableAttributes === "function") {
     var originalCgkitUpdate = window.cgkitUpdateAvailableAttributes;
     window.cgkitUpdateAvailableAttributes = function (form) {
-      console.log("🔍 cgkitUpdateAvailableAttributes called - preserving current state");
-
       // Capture current selections before CommerceKit processes them
       var currentSelections = captureCurrentSelections();
-      console.log("Selections before cgkitUpdateAvailableAttributes:", currentSelections);
 
       // ENSURE all required options exist BEFORE CommerceKit checks
       ensureAllVariationsEnabled();
@@ -546,8 +471,6 @@ jQuery(document).ready(function ($) {
 
       // IMMEDIATELY restore selections that CommerceKit might have cleared
       setTimeout(function () {
-        console.log("🔧 Restoring selections after cgkitUpdateAvailableAttributes");
-
         // Restore each selection that was lost
         Object.keys(currentSelections).forEach(function (attr) {
           var value = currentSelections[attr];
@@ -562,8 +485,6 @@ jQuery(document).ready(function ($) {
 
           // Check if selection was lost
           if ($dropdown && $dropdown.value !== value) {
-            console.log("❌ Lost selection:", attr, "was:", value, "now:", $dropdown.value);
-
             // Restore dropdown value
             $dropdown.value = value;
 
@@ -579,16 +500,12 @@ jQuery(document).ready(function ($) {
 
               // Add selection to correct swatch
               $swatch.classList.add("cgkit-swatch-selected");
-
-              console.log("✅ Restored:", attr, "=", value);
             }
           }
         });
 
         // Final pass to ensure everything stays enabled
         ensureAllVariationsEnabled();
-
-        console.log("Final selections after restoration:", captureCurrentSelections());
       }, 5); // Very short timeout to catch CommerceKit immediately
 
       return result;
@@ -647,7 +564,6 @@ jQuery(document).ready(function ($) {
 
           // Trigger found_variation event to update prices
           if (matchingVariation) {
-            console.log("Updating prices for grill-only + controller change:", matchingVariation.variation_id);
             $form.trigger("found_variation", [matchingVariation]);
           }
         }
@@ -658,13 +574,8 @@ jQuery(document).ready(function ($) {
   // Function to update bundle card prices based on current controller and front bench selection
   function updateBundleCardPrices(variations, controllerValue, currentFrontBench) {
     if (!variations || !controllerValue) {
-      console.log("❌ No variations or controller value provided for price update");
       return;
     }
-
-    console.log("🎲 Updating bundle card prices for controller:", controllerValue);
-    console.log("Total variations available:", variations.length);
-    console.log("🎲 Current front bench selection:", currentFrontBench);
 
     var lastAttribute = "attribute_pa_bundles";
     var availableBundles = {};
@@ -681,36 +592,17 @@ jQuery(document).ready(function ($) {
             // If we have a current front bench selection, try to match it first
             if (currentFrontBench && variation.attributes["attribute_pa_front-bench"] === currentFrontBench) {
               availableBundles[bundle] = variation.price_html;
-              console.log(
-                "✅ Found exact match price for",
-                bundle,
-                "with front-bench:",
-                currentFrontBench,
-                "price:",
-                variation.price_html,
-                "| variation ID:",
-                variation.variation_id
-              );
             }
             // For grill-only, always accept variations with front-bench as "none" (regardless of currentFrontBench)
             else if (bundle === "grill-only" && variation.attributes["attribute_pa_front-bench"] === "none") {
               availableBundles[bundle] = variation.price_html;
-              console.log(
-                "✅ Found grill-only price with front-bench: none, price:",
-                variation.price_html,
-                "| variation ID:",
-                variation.variation_id
-              );
             }
           }
         }
       }
     });
 
-    console.log("Available bundles with prices:", availableBundles);
-
     // Second pass: get fallback prices for missing bundles (except grill-only if front bench changed)
-    console.log("🔄 Second pass: getting fallback prices for missing bundles");
     variations.forEach(function (variation) {
       if (variation.attributes && variation.attributes[lastAttribute]) {
         var bundle = variation.attributes[lastAttribute];
@@ -722,37 +614,15 @@ jQuery(document).ready(function ($) {
             // For grill-only, only accept variations with front-bench as "none"
             if (bundle === "grill-only" && variation.attributes["attribute_pa_front-bench"] === "none") {
               availableBundles[bundle] = variation.price_html;
-              console.log(
-                "🔄 Fallback price for",
-                bundle,
-                "with front-bench:",
-                variation.attributes["attribute_pa_front-bench"],
-                "price:",
-                variation.price_html,
-                "| variation ID:",
-                variation.variation_id
-              );
             }
             // For other bundles, accept any front-bench value
             else if (bundle !== "grill-only") {
               availableBundles[bundle] = variation.price_html;
-              console.log(
-                "🔄 Fallback price for",
-                bundle,
-                "with front-bench:",
-                variation.attributes["attribute_pa_front-bench"],
-                "price:",
-                variation.price_html,
-                "| variation ID:",
-                variation.variation_id
-              );
             }
           }
         }
       }
     });
-
-    console.log("Final available bundles with prices:", availableBundles);
 
     // Update prices for each bundle
     Object.keys(availableBundles).forEach(function (bundle) {
@@ -776,15 +646,12 @@ jQuery(document).ready(function ($) {
         if (bundle === "grill-only") {
           if (cleanPriceHtml && cleanPriceHtml.trim() !== "" && currentPrice !== cleanPriceHtml) {
             $priceElement.html(cleanPriceHtml);
-            console.log("Updated grill-only card price from", currentPrice, "to:", cleanPriceHtml);
           } else if (!cleanPriceHtml || cleanPriceHtml.trim() === "") {
-            console.log("🚫 Skipping grill-only update - no valid price available, keeping current:", currentPrice);
           }
         } else {
           // For other bundles, update normally
           if (currentPrice !== cleanPriceHtml) {
             $priceElement.html(cleanPriceHtml);
-            console.log("Updated", bundle, "card price from", currentPrice, "to:", cleanPriceHtml);
           }
         }
       }
@@ -799,8 +666,6 @@ jQuery(document).ready(function ($) {
       $grillOnlyPrice.length &&
       ($grillOnlyPrice.text().trim() === "" || $grillOnlyPrice.text().trim() === "&nbsp;")
     ) {
-      console.log("⚠️ Grill-only price is empty/blank, attempting to find fallback price...");
-
       // Look for any grill-only variation to get a price
       for (var i = 0; i < variations.length; i++) {
         var variation = variations[i];
@@ -809,7 +674,6 @@ jQuery(document).ready(function ($) {
           if (fallbackPrice) {
             var cleanFallbackPrice = fallbackPrice.toString().replace(/Total:\s*/g, "");
             $grillOnlyPrice.html(cleanFallbackPrice);
-            console.log("✅ Set fallback price for grill-only:", cleanFallbackPrice);
             break;
           }
         }
@@ -823,33 +687,14 @@ jQuery(document).ready(function ($) {
   }, 1000);
 
   $(document).on("found_variation", "form.cart", function (event, variation) {
-    console.log("🎯 found_variation event triggered");
-    console.log("Variation details:");
-    console.log("- ID:", variation ? variation.variation_id : "none");
-    console.log("- Price:", variation ? variation.price : "none");
-    console.log("- Display Price:", variation ? variation.display_price : "none");
-    console.log("- Regular Price:", variation ? variation.regular_price : "none");
-    console.log("- Attributes:", variation ? variation.attributes : "none");
-
     // Log current form selections for comparison
     var currentSelections = {};
     $("form.cart select").each(function () {
       currentSelections[$(this).attr("name")] = $(this).val();
     });
-    console.log("Current form selections:", currentSelections);
 
     // Clear any existing savings display
-    $("#total-savings-dv").remove();
-
-    var savingsAmount = "";
-    if (variation && variation.save && variation.save !== "") {
-      savingsAmount = variation.save;
-    }
-
-    // Insert savings if present
-    if (savingsAmount) {
-      $('<div id="total-savings-dv">TOTAL SAVINGS: ' + savingsAmount).insertBefore(".single_add_to_cart_button");
-    }
+    $("#vt-total-savings").remove();
 
     if (variation) {
       var $btn = $(".single_add_to_cart_button.elementor-button");
@@ -857,10 +702,8 @@ jQuery(document).ready(function ($) {
       var finalPrice = "";
       if (variation.display_price !== undefined && variation.display_price !== "") {
         finalPrice = variation.display_price;
-        console.log("💰 Using display_price:", finalPrice);
       } else if (variation.price !== undefined && variation.price !== "") {
         finalPrice = variation.price;
-        console.log("💰 Using price:", finalPrice);
       }
 
       if (finalPrice) {
@@ -872,7 +715,6 @@ jQuery(document).ready(function ($) {
           // Fallback formatting
           formattedPrice = "$" + parseFloat(finalPrice).toFixed(2);
         }
-        console.log("💰 Final formatted price:", formattedPrice);
 
         // Update the entire button text to show "Add to cart - $price"
         var buttonText = "Add to cart - " + formattedPrice;
@@ -881,12 +723,7 @@ jQuery(document).ready(function ($) {
         } else {
           $btn.text(buttonText);
         }
-        console.log("✅ Updated ATC button text:", buttonText);
-      } else {
-        console.log("❌ No valid price found in variation");
       }
-    } else {
-      console.log("❌ No variation data received");
     }
 
     // Clear any existing badge display
@@ -908,13 +745,6 @@ jQuery(document).ready(function ($) {
         "</div>" +
         '<div class="vt-accordion-content" style="display: none;">' +
         variation.vt_dd_text;
-
-      // Add savings info if available
-      if (variation.vt_msrp && variation.vt_now && variation.vt_saving) {
-        accordionHtml += "<br><br><strong>MSRP:</strong> $" + variation.vt_msrp;
-        accordionHtml += "<br><strong>Now:</strong> $" + variation.vt_now;
-        accordionHtml += "<br><strong>Total Savings:</strong> $" + variation.vt_saving;
-      }
 
       accordionHtml += "</div></div>";
 
@@ -991,20 +821,16 @@ jQuery(document).ready(function ($) {
     $('.cgkit-attribute-swatches[data-attribute="' + bundleAttribute + '"] .tile-price').empty();
     // Update with new prices
     Object.keys(availableBundles).forEach(function (bundle) {
-      // Remove only "Total:" text and colon, keep the full price display
       var priceHtml = availableBundles[bundle];
       var cleanPriceHtml = "";
 
       if (priceHtml) {
-        // Remove "Total:" text and colon, keep everything else
         cleanPriceHtml = priceHtml.replace(/Total:\s*/g, "");
       }
 
       var $target = $('.cgkit-attribute-swatches[data-attribute="' + bundleAttribute + '"]')
         .find('.cgkit-swatch[data-attribute-value="' + bundle + '"]')
         .find(".tile-price");
-
-      console.log("Updating price for bundle:", bundle, "Target found:", $target.length, "Price:", cleanPriceHtml);
 
       $target.html(cleanPriceHtml);
     });
@@ -1196,7 +1022,6 @@ jQuery(document).ready(function ($) {
 
     // Preserve ALL current selections using CommerceKit-aware system
     var allCurrentSelections = captureCurrentSelections();
-    console.log("Current selections before grill-only click:", allCurrentSelections);
 
     // Handle grill-only selection
     if (!$clickedSwatch.hasClass("cgkit-swatch-selected")) {
@@ -1247,7 +1072,6 @@ jQuery(document).ready(function ($) {
             // Also update the select dropdown
             var selectName = attribute.replace("attribute_", "");
             $("#" + selectName).val(value);
-            console.log("Restored", attribute, "to:", value);
           }
         }
       });
@@ -1308,8 +1132,6 @@ jQuery(document).ready(function ($) {
             }
           });
 
-          console.log("Final selection for variation lookup:", currentSelection);
-
           // Find matching variation
           var matchingVariation = null;
           for (var i = 0; i < variations.length; i++) {
@@ -1331,10 +1153,8 @@ jQuery(document).ready(function ($) {
 
           // Trigger found_variation event manually
           if (matchingVariation) {
-            console.log("Found matching variation:", matchingVariation.variation_id);
             $form.trigger("found_variation", [matchingVariation]);
           } else {
-            console.log("No matching variation found for:", currentSelection);
           }
         }
       }, 100);
@@ -1356,7 +1176,6 @@ jQuery(document).ready(function ($) {
 
       // Preserve ALL current selections before making changes
       var allCurrentSelections = captureCurrentSelections();
-      console.log("Current selections before bundle change:", allCurrentSelections);
 
       // Handle bundle selection
       if (!$clickedBundle.hasClass("cgkit-swatch-selected")) {
@@ -1374,22 +1193,18 @@ jQuery(document).ready(function ($) {
 
       // Get the CURRENT front bench value (not any preserved one)
       var currentFrontBench = $("#pa_front-bench").val();
-      console.log("🪵 [Old Handler] Current front bench when switching to", bundleValue, ":", currentFrontBench);
 
       // Also check what the visual swatch shows
       var selectedSwatch = $(
         '.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] .cgkit-swatch-selected'
       );
       var visuallySelected = selectedSwatch.length ? selectedSwatch.data("attribute-value") : null;
-      console.log("🪵 [Old Handler] Visual swatch selected:", visuallySelected);
 
       // CRITICAL FIX: Check visual swatch selection, not just dropdown value
       var shouldUseDefault =
         (!currentFrontBench || currentFrontBench === "none") && (!visuallySelected || visuallySelected === "none");
-      console.log("🪵 [Old Handler] Should use stainless-steel default?", shouldUseDefault);
 
       if (shouldUseDefault) {
-        console.log("🪵 [Old Handler] Setting default stainless-steel because front bench was:", currentFrontBench);
         $("#pa_front-bench").val("stainless-steel");
         $('.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] .cgkit-swatch').removeClass(
           "cgkit-swatch-selected"
@@ -1400,7 +1215,6 @@ jQuery(document).ready(function ($) {
       } else {
         // User has a valid selection (wood, stainless-steel, etc.) - preserve it
         var valueToPreserve = visuallySelected || currentFrontBench;
-        console.log("🪵 [Old Handler] Preserving user's front bench selection:", valueToPreserve);
 
         // Update the dropdown to match the visual selection
         $("#pa_front-bench").val(valueToPreserve);
@@ -1452,7 +1266,6 @@ jQuery(document).ready(function ($) {
               // Also update the select dropdown
               var selectName = attribute.replace("attribute_", "");
               $("#" + selectName).val(value);
-              console.log("Restored", attribute, "to:", value);
             }
           }
         });
@@ -1506,8 +1319,6 @@ jQuery(document).ready(function ($) {
               "attribute_pa_front-bench": $("#pa_front-bench").val(), // Use whatever is currently selected
             };
 
-            console.log("🪵 [Old Handler] Using current front bench for variation lookup:", $("#pa_front-bench").val());
-
             // Include all other current selections
             $form.find("select").each(function () {
               var attrName = $(this).attr("name");
@@ -1516,8 +1327,6 @@ jQuery(document).ready(function ($) {
                 currentSelection[attrName] = attrValue;
               }
             });
-
-            console.log("Bundle changed to", bundleValue, "looking for variation:", currentSelection);
 
             // Find matching variation
             var matchingVariation = null;
@@ -1540,15 +1349,8 @@ jQuery(document).ready(function ($) {
 
             // Trigger found_variation event to update ATC button price
             if (matchingVariation) {
-              console.log(
-                "Found variation for bundle change:",
-                matchingVariation.variation_id,
-                "price:",
-                matchingVariation.display_price || matchingVariation.price
-              );
               $form.trigger("found_variation", [matchingVariation]);
             } else {
-              console.log("No variation found for bundle change:", currentSelection);
             }
           }
         }, 100);
@@ -1588,8 +1390,6 @@ jQuery(document).ready(function ($) {
           // Ensure front bench stays hidden for grill-only
           $("#pa_front-bench").val("none");
           $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
-
-          console.log("Preserved controller:", controllerValue, "and ensured front bench hidden");
         }, 50);
 
         // Trigger variation change events
@@ -1604,8 +1404,6 @@ jQuery(document).ready(function ($) {
             "attribute_pa_front-bench": "none",
             attribute_pa_controller: controllerValue,
           };
-
-          console.log("Controller changed to", controllerValue, "looking for grill-only variation:", currentSelection);
 
           // Find matching variation
           var matchingVariation = null;
@@ -1628,15 +1426,8 @@ jQuery(document).ready(function ($) {
 
           // Trigger found_variation event to update ATC button price
           if (matchingVariation) {
-            console.log(
-              "Found variation for controller change:",
-              matchingVariation.variation_id,
-              "price:",
-              matchingVariation.display_price || matchingVariation.price
-            );
             $form.trigger("found_variation", [matchingVariation]);
           } else {
-            console.log("No variation found for controller change:", currentSelection);
           }
 
           // IMPORTANT: Also update bundle card prices manually
@@ -1654,8 +1445,6 @@ jQuery(document).ready(function ($) {
             // Final front bench hiding
             $("#pa_front-bench").val("none");
             $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
-
-            console.log("Final preservation - Controller:", controllerValue, "Front bench hidden");
           }, 200);
         }
       }
@@ -1730,25 +1519,17 @@ jQuery(document).ready(function ($) {
     var $inStockMessage = $("#vt-in-stock-message");
     var $lowStockMessage = $("#vt-low-stock-message");
 
-    console.log("🔍 Stock Message Debug:");
-    console.log("- isWirelessSelected:", isWirelessSelected);
-    console.log("- isNonWirelessSelected:", isNonWirelessSelected);
-    console.log("- controllerSwatches length:", $controllerSwatches.length);
-
     // Show appropriate stock message based on controller selection
     if (isWirelessSelected && $controllerSwatches.length > 0) {
       // Show "In Stock" when Wireless Enabled is selected
-      console.log("✅ Showing In Stock (Wireless Selected)");
       $inStockMessage.show();
       $lowStockMessage.hide();
     } else if (isNonWirelessSelected && $controllerSwatches.length > 0) {
       // Show "Low in Stock" when Non-Wireless is selected
-      console.log("✅ Showing Low in Stock (Non-Wireless Selected)");
       $inStockMessage.hide();
       $lowStockMessage.show();
     } else {
       // Hide both when no selection or other cases
-      console.log("✅ Hiding both messages (No selection)");
       $inStockMessage.hide();
       $lowStockMessage.hide();
     }
@@ -1771,10 +1552,18 @@ jQuery(document).ready(function ($) {
 
   // Continuously monitor and update badges based on variation changes
   setInterval(function () {
-    updateVariationBadges();
+    // Update badges less frequently for better performance
+    if (!window.lastBadgeCheck || Date.now() - window.lastBadgeCheck > 3000) {
+      window.lastBadgeCheck = Date.now();
+      // Only update badges, not savings (savings handled by variation events)
+      updateVariationBadges();
+    }
 
-    // Preserve controller selections
-    preserveControllerSelections();
+    // Preserve controller selections (less frequently to avoid interference)
+    if (!window.lastControllerCheck || Date.now() - window.lastControllerCheck > 2000) {
+      window.lastControllerCheck = Date.now();
+      preserveControllerSelections();
+    }
 
     // Monitor grill-only price specifically for slow connections
     var $grillOnlyPrice = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]')
@@ -1785,8 +1574,6 @@ jQuery(document).ready(function ($) {
       $grillOnlyPrice.length &&
       ($grillOnlyPrice.text().trim() === "" || $grillOnlyPrice.text().trim() === "&nbsp;")
     ) {
-      console.log("🔄 Grill-only price is blank, restoring immediately...");
-
       var $form = $(".variations_form");
       var variations = $form.data("product_variations");
       var controllerValue = $form.find('select[name="attribute_pa_controller"]').val();
@@ -1859,15 +1646,6 @@ jQuery(document).ready(function ($) {
           $selectedSwatch.length &&
           (!$currentlySelected.length || $currentlySelected.data("attribute-value") !== formValue)
         ) {
-          console.log(
-            "🔧 Fixing selection mismatch:",
-            attr,
-            "form=",
-            formValue,
-            "swatch=",
-            $currentlySelected.data("attribute-value")
-          );
-
           // Remove all selections in this attribute
           $('[data-attribute="' + attr + '"] .cgkit-swatch').removeClass("cgkit-swatch-selected");
 
@@ -1911,14 +1689,12 @@ jQuery(document).ready(function ($) {
         var selectedCount = $attributeGroup.find(".cgkit-swatch-selected").length;
 
         if (selectedCount > 1) {
-          console.log("⚠️ Multiple selections detected, fixing...");
           // Keep only the first selected swatch
           var $firstSelected = $attributeGroup.find(".cgkit-swatch-selected").first();
           $attributeGroup.find(".cgkit-swatch-selected").not($firstSelected).removeClass("cgkit-swatch-selected");
         }
       });
     } catch (error) {
-      console.log("❌ Error in selection monitoring:", error);
     } finally {
       window.isUpdatingSelections = false;
     }
@@ -1942,7 +1718,6 @@ jQuery(document).ready(function ($) {
     var $this = $(this);
     // Prevent removal of cgkit-swatch-selected class by external scripts
     if (typeof className === "string" && className.includes("cgkit-swatch-selected") && window.selectionLocked) {
-      console.log("🚫 Blocked external script from adding cgkit-swatch-selected");
       return this;
     }
     return originalAddClass.apply(this, arguments);
@@ -1952,7 +1727,6 @@ jQuery(document).ready(function ($) {
     var $this = $(this);
     // Prevent removal of cgkit-swatch-selected class by external scripts
     if (typeof className === "string" && className.includes("cgkit-swatch-selected") && window.selectionLocked) {
-      console.log("🚫 Blocked external script from removing cgkit-swatch-selected");
       return this;
     }
     return originalRemoveClass.apply(this, arguments);
@@ -1961,6 +1735,7 @@ jQuery(document).ready(function ($) {
   // Hook into WooCommerce variation events
   $(document).on("found_variation", function (event, variation) {
     console.log("🎯 found_variation event triggered");
+
     console.log("Variation details:");
     console.log("- ID:", variation.variation_id);
     console.log("- Price:", variation.price);
@@ -2019,8 +1794,6 @@ jQuery(document).ready(function ($) {
   $(document).on("woocommerce_variation_select_change", function (event, variation) {
     var $select = $(event.target);
     if ($select.attr("name") === "attribute_pa_front-bench") {
-      console.log("🪵 Front bench changed, updating bundle prices (excluding grill-only)...");
-
       setTimeout(function () {
         var $form = $(".variations_form");
         var variations = $form.data("product_variations");
@@ -2068,11 +1841,16 @@ jQuery(document).ready(function ($) {
 
     window.isProcessingClick = true;
 
+    // Safety timeout to ensure flag gets reset
+    setTimeout(function () {
+      if (window.isProcessingClick) {
+        window.isProcessingClick = false;
+      }
+    }, 5000);
+
     var $swatch = $(this);
     var attributeName = $swatch.closest(".cgkit-attribute-swatches").data("attribute");
     var attributeValue = $swatch.data("attribute-value");
-
-    console.log("🖱️ Swatch clicked:", attributeName, "=", attributeValue);
 
     // Update WooCommerce form
     var $form = $(".variations_form");
@@ -2105,9 +1883,6 @@ jQuery(document).ready(function ($) {
       // Enforce selection states
       enforceSelectionStates();
 
-      // Preserve controller selections
-      preserveControllerSelections();
-
       // Update bundle prices (preserve controller selection)
       var variations = $form.data("product_variations");
       var controllerValue =
@@ -2116,7 +1891,6 @@ jQuery(document).ready(function ($) {
         currentSelections["attribute_pa_front-bench"] || $form.find('select[name="attribute_pa_front-bench"]').val();
 
       if (variations && controllerValue) {
-        console.log("💰 Updating bundle prices after swatch click with controller:", controllerValue);
         updateBundleCardPrices(variations, controllerValue, currentFrontBench);
       }
 
@@ -2126,36 +1900,36 @@ jQuery(document).ready(function ($) {
       }, 100);
 
       window.isProcessingClick = false;
+    } else {
+      window.isProcessingClick = false;
     }
   });
 
   // Function to enforce proper selection states
   function enforceSelectionStates() {
-    // Make all selected swatches unclickable and ensure visual highlighting
-    $(".cgkit-swatch-selected").each(function () {
-      $(this).css({
-        "pointer-events": "none",
-        cursor: "default",
-      });
+    // Remove pointer-events restrictions - all swatches should remain clickable
+    // Users should be able to click any swatch to change their selection
+    $(".cgkit-swatch").css({
+      "pointer-events": "auto",
+      cursor: "pointer",
+    });
 
-      // Force visual highlighting for selected swatches
-      if ($(this).closest('[data-attribute="attribute_pa_bundles"]').length) {
-        // For bundle swatches, ensure the card has proper selection styling
-        $(this).closest(".cgkit-attribute-swatch").addClass("cgkit-selected");
+    // Only ensure bundle cards have proper selection highlighting
+    $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch').each(function () {
+      var $swatch = $(this);
+      if ($swatch.hasClass("cgkit-swatch-selected")) {
+        $swatch.addClass("cgkit-selected");
+      } else {
+        $swatch.removeClass("cgkit-selected");
       }
     });
 
-    // Make all non-selected swatches clickable and remove highlighting
-    $(".cgkit-swatch:not(.cgkit-swatch-selected)").each(function () {
-      $(this).css({
-        "pointer-events": "auto",
-        cursor: "pointer",
-      });
-
-      // Remove visual highlighting for non-selected swatches
-      if ($(this).closest('[data-attribute="attribute_pa_bundles"]').length) {
-        $(this).closest(".cgkit-attribute-swatch").removeClass("cgkit-selected");
-      }
+    // Debug: Check controller swatch states
+    $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch').each(function () {
+      var $swatch = $(this);
+      var isSelected = $swatch.hasClass("cgkit-swatch-selected");
+      var pointerEvents = $swatch.css("pointer-events");
+      var cursor = $swatch.css("cursor");
     });
   }
 
@@ -2169,8 +1943,6 @@ jQuery(document).ready(function ($) {
       $grillOnlyPrice.length &&
       ($grillOnlyPrice.text().trim() === "" || $grillOnlyPrice.text().trim() === "&nbsp;")
     ) {
-      console.log("⚠️ Grill-only price is missing, forcing price update...");
-
       var $form = $(".variations_form");
       var variations = $form.data("product_variations");
       var controllerValue = $form.find('select[name="attribute_pa_controller"]').val();
@@ -2194,15 +1966,14 @@ jQuery(document).ready(function ($) {
         '.cgkit-swatch[data-attribute-value="' + controllerValue + '"]'
       );
 
-      if ($controllerSwatch.length) {
-        // Remove selection from all controller swatches
+      if ($controllerSwatch.length && !$controllerSwatch.hasClass("cgkit-swatch-selected")) {
+        // Only update if the swatch is not already selected
         $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]')
           .find(".cgkit-swatch")
           .removeClass("cgkit-swatch-selected");
 
         // Add selection to current controller
         $controllerSwatch.addClass("cgkit-swatch-selected");
-        console.log("✅ Preserved controller selection:", controllerValue);
       }
     }
   }

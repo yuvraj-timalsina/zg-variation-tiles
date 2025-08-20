@@ -2490,11 +2490,8 @@ class ProductVariantTilesV4 extends  Widget_Base
         $msrp_html = isset($selected_var['vt_msrp_html']) ? $selected_var['vt_msrp_html'] : '';
         $now_html  = isset($selected_var['vt_now_html'])  ? $selected_var['vt_now_html']  : '';
         $pricing_block = '';
-        if ( $sv_html || $msrp_html || $now_html ) {
+        if ( $msrp_html || $now_html ) {
             $pricing_block  = '<div class="vt-acc-pricing">';
-            if ( $sv_html ) {
-                $pricing_block .= '<div class="vt-savings">Total Savings: <b>' . $sv_html . '</b>' . ( $msrp_html ? ' <span class="vt-msrp">(MSRP ' . $msrp_html . ')</span>' : '' ) . '</div>';
-            }
             if ( $now_html ) {
                 $pricing_block .= '<div class="vt-now">Now ' . $now_html . ' Only</div>';
             }
