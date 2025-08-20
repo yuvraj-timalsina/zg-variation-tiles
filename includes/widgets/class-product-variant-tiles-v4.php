@@ -656,6 +656,9 @@ class ProductVariantTilesV4 extends  Widget_Base
 
         // $this->end_controls_section();
 
+        // ACTIVE SECTION - Variant Tiles (CommerceKit system)
+        // NOTE: This section controls actual tile styling (.variable-item, .cgkit-swatch)
+        // Used by current CommerceKit implementation
         $this->start_controls_section(
             'variant_tiles',
             [
@@ -862,7 +865,7 @@ class ProductVariantTilesV4 extends  Widget_Base
             [
                 'label' => __('Selected Tiles Background Color', 'elementor'),
                 'type' => Controls_Manager::COLOR,
-                'dynamic' => [],
+
                 'selectors' => [
                     '{{WRAPPER}} .variable-items-wrapper li.variable-item.selected:not(.radio-variable-item)' => 'background-color: {{VALUE}};',
 
@@ -904,42 +907,15 @@ class ProductVariantTilesV4 extends  Widget_Base
         );
 
         $this->end_controls_section();
+        // LEGACY SECTION - Offer Label (variable-item system)
+        // NOTE: This section targets old .variable-item-span-button-offers classes
+        // Current system uses CommerceKit with .tile-offer badges instead
+        // Kept for backward compatibility - may be removed in future versions
         $this->start_controls_section(
             'offer_label',
             [
                 'label' => __('Offer Label', 'elementor'),
                 'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-        $this->add_responsive_control(
-            'label_width',
-            [
-                'label' => __('Label Width', 'elementor') . ' (%)',
-                'type' => Controls_Manager::SLIDER,
-                'desktop_default' => ['unit' => '%', 'size' => '45'],
-                'tablet_default' => ['unit' => '%', 'size' => '45'],
-                'mobile_default' => ['unit' => '%', 'size' => '70'],
-
-                'range' => [
-                    'range' => [
-                        'px' => [
-                            'min' => 10,
-                            'max' => 2000,
-                            'step' => 10,
-                        ],
-                        '%' => [
-                            'min' => 1,
-                            'max' => 100,
-                            'step' => 1,
-                        ],
-                    ],
-                ],
-                'size_units' => ['px', 'em', "%"],
-
-                'selectors' => [
-                    '{{WRAPPER}} .variable-item .variable-item-span-button-offers' => 'width: {{SIZE}}{{UNIT}}',
-                ],
-
             ]
         );
 
@@ -1056,6 +1032,10 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
+        // LEGACY SECTION - Regular Price (variable-item system)
+        // NOTE: This section targets old .variable-item-span-button-price classes
+        // Current system uses CommerceKit with .tile-price classes instead
+        // Kept for backward compatibility - may be removed in future versions
         $this->start_controls_section(
             'price',
             [
@@ -1165,6 +1145,10 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
+        // LEGACY SECTION - Sale Price (variable-item system)
+        // NOTE: This section targets old .variable-item-span-button-price classes
+        // Current system uses CommerceKit with .tile-price classes instead
+        // Kept for backward compatibility - may be removed in future versions
         $this->start_controls_section(
             'sale_price',
             [
@@ -1238,6 +1222,10 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
+        // LEGACY SECTION - Bundle Name (variable-item system)
+        // NOTE: This section targets old .variable-item-span-button classes
+        // Current system uses CommerceKit with .tile-title classes instead
+        // Kept for backward compatibility - may be removed in future versions
         $this->start_controls_section(
             'attribute_label',
             [
@@ -1352,6 +1340,9 @@ class ProductVariantTilesV4 extends  Widget_Base
         );
         $this->end_controls_section();
 
+        // ACTIVE SECTION - Total Price (WooCommerce variation display)
+        // NOTE: This section controls WooCommerce variation price display
+        // Used by current system for showing total prices
         $this->start_controls_section(
             'total_price',
             [
@@ -1467,6 +1458,9 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
+        // ACTIVE SECTION - Product Image (CommerceKit tiles)
+        // NOTE: This section controls image height in CommerceKit tiles
+        // Used by current system for tile image dimensions
         $this->start_controls_section(
             'product-image',
             [
