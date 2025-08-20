@@ -2933,20 +2933,25 @@ class ProductVariantTilesV4 extends  Widget_Base
                         $content.find('div').first().html('');
                     }
 
-                    // Update savings information
-                    if (variation.savings !== undefined) {
-                        $savingsSection.find('.zg-savings-amount').text('$' + Math.round(variation.savings));
+                                                                                // Update savings information - always show section, conditionally show savings line
+                    var regularPrice = parseFloat(variation.display_regular_price);
+                    var salePrice = parseFloat(variation.display_price);
+                    var $savingsLine = $savingsSection.find('div').first(); // The div with "Total Savings"
+
+                    // Always ensure the parent savings section is visible
+                    $savingsSection.show();
+
+                    if (regularPrice && salePrice && regularPrice > salePrice) {
+                        var savings = regularPrice - salePrice;
+                        $savingsSection.find('.zg-savings-amount').text('$' + Math.round(savings));
+                        $savingsSection.find('.zg-msrp-text').text('(MSRP $' + Math.round(regularPrice) + ')');
+                        $savingsLine.show(); // Show the "Total Savings" line
+                    } else {
+                        $savingsLine.hide(); // Hide the "Total Savings" line
                     }
-                    if (variation.msrp !== undefined) {
-                        $savingsSection.find('.zg-msrp-text').text('(MSRP $' + Math.round(variation.msrp) + ')');
-                    } else if (variation.display_regular_price !== undefined) {
-                        $savingsSection.find('.zg-msrp-text').text('(MSRP $' + Math.round(variation.display_regular_price) + ')');
-                    }
-                    if (variation.current_price !== undefined) {
-                        $savingsSection.find('.zg-current-price').text('Now $' + Math.round(variation.current_price) + ' Only');
-                    } else if (variation.display_price !== undefined) {
-                        $savingsSection.find('.zg-current-price').text('Now $' + Math.round(variation.display_price) + ' Only');
-                    }
+
+                    // Always update "Now $X Only" price
+                    $savingsSection.find('.zg-current-price').text('Now $' + Math.round(salePrice || regularPrice) + ' Only');
 
                     // Update badge visibility based on selected variation
                     updateBadgeVisibility(variation);
@@ -2968,6 +2973,20 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                     // Hide all badges when variation is reset
                     $('.tile-offer').hide();
+
+                    // Reset accordion savings section visibility - always show section, conditionally show savings line
+                    var $savingsSection = $('.zg-accordion-savings');
+                    var $savingsLine = $savingsSection.find('div').first(); // The div with "Total Savings"
+                    var defaultSavings = <?php echo $default_variation_data['savings']; ?>;
+
+                    // Always ensure the parent savings section is visible
+                    $savingsSection.show();
+
+                    if (defaultSavings > 0) {
+                        $savingsLine.show(); // Show the "Total Savings" line
+                    } else {
+                        $savingsLine.hide(); // Hide the "Total Savings" line
+                    }
                 }
             });
             </script>
