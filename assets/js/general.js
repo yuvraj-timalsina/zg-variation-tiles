@@ -4,6 +4,8 @@ jQuery(document).ready(function ($) {
 
   // Function to show/hide badges and total savings based on deals
   function updateVariationBadges() {
+    // Also ensure prices are displayed
+    ensureBundlePricesDisplayed();
     // Get current form selections
     var currentSelections = {};
     $(".variations select").each(function () {
@@ -200,6 +202,8 @@ jQuery(document).ready(function ($) {
       // Update badges and savings after CommerceKit update
       setTimeout(function () {
         updateVariationBadges(); // Update badges when variation changes
+        enforceSelectionStates(); // Enforce proper click states
+        ensureBundlePricesDisplayed(); // Ensure prices are displayed
       }, 100);
 
       // Handle special logic for our variations
@@ -1576,6 +1580,8 @@ jQuery(document).ready(function ($) {
   // Update badges and savings on page load
   setTimeout(function () {
     updateVariationBadges(); // Update badges based on current variation
+    enforceSelectionStates(); // Enforce proper click states
+    ensureBundlePricesDisplayed(); // Ensure prices are displayed
   }, 500);
 
   // Continuously monitor and update badges based on variation changes
@@ -1583,7 +1589,7 @@ jQuery(document).ready(function ($) {
     updateVariationBadges();
   }, 1000);
 
-  // Monitor badges and savings - check every 2 seconds
+  // Monitor badges, savings, selection states, and prices - check every 2 seconds
   setInterval(function () {
     // Check if badges exist and are visible
     $(".tile-offer").each(function () {
@@ -1593,6 +1599,18 @@ jQuery(document).ready(function ($) {
         return false; // Break the loop
       }
     });
+
+    // Check if prices are missing and add them
+    $('[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch').each(function () {
+      var $priceContainer = $(this).find(".tile-price");
+      if ($priceContainer.length && $priceContainer.text().trim() === "") {
+        ensureBundlePricesDisplayed();
+        return false; // Break the loop
+      }
+    });
+
+    // Continuously enforce selection states
+    enforceSelectionStates();
   }, 2000);
 
   // Prevent other scripts from removing badges and savings (but allow our own removal)
@@ -1609,19 +1627,95 @@ jQuery(document).ready(function ($) {
   $(document).on("found_variation", function (event, variation) {
     setTimeout(function () {
       updateVariationBadges();
+      enforceSelectionStates();
+      ensureBundlePricesDisplayed();
     }, 100);
   });
 
   $(document).on("reset_data", function () {
     setTimeout(function () {
       updateVariationBadges();
+      enforceSelectionStates();
+      ensureBundlePricesDisplayed();
     }, 100);
   });
 
   // Hook into CommerceKit swatch clicks
-  $(document).on("click", ".cgkit-swatch", function () {
+  $(document).on("click", ".cgkit-swatch", function (e) {
+    var $clickedSwatch = $(this);
+
+    // Prevent clicking on already selected swatches
+    if ($clickedSwatch.hasClass("cgkit-swatch-selected")) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+
     setTimeout(function () {
       updateVariationBadges();
+      enforceSelectionStates();
+      ensureBundlePricesDisplayed();
     }, 200);
   });
+
+  // Function to enforce proper selection states
+  function enforceSelectionStates() {
+    // Make all selected swatches unclickable
+    $(".cgkit-swatch-selected").each(function () {
+      $(this).css({
+        "pointer-events": "none",
+        cursor: "default",
+      });
+    });
+
+    // Make all non-selected swatches clickable
+    $(".cgkit-swatch:not(.cgkit-swatch-selected)").each(function () {
+      $(this).css({
+        "pointer-events": "auto",
+        cursor: "pointer",
+      });
+    });
+  }
+
+  // Function to ensure bundle prices are always displayed
+  function ensureBundlePricesDisplayed() {
+    var $variationForm = $("form.variations_form");
+    var variationData = $variationForm.data("product_variations");
+
+    if (!variationData) return;
+
+    // Get current controller selection
+    var controllerValue = $('select[name="attribute_pa_controller"]').val() || "wireless-enabled";
+
+    // Find all bundle swatches
+    $('[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch').each(function () {
+      var $swatch = $(this);
+      var $button = $swatch.find("button");
+      var bundleValue = $button.data("attribute-value");
+      var $priceContainer = $swatch.find(".tile-price");
+
+      // Skip if price is already displayed
+      if ($priceContainer.text().trim() !== "") return;
+
+      // Find matching variation for this bundle
+      var matchingVariation = null;
+      for (var i = 0; i < variationData.length; i++) {
+        var variation = variationData[i];
+        if (
+          variation.attributes &&
+          variation.attributes["attribute_pa_bundles"] === bundleValue &&
+          variation.attributes["attribute_pa_controller"] === controllerValue
+        ) {
+          matchingVariation = variation;
+          break;
+        }
+      }
+
+      // Display price if variation found
+      if (matchingVariation && matchingVariation.price_html) {
+        var priceHtml = matchingVariation.price_html.replace(/Total:\s*/g, "");
+        $priceContainer.html(priceHtml);
+      }
+    });
+  }
 });

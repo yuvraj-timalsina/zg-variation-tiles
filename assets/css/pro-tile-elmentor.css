@@ -1011,58 +1011,20 @@ span.raw-badge {
   display: block;
 }
 
-/* Override disabled styling for grill-only specifically */
-.cgkit-swatch[data-attribute-value="grill-only"].cgkit-disabled {
-  opacity: 1 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
-.cgkit-swatch[data-attribute-value="grill-only"].cgkit-disabled:hover {
-  opacity: 1 !important;
-}
-.cgkit-swatch[data-attribute-value="grill-only"].cgkit-disabled:active {
-  pointer-events: auto !important;
-}
-
-/* Even more aggressive override for grill-only */
-.cgkit-swatch[data-attribute-value="grill-only"] {
-  opacity: 1 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  position: relative !important;
-}
-
-.cgkit-swatch[data-attribute-value="grill-only"]:hover {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-.cgkit-swatch[data-attribute-value="grill-only"]:active {
-  pointer-events: auto !important;
-}
-
-/* Override any CommerceKit disabled styles for grill-only */
-.cgkit-as-wrap
-  .cgkit-attribute-swatches
-  .cgkit-attribute-swatch
-  > button.cgkit-disabled[data-attribute-value="grill-only"] {
-  opacity: 1 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
-
-.cgkit-as-wrap
-  .cgkit-attribute-swatches
-  .cgkit-attribute-swatch
-  > button.cgkit-disabled[data-attribute-value="grill-only"]:hover {
+/* Proper swatch selection and disabled states */
+.cgkit-swatch.cgkit-swatch-selected {
+  pointer-events: none !important;
+  cursor: default !important;
   opacity: 1 !important;
 }
 
-.cgkit-as-wrap
-  .cgkit-attribute-swatches
-  .cgkit-attribute-swatch
-  > button.cgkit-disabled[data-attribute-value="grill-only"]:active {
-  pointer-events: auto !important;
+.cgkit-swatch.cgkit-swatch-selected:hover {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.cgkit-swatch.cgkit-swatch-selected:active {
+  pointer-events: none !important;
 }
 
 /* Neutralize sticky summary coming from theme on PDP */
