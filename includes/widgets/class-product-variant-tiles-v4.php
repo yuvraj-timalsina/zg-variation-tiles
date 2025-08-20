@@ -2367,7 +2367,8 @@ class ProductVariantTilesV4 extends  Widget_Base
     }
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
-        // Attach custom meta for accordion only - badge completely removed
+        // Attach custom meta for accordion and badge
+        $variation_data['_vt_offer_label'] = get_post_meta($variation->get_id(), '_vt_offer_label', true);
         $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
         $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
 

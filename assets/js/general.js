@@ -118,6 +118,116 @@ jQuery(document).ready(function ($) {
 
   // Badge function completely removed
 
+  // Track last badge state to prevent unnecessary updates
+  var lastBadgeState = {
+    controller: null,
+    frontBench: null,
+    badgeCount: 0,
+  };
+
+  // Optimized badge update that only runs when state actually changes
+  function updateBestValueBadgeOptimized() {
+    var $form = $(".variations_form");
+    var currentController = $form.find('select[name="attribute_pa_controller"]').val();
+    var currentFrontBench = $form.find('select[name="attribute_pa_front-bench"]').val();
+
+    // Check if state actually changed
+    if (lastBadgeState.controller === currentController && lastBadgeState.frontBench === currentFrontBench) {
+      return; // No change, skip update
+    }
+
+    lastBadgeState.controller = currentController;
+    lastBadgeState.frontBench = currentFrontBench;
+
+    updateBestValueBadge();
+  }
+
+  // Function to show "Best Value" badge only for specific combination
+  function updateBestValueBadge() {
+    // Get current selections first
+    var $form = $(".variations_form");
+    var currentSelections = {};
+
+    $form.find("select").each(function () {
+      var $select = $(this);
+      var attrName = $select.attr("name");
+      var attrValue = $select.val();
+      if (attrName && attrValue) {
+        currentSelections[attrName] = attrValue;
+      }
+    });
+
+    // Check if controller is Wireless Enabled (ignore bundle and front bench)
+    var isWirelessEnabled = currentSelections["attribute_pa_controller"] === "wireless-enabled";
+
+    // Check if we have both controller and front bench selected
+    var currentFrontBench = currentSelections["attribute_pa_front-bench"];
+    var hasValidCombination = isWirelessEnabled && currentFrontBench;
+
+    // Always remove existing badges first to ensure clean update
+    window.isRemovingBadges = true;
+    var existingBadges = $(".tile-offer").length;
+    if (existingBadges > 0) {
+    }
+    $(".tile-offer").remove();
+    window.isRemovingBadges = false;
+
+    // Exit early if we don't have a valid combination
+    if (!hasValidCombination) {
+      return;
+    }
+
+    // Show badge if we have both controller and front bench
+    if (hasValidCombination) {
+      // Get variations data to find variations with offer labels
+      var variations = $form.data("product_variations");
+      if (!variations) {
+        return;
+      }
+
+      // Find all variations with current controller and front bench that have offer labels
+      var variationsWithOffers = [];
+
+      for (var i = 0; i < variations.length; i++) {
+        var variation = variations[i];
+        if (
+          variation.attributes &&
+          variation.attributes["attribute_pa_controller"] === "wireless-enabled" &&
+          variation.attributes["attribute_pa_front-bench"] === currentFrontBench &&
+          variation._vt_offer_label &&
+          variation._vt_offer_label.trim() !== ""
+        ) {
+          variationsWithOffers.push(variation);
+        }
+      }
+
+      // Update badge count in state
+      lastBadgeState.badgeCount = variationsWithOffers.length;
+
+      // Add badges for each variation that has an offer label
+      variationsWithOffers.forEach(function (variation) {
+        var bundleValue = variation.attributes["attribute_pa_bundles"];
+        var $bundleCard = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]').find(
+          '.cgkit-swatch[data-attribute-value="' + bundleValue + '"]'
+        );
+
+        // Only add badge if it doesn't already exist
+        if ($bundleCard.length && $bundleCard.find(".tile-offer").length === 0) {
+          var $badge = $(
+            '<span class="tile-offer" style="position: absolute !important; top: 8px !important; right: 8px !important; background: var(--vt-accent) !important; color: #fff !important; font-weight: 700 !important; border-radius: 12px !important; padding: 3px 6px !important; font-size: 10px !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; z-index: 999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
+              variation._vt_offer_label +
+              "</span>"
+          );
+          $bundleCard.append($badge);
+        } else if ($bundleCard.find(".tile-offer").length > 0) {
+        }
+      });
+
+      if (variationsWithOffers.length === 0) {
+      }
+    }
+  }
+
   function captureCurrentSelections() {
     var selections = {};
     $(".cgkit-attribute-swatches").each(function () {
@@ -203,7 +313,7 @@ jQuery(document).ready(function ($) {
 
       // Update badges and savings after CommerceKit update
       setTimeout(function () {
-        // Badge update removed
+        updateBestValueBadgeOptimized(); // Update "Best Value" badge for specific combination
         enforceSelectionStates(); // Enforce proper click states
       }, 100);
 
@@ -1472,10 +1582,7 @@ jQuery(document).ready(function ($) {
   // Continuously monitor and update badges based on variation changes
   setInterval(function () {
     // Update badges less frequently for better performance
-    if (!window.lastBadgeCheck || Date.now() - window.lastBadgeCheck > 3000) {
-      window.lastBadgeCheck = Date.now();
-      // Badge update removed
-    }
+    // Remove periodic badge checks - not needed with optimized approach
 
     // Preserve controller selections (less frequently to avoid interference)
     if (!window.lastControllerCheck || Date.now() - window.lastControllerCheck > 2000) {
@@ -1518,11 +1625,18 @@ jQuery(document).ready(function ($) {
 
   // Monitor badges, savings, and selection states - check every 2 seconds
   setInterval(function () {
-    // Badge monitoring removed
+    // Remove badge monitoring - handled by state change detection
 
     // Continuously enforce selection states
     enforceSelectionStates();
   }, 2000);
+
+  // Initialize "Best Value" badge on page load
+  $(document).ready(function () {
+    setTimeout(function () {
+      updateBestValueBadgeOptimized();
+    }, 1000);
+  });
 
   // Enhanced monitoring for selection consistency - check every 500ms
   setInterval(function () {
@@ -1615,7 +1729,7 @@ jQuery(document).ready(function ($) {
   var originalRemove = $.fn.remove;
   $.fn.remove = function () {
     var $this = $(this);
-    if ($this.attr("id") === "vt-total-savings" && !window.isRemovingBadges) {
+    if (($this.hasClass("tile-offer") || $this.attr("id") === "vt-total-savings") && !window.isRemovingBadges) {
       return this;
     }
     return originalRemove.apply(this, arguments);
@@ -1683,9 +1797,12 @@ jQuery(document).ready(function ($) {
       // Grill-only should only update when controller actually changes
       updateBundleCardPrices(variations, controllerValue, currentFrontBench);
     }
+
+    // Update badge when any variation is found
+    updateBestValueBadgeOptimized();
   });
 
-  // Also hook into front bench changes specifically (but not for grill-only)
+  // Also hook into front bench changes specifically
   $(document).on("woocommerce_variation_select_change", function (event, variation) {
     var $select = $(event.target);
     if ($select.attr("name") === "attribute_pa_front-bench") {
@@ -1697,12 +1814,15 @@ jQuery(document).ready(function ($) {
         if (variations && controllerValue) {
           updateBundleCardPrices(variations, controllerValue);
         }
+
+        // Update badge when front bench changes
+        updateBestValueBadgeOptimized();
       }, 100);
     }
   });
 
   $(document).on("reset_data", function () {
-    // Badge update removed
+    updateBestValueBadgeOptimized(); // Update "Best Value" badge for specific combination
     enforceSelectionStates();
 
     // Update bundle prices when variation is reset
@@ -1770,7 +1890,8 @@ jQuery(document).ready(function ($) {
       // Add selection to clicked swatch
       $swatch.addClass("cgkit-swatch-selected");
 
-      // Badge update removed
+      // Update "Best Value" badge for specific combination
+      updateBestValueBadgeOptimized();
 
       // Enforce selection states
       enforceSelectionStates();

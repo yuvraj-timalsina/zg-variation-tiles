@@ -14,7 +14,6 @@ jQuery(document).ready(function ($) {
   });
 
   function variable_manage_gz_bundle(event) {
-    console.log("here gz bundle");
     $("input.variable_is_zg_bundle").trigger("change");
   }
 

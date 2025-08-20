@@ -998,9 +998,25 @@ span.raw-badge {
   line-height: 1.5;
 }
 
-/* Badge CSS removed */
-
-/* Badge CSS completely removed */
+/* "Best Value" Badge for specific combination only */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-offer {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background: var(--vt-accent) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  padding: 3px 6px !important;
+  font-size: 10px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  z-index: 999 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+}
 
 /* Tile title (bundle name) */
 .tile-title {
