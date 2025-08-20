@@ -132,28 +132,6 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     protected function register_controls()
     {
-        global $product;
-        $variation_locations = array('default' => 'Default');
-
-        if ( $product instanceof \WC_Product ) {
-            $attributes = $product->get_attributes();
-            foreach ( array_keys( $attributes ) as $attr ) {
-                $variation_locations['before_product_swatch_attribute_' . $attr] = 'Before ' . $attr;
-                $variation_locations['after_product_swatch_attribute_' . $attr] = 'After ' . $attr;
-            }
-        } else {
-            $current_id = function_exists('get_the_ID') ? get_the_ID() : 0;
-            if ( function_exists('wc_get_product') && $current_id ) {
-                $prod_obj = wc_get_product( $current_id );
-                if ( $prod_obj instanceof \WC_Product ) {
-                    $attributes = $prod_obj->get_attributes();
-                    foreach ( array_keys( $attributes ) as $attr ) {
-                        $variation_locations['before_product_swatch_attribute_' . $attr] = 'Before ' . $attr;
-                        $variation_locations['after_product_swatch_attribute_' . $attr] = 'After ' . $attr;
-                    }
-                }
-            }
-        }
 
         $this->start_controls_section(
             'section_product',
@@ -179,12 +157,17 @@ class ProductVariantTilesV4 extends  Widget_Base
 		);
 
         $this->add_control(
-            'variation_location',
+            'dropdown_location',
             [
-                'label' => __('Variation Data Location', 'elementor-pro'),
+                'label' => __('Dropdown Location', 'elementor-pro'),
                 'type' => \Elementor\Controls_Manager::SELECT,
-                'default' => 'no',
-                'options' => $variation_locations
+                'default' => 'above_atc',
+                'options' => [
+                    'above_atc' => __('Above Add to Cart Button', 'elementor-pro'),
+                    'below_bundles' => __('Below Bundles', 'elementor-pro'),
+                    'below_controller' => __('Below Controller', 'elementor-pro'),
+                    'below_front_bench' => __('Below Front Bench', 'elementor-pro'),
+                ],
             ]
         );
 
@@ -200,31 +183,7 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
 
-        $this->add_control(
-            'show_short_descriptions',
-            [
-                'label' => __('Show Short Descriptions', 'elementor-pro'),
-                'type' => Controls_Manager::SWITCHER,
-                'label_off' => __('Hide', 'elementor-pro'),
-                'label_on' => __('Show', 'elementor-pro'),
-                'default' => 'yes',
-                'description' => __('Please note that switching on this option will disable some of the design controls.', 'elementor-pro'),
-            ]
-        );
 
-        $this->add_responsive_control(
-            'show_slider',
-            [
-                'label' => __('Display Slider', 'elementor-pro'),
-                'type' => Controls_Manager::SWITCHER,
-                'label_off' => __('Hide', 'elementor-pro'),
-                'label_on' => __('Show', 'elementor-pro'),
-                'desktop_default' => 'no',
-                'tablet_default' => 'yes',
-                'mobile_default' => 'yes',
-                'description' => __('Please note that switching on this option will disable some of the design controls.', 'elementor-pro'),
-            ]
-        );
 
         $this->end_controls_section();
 
@@ -346,7 +305,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 'options' => self::get_button_sizes(),
                 'style_transfer' => true,
                 'condition' => [
-                    'show_quantity' => '',
+                    'show_quantity' => 'no',
                 ],
             ]
         );
@@ -516,6 +475,8 @@ class ProductVariantTilesV4 extends  Widget_Base
         );
 
         $this->end_controls_tab();
+
+        $this->end_controls_tabs();
 
         $this->add_group_control(
             Group_Control_Border::get_type(),
@@ -832,7 +793,6 @@ class ProductVariantTilesV4 extends  Widget_Base
             [
                 'label' => __('Tiles Background Color', 'elementor'),
                 'type' => Controls_Manager::COLOR,
-                'dynamic' => [],
                 'selectors' => [
                     '{{WRAPPER}} .variable-items-wrapper li.variable-item:not(.radio-variable-item)' => 'background-color: {{VALUE}};',
 
@@ -1392,164 +1352,7 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
-        $this->start_controls_section(
-            'short_description',
-            [
-                'label' => __('Short Descriptions', 'elementor'),
-                'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-        $this->add_control(
-            'short_description_prefix_text',
-            [
-                'label' => __('Prefix Text', 'elementor'),
-                'type' => Controls_Manager::TEXT,
-                'default' => 'Comes with'
-            ]
-        );
-        $this->add_responsive_control(
-            'short_description_prefix_icon',
-            [
-                'label' => __('Prefix Icon', 'elementor'),
-                'type' => Controls_Manager::ICONS,
-                'fa4compatibility' => 'icon',
-                'skin' => 'inline',
-                'label_block' => false,
-            ]
-        );
 
-        $this->add_control(
-            'short_description_prefix_icon_width',
-            [
-                'label'     => __('Icon Width', 'elementor'),
-                'type'         => Controls_Manager::TEXT,
-                'default'     => '50',
-                'selectors' => [
-                    '{{WRAPPER}} .single_variation_wrap .elementor-text-icon svg' => 'width: {{VALUE}}px;'
-
-                ],
-
-            ]
-        );
-
-        $this->add_control(
-            'short_description_prefix_icon_height',
-            [
-                'label'     => __('Icon Height', 'elementor'),
-                'type'         => Controls_Manager::TEXT,
-                'default'     => '50',
-                'selectors' => [
-                    '{{WRAPPER}} .single_variation_wrap .elementor-text-icon svg' => 'height: {{VALUE}}px;'
-
-                ],
-
-            ]
-        );
-
-        $this->add_responsive_control(
-            'short_description_prefix_icon_indent',
-            [
-                'label' => __('Icon Spacing', 'elementor'),
-                'type' => Controls_Manager::SLIDER,
-                'range' => [
-                    'px' => [
-                        'max' => 100,
-                    ],
-                ],
-                'desktop_default' => ['size' => '5', 'unit' => "px"],
-                'tablet_default' => ['size' => '5', 'unit' => "px"],
-                'mobile_default' => ['size' => '5', 'unit' => "px"],
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-text-icon.elementor-align-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
-                ],
-            ]
-        );
-        $this->add_control(
-            'short_description_prefix_label_color',
-            [
-                'label' => __('Prefix Text Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#555555',
-                'selectors' => [
-                    '{{WRAPPER}} .woocommerce-variation-description span.elementor-text-content-wrapper' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'label' => __('Prefix Text Typography', 'elementor'),
-                'name' => 'prefix_text_typography',
-                'selector' => '{{WRAPPER}} .woocommerce-variation-description span.elementor-text-content-wrapper',
-                'fields_options' => [
-                    'font_weight' => ['default' => '600'],
-                    'font_family' => ['default' => 'Inter',],
-                    'font_size'   => ['default' => ['unit' => 'px', 'size' => '15']],
-                    'line_height' => ['default' => ['unit' => 'px', 'size' => '18.15']]
-                ],
-            ]
-        );
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'Descriptions_typography',
-                'selector' => '{{WRAPPER}} .woocommerce-variation-description p',
-                'fields_options' => [
-                    'font_weight' => ['default' => '400'],
-                    'font_family' => ['default' => 'Inter',],
-                    'font_size'   => ['default' => ['unit' => 'px', 'size' => '15']],
-                    'line_height' => ['default' => ['unit' => 'px', 'size' => '21.3']]
-                ],
-            ]
-        );
-        $this->add_responsive_control(
-            'short_description_align',
-            [
-                'label' => __('Alignment', 'elementor'),
-                'type' => Controls_Manager::CHOOSE,
-                'options' => [
-                    'left' => [
-                        'title' => __('Left', 'elementor'),
-                        'icon' => 'eicon-text-align-left',
-                    ],
-                    'center' => [
-                        'title' => __('Center', 'elementor'),
-                        'icon' => 'eicon-text-align-center',
-                    ],
-                    'right' => [
-                        'title' => __('Right', 'elementor'),
-                        'icon' => 'eicon-text-align-right',
-                    ],
-                    'justify' => [
-                        'title' => __('Justified', 'elementor'),
-                        'icon' => 'eicon-text-align-justify',
-                    ],
-                ],
-                'desktop_default' => 'left',
-                'tablet_default' => 'left',
-                'mobile_default' => 'left',
-                'selectors' => [
-                    '{{WRAPPER}} .woocommerce-variation-description p' => 'text-align: {{VALUE}};',
-                ],
-
-            ]
-        );
-        $this->add_responsive_control(
-            'short_description_margin',
-            [
-                'label' => __('Short Descriptions Margin', 'elementor'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
-                'desktop_default' =>  ['top' => 0, 'bottom' => 0, 'left' => 0, 'right' => 0],
-                'tablet_default' =>  ['top' => 0, 'bottom' => 0, 'left' => 0, 'right' => 0],
-                'mobile_default' =>  ['top' => 0, 'bottom' => 0, 'left' => 0, 'right' => 0],
-                'allowed_dimensions' => ['top', 'left', 'right', 'bottom'],
-                'selectors' => [
-                    '{{WRAPPER}} .woocommerce-variation.single_variation' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-        $this->end_controls_section();
         $this->start_controls_section(
             'total_price',
             [
@@ -1793,7 +1596,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 'options' => self::get_button_sizes(),
                 'style_transfer' => true,
                 'condition' => [
-                    'show_quantity' => '',
+                    'show_quantity' => 'no',
                 ],
             ]
         );
@@ -1902,10 +1705,7 @@ class ProductVariantTilesV4 extends  Widget_Base
             return ob_get_clean();
         };
 
-        if(isset($settings['variation_location']) && $settings['variation_location'] !== 'default'){
-            remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation', 10 );
-            add_action( $settings['variation_location'] , 'woocommerce_single_variation' );
-        }
+
 
         // add_action('woocommerce_before_single_variation', array($this, 'action_wc_before_single_variation'), 20);
         add_filter('woocommerce_get_stock_html', '__return_empty_string');
@@ -1953,7 +1753,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 aarrows = <?php echo ($settings['show_arrows'] == 'yes') ? 'true' : 'false'; ?>;
                 adots = <?php echo ($settings['show_dots'] == 'yes') ? 'true' : 'false'; ?>;
 
-                show_slider = <?php echo ($settings['show_slider'] == 'yes') ? 'true' : 'false'; ?>;
+
 
                 $(window).resize(function() {
 
@@ -2060,58 +1860,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         return $variation_data;
     }
 
-    function pvt_add_text_short_descriptions_v2($description)
-    {
-        $settings = $this->get_settings_for_display();
-        $migrated = isset($settings['__fa4_migrated']['short_description_prefix_icon']);
-        $is_new = empty($settings['icon']) && Icons_Manager::is_migration_allowed();
 
-        if (!$is_new && empty($settings['short_description_prefix_icon_align'])) {
-            // @todo: remove when deprecated
-            // added as bc in 2.6
-            //old default
-            $settings['short_description_prefix_icon_align'] = $this->get_settings('short_description_prefix_icon_align');
-        }
-
-        $this->add_render_attribute([
-            'short-content-wrapper' => [
-                'class' => 'elementor-text-content-wrapper',
-            ],
-            'short_description_prefix_icon_align' => [
-                'class' => [
-                    'elementor-text-icon',
-                    'elementor-align-icon-left',
-                ],
-            ],
-            'short_description_text' => [
-                'class' => 'elementor-label-text',
-            ],
-        ]);
-
-
-        if ('yes' === $settings['show_short_descriptions']) {
-            ob_start(); ?>
-            <span class="elementor-text-content-wrapper">
-                <?php if (!empty($settings['icon']) || !empty($settings['short_description_prefix_icon']['value'])) : ?>
-                    <span class="elementor-text-icon elementor-align-icon-left">
-                        <?php if ($is_new || $migrated) :
-                            Icons_Manager::render_icon($settings['short_description_prefix_icon'], ['aria-hidden' => 'true']);
-                        else : ?>
-                            <i class="<?php echo esc_attr($settings['icon']); ?>" aria-hidden="true"></i>
-                        <?php endif; ?>
-                    </span>
-                <?php endif; ?>
-                <span <?php echo $this->get_render_attribute_string('short_description_text'); ?>>
-                    <?php echo $this->get_settings('short_description_prefix_text'); ?>
-                </span>
-            </span>
-        <?php
-            $icon = ob_get_contents();
-            ob_end_clean();
-            return $icon . $description;
-        }
-        return '';
-    }
     /**
      * Render button text.
      *
@@ -2488,28 +2237,44 @@ class ProductVariantTilesV4 extends  Widget_Base
         $swatch_html .= '<div class="clearfix"></div>';
         $swatches_html .= '<section class="clearfix">' . do_action('after_product_swatch_' . $attribute_name) . '</section>';
 
-        // Accordion under selected tile using _vt_dd_text and optional preview
-        $selected_var = isset($_variations[$attribute_raw][$args['selected']]['variation']) ? $_variations[$attribute_raw][$args['selected']]['variation'] : array();
-        $dd_text  = isset($selected_var['_vt_dd_text']) ? $selected_var['_vt_dd_text'] : '';
-        $dd_prev  = isset($selected_var['_vt_dd_preview']) ? $selected_var['_vt_dd_preview'] : '';
-        if ( empty($dd_text) && isset($selected_var['variation_id']) ) {
-            $dd_text = get_post_meta($selected_var['variation_id'], '_vt_dd_text', true);
-            $dd_prev = get_post_meta($selected_var['variation_id'], '_vt_dd_preview', true);
+        // Accordion positioning based on dropdown_location setting
+        $dropdown_location = 'above_atc'; // Default fallback
+        try {
+            $settings = $this->get_settings_for_display();
+            $dropdown_location = isset($settings['dropdown_location']) ? $settings['dropdown_location'] : 'above_atc';
+        } catch (Exception $e) {
+            // Fallback to default if settings not available
         }
-        // Pricing figures
-        $sv_html = isset($selected_var['vt_saving_html']) ? $selected_var['vt_saving_html'] : '';
-        $msrp_html = isset($selected_var['vt_msrp_html']) ? $selected_var['vt_msrp_html'] : '';
-        $now_html  = isset($selected_var['vt_now_html'])  ? $selected_var['vt_now_html']  : '';
-        $pricing_block = '';
-        if ( $msrp_html || $now_html ) {
-            $pricing_block  = '<div class="vt-acc-pricing">';
-            if ( $now_html ) {
-                $pricing_block .= '<div class="vt-now">Now ' . $now_html . ' Only</div>';
+
+        // Only render accordion in swatches if it's set to appear below specific attributes
+        if (in_array($dropdown_location, ['below_bundles', 'below_controller', 'below_front_bench'])) {
+            // Check if this is the correct attribute to render accordion after
+            $should_render_accordion = false;
+
+            if ($dropdown_location === 'below_bundles' && strpos($args['attribute'], 'bundles') !== false) {
+                $should_render_accordion = true;
+            } elseif ($dropdown_location === 'below_controller' && strpos($args['attribute'], 'controller') !== false) {
+                $should_render_accordion = true;
+            } elseif ($dropdown_location === 'below_front_bench' && strpos($args['attribute'], 'front-bench') !== false) {
+                $should_render_accordion = true;
             }
-            $pricing_block .= '</div>';
-        }
-        if ( ! empty($dd_text) ) {
-            $swatches_html .= '<details class="vt-accordion" open><summary>' . esc_html( $dd_prev ?: __("What's included?","product-tiles") ) . '</summary><div class="vt-accordion-content">' . $pricing_block . wp_kses_post($dd_text) . '</div></details>';
+
+            if ($should_render_accordion) {
+                // Get default variation data for accordion
+                global $product;
+                $default_variation_data = $this->get_default_variation_data($product);
+
+                // Render accordion after this attribute
+                $swatches_html .= '<div class="zg-accordion-positioned">';
+
+                // Capture accordion output
+                ob_start();
+                $this->render_accordion($default_variation_data);
+                $accordion_html = ob_get_clean();
+
+                $swatches_html .= $accordion_html;
+                $swatches_html .= '</div>';
+            }
         }
 
         if (isset($args['css_class']) && 'cgkit-as-wrap-plp' === $args['css_class']) {
@@ -2687,45 +2452,21 @@ class ProductVariantTilesV4 extends  Widget_Base
         // Get default variation data for initial display
         $default_variation_data = $this->get_default_variation_data($product);
 
+        // Get settings for dropdown location
+        $settings = $this->get_settings_for_display();
+
         ?>
         <div class="zg-product-savings-section" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
 
-                                                                        <!-- Simple visible accordion -->
-            <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; margin: 15px 0;">
-                <div class="zg-accordion-header" style="padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 600; font-size: 16px; color: #212529;">What's included?</span>
-                    <span class="zg-accordion-icon" style="font-size: 12px; color: #212529;">▼</span>
-                </div>
+        <?php
+        // Render accordion based on dropdown location setting
+        $dropdown_location = isset($settings['dropdown_location']) ? $settings['dropdown_location'] : 'above_atc';
 
-                <!-- Excerpt text (shown when collapsed) -->
-                <?php if (!empty($default_variation_data['accordion_preview'])) : ?>
-                    <div class="zg-accordion-excerpt" style="padding: 10px 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
-                        <?php echo esc_html($default_variation_data['accordion_preview']); ?>
-                    </div>
-                <?php endif; ?>
-
-                                    <!-- Full description (shown when expanded) -->
-                    <div class="zg-accordion-content" style="display: none;">
-                        <div style="color: #495057; font-size: 14px; line-height: 1.5;">
-                            <?php if (!empty($default_variation_data['accordion_content'])) : ?>
-                                <?php echo wp_kses_post($default_variation_data['accordion_content']); ?>
-                            <?php else : ?>
-                                Grill and 2 x Food Temperature Probes
-                            <?php endif; ?>
-                        </div>
-                                                <!-- Dynamic savings section at bottom of expanded content -->
-                        <div class="zg-accordion-savings" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
-                            <div style="color: #6c757d; font-size: 15px; margin-bottom: 5px;">
-                                <strong style="font-weight: 700;">Total Savings:</strong>
-                                <span class="zg-savings-amount" style="color: #dc3545; font-weight: bold;">$<?php echo esc_html(number_format($default_variation_data['savings'], 0)); ?></span>
-                                <span class="zg-msrp-text" style="color: #6c757d; font-size: 12px;">(MSRP $<?php echo esc_html(number_format($default_variation_data['msrp'], 0)); ?>)</span>
-                            </div>
-                            <div class="zg-current-price" style="color: #dc3545; font-weight: bold; font-size: 16px;">
-                                Now $<?php echo esc_html(number_format($default_variation_data['current_price'], 0)); ?> Only
-                            </div>
-                        </div>
-                    </div>
-            </div>
+        // Only render accordion if it's set to appear above ATC button (default position)
+        if ($dropdown_location === 'above_atc') {
+            $this->render_accordion($default_variation_data);
+        }
+        ?>
 
                                     <script type="text/javascript">
             jQuery(document).ready(function($) {
@@ -3125,5 +2866,49 @@ class ProductVariantTilesV4 extends  Widget_Base
         }
 
         return $data;
+    }
+
+    /**
+     * Render accordion component
+     */
+    private function render_accordion($default_variation_data) {
+        ?>
+        <!-- Simple visible accordion -->
+        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; margin: 15px 0;">
+            <div class="zg-accordion-header" style="padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 16px; color: #212529;">What's included?</span>
+                <span class="zg-accordion-icon" style="font-size: 12px; color: #212529;">▼</span>
+            </div>
+
+            <!-- Excerpt text (shown when collapsed) -->
+            <?php if (!empty($default_variation_data['accordion_preview'])) : ?>
+                <div class="zg-accordion-excerpt" style="padding: 10px 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
+                    <?php echo esc_html($default_variation_data['accordion_preview']); ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Full description (shown when expanded) -->
+            <div class="zg-accordion-content" style="display: none;">
+                <div style="color: #495057; font-size: 14px; line-height: 1.5;">
+                    <?php if (!empty($default_variation_data['accordion_content'])) : ?>
+                        <?php echo wp_kses_post($default_variation_data['accordion_content']); ?>
+                    <?php else : ?>
+                        Grill and 2 x Food Temperature Probes
+                    <?php endif; ?>
+                </div>
+                <!-- Dynamic savings section at bottom of expanded content -->
+                <div class="zg-accordion-savings" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                    <div style="color: #6c757d; font-size: 15px; margin-bottom: 5px;">
+                        <strong style="font-weight: 700;">Total Savings:</strong>
+                        <span class="zg-savings-amount" style="color: #dc3545; font-weight: bold;">$<?php echo esc_html(number_format($default_variation_data['savings'], 0)); ?></span>
+                        <span class="zg-msrp-text" style="color: #6c757d; font-size: 12px;">(MSRP $<?php echo esc_html(number_format($default_variation_data['msrp'], 0)); ?>)</span>
+                    </div>
+                    <div class="zg-current-price" style="color: #dc3545; font-weight: bold; font-size: 16px;">
+                        Now $<?php echo esc_html(number_format($default_variation_data['current_price'], 0)); ?> Only
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 }
