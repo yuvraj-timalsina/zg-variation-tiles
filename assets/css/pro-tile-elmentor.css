@@ -360,9 +360,7 @@ ul.variable-items-wrapper.wvs-style-squared li.active {
 .product .cart .single_add_to_cart_button.elementor-button {
   position: relative;
 }
-.single_variation_wrap {
-  margin-top: 30px;
-}
+
 label.variable-item {
   text-transform: none !important;
   font-family: "Inter", sans-serif;
@@ -407,7 +405,6 @@ span.raw-badge {
 
 /* CommerceKit Swatch Styling */
 .cgkit-as-wrap {
-  margin-bottom: 20px;
   width: 100% !important;
   max-width: 100% !important;
   overflow: hidden;
@@ -449,7 +446,7 @@ span.raw-badge {
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
   width: 100% !important;
   height: auto;
-  min-height: 280px; /* Increased to accommodate price area */
+  min-height: 250px; /* Maintain existing height for consistency */
   display: flex;
   flex-direction: column;
   align-items: center;
