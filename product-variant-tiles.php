@@ -42,6 +42,6 @@ Product_Tiles_Plugin_loaded::instance();
 add_action( 'elementor/frontend/after_register_scripts', 'register_frontend_scripts',5 );
 function register_frontend_scripts() {
 
-wp_register_script( 'pro-tiles-slick.carousel', PROTILES_URL.'assets/js/slick.js',array( 'jquery', 'elementor-frontend' ), '1.0.1', true );
+
         wp_register_script( 'pro-tiles-general', PROTILES_URL.'assets/js/general.js', array( 'jquery', 'elementor-frontend' ), '1.0.3.' . time(), true );
 }

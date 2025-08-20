@@ -29,7 +29,6 @@ class ProductVariantTilesV4 extends  Widget_Base
     {
         parent::__construct($data, $args);
         wp_register_style('pro-tiles-elementor', PROTILES_URL . 'assets/css/pro-tile-elmentor.css', array(), '1.0.26.' . time());
-        wp_register_style('pro-tiles-slick', PROTILES_URL . 'assets/css/slick-carousal.css', array(), '1.0.1.' . time());
         wp_register_style('zg-savings-accordion', PROTILES_URL . 'assets/css/savings-accordion.css', array(), '1.0.0.' . time());
         wp_register_script('zg-savings-accordion', PROTILES_URL . 'assets/js/savings-accordion.js', array('jquery'), '1.0.0.' . time(), true);
         wp_enqueue_script('wc-add-to-cart-variation');
@@ -57,7 +56,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function get_style_depends()
     {
-        $deps = ['pro-tiles-elementor', 'pro-tiles-slick', 'zg-savings-accordion'];
+        $deps = ['pro-tiles-elementor', 'zg-savings-accordion'];
         if ( function_exists('is_product') && is_product() ) {
             $deps[] = 'commercekit-attribute-swatches-css';
             $deps[] = 'woo-variation-swatches-frontend';
@@ -69,7 +68,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function get_script_depends()
     {
-        return ['pro-tiles-general', 'pro-tiles-slick.carousel', 'zg-savings-accordion'];
+        return ['pro-tiles-general', 'zg-savings-accordion'];
     }
 
     public function get_name()
@@ -1498,172 +1497,8 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
         $this->end_controls_section();
-        $this->start_controls_section(
-            'expand-txt',
-            [
-                'label' => __('Expand Text', 'elementor'),
-                'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'seemore_typography',
-                'selector' => '{{WRAPPER}} .tiles-seemore-link',
-                'fields_options' => [
-                    'font_weight' => ['default' => '400'],
-                    'font_family' => ['default' => 'Inter',],
-                    'font_size'   => ['default' => ['unit' => 'px', 'size' => '10']],
-                    'line_height' => ['default' => ['unit' => 'px', 'size' => '16']]
-                ],
-            ]
-        );
-        $this->add_control(
-            'expand_text_color',
-            [
-                'label' => __('Text Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#000000',
-                'selectors' => [
-                    '{{WRAPPER}} .tiles-seemore-link' => 'color: {{VALUE}};',
-                    '{{WRAPPER}} .tiles-seemore-link:hover' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-        $this->add_control(
-            'expand_text_color_hover',
-            [
-                'label' => __('Hover Text Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#BC3116',
-                'selectors' => [
-                    '{{WRAPPER}} .tiles-seemore-link:hover' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'expand_background_color',
-            [
-                'label' => __('Background Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#E6E5E5',
-                'selectors' => [
-                    '{{WRAPPER}} .variable-item-span-search .elementor-text-content-wrapper' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-        $this->add_responsive_control(
-            'expand_text_align',
-            [
-                'label' => __('Alignment', 'elementor'),
-                'type' => Controls_Manager::CHOOSE,
-                'options' => [
-                    'left'    => [
-                        'title' => __('Left', 'elementor'),
-                        'icon' => 'eicon-text-align-left',
-                    ],
-                    'center' => [
-                        'title' => __('Center', 'elementor'),
-                        'icon' => 'eicon-text-align-center',
-                    ],
-                    'right' => [
-                        'title' => __('Right', 'elementor'),
-                        'icon' => 'eicon-text-align-right',
-                    ],
-                    'justify' => [
-                        'title' => __('Justified', 'elementor'),
-                        'icon' => 'eicon-text-align-justify',
-                    ],
-                ],
-                'prefix_class' => 'elementor%s-align-',
-                'desktop_default' => 'left',
-                'tablet_default' => 'left',
-                'mobile_default' => 'left',
-                'selectors' => [
-                    '{{WRAPPER}} .tiles-seemore-link' => 'text-align: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'expand_text_size',
-            [
-                'label' => __('Size', 'elementor'),
-                'type' => Controls_Manager::SELECT,
-                'default' => 'sm',
-                'options' => self::get_button_sizes(),
-                'style_transfer' => true,
-                'condition' => [
-                    'show_quantity' => 'no',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'expand_text_icon',
-            [
-                'label' => __('Expand Text Icon', 'elementor'),
-                'type' => Controls_Manager::ICONS,
-                'fa4compatibility' => 'icon',
-                'skin' => 'inline',
-                'label_block' => false,
-
-            ]
-        );
 
 
-        $this->end_controls_section();
-        $this->start_controls_section(
-            'variant-tiles-sliders',
-            [
-                'label' => __('Variant Tiles Sliders', 'elementor'),
-                'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-        $this->add_control(
-            'show_arrows',
-            [
-                'label' => __('Show Arrows', 'elementor-pro'),
-                'type' => Controls_Manager::SWITCHER,
-                'label_off' => __('Hide', 'elementor-pro'),
-                'label_on' => __('Show', 'elementor-pro'),
-                'default' =>  'no',
-                'description' => __('Please note that switching on this option will disable some of the design controls.', 'elementor-pro'),
-            ]
-        );
-
-
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'arrows_size',
-                'selector' => '{{WRAPPER}} .slick-prev:before, {{WRAPPER}} .slick-next:before',
-                'fields_options' => [
-                    'font_weight' => ['default' => '400'],
-                    'font_family' => ['default' => 'Font Awesome 5 Free',],
-                    'font_size'   => ['default' => ['unit' => 'px', 'size' => '24']],
-                    'line_height' => ['default' => ['unit' => 'px', 'size' => '28']]
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'show_dots',
-            [
-                'label' => __('Show Dots', 'elementor-pro'),
-                'type' => Controls_Manager::SWITCHER,
-                'label_off' => __('Hide', 'elementor-pro'),
-                'label_on' => __('Show', 'elementor-pro'),
-                'default' => 'no',
-                'description' => __('Please note that switching on this option will disable some of the design controls.', 'elementor-pro'),
-                'separator' => 'before'
-            ]
-        );
-
-        $this->end_controls_section();
     }
 
     protected function render()
@@ -1745,36 +1580,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         echo '</div>';
 
 ?>
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
 
-                var aarrows = 'true';
-                var adots = 'true';
-                aarrows = <?php echo ($settings['show_arrows'] == 'yes') ? 'true' : 'false'; ?>;
-                adots = <?php echo ($settings['show_dots'] == 'yes') ? 'true' : 'false'; ?>;
-
-
-
-                $(window).resize(function() {
-
-                    var owl = $('.elementor-widget-productvarianttilesv4 .variable-items-wrapper');
-                    if ($(window).width() < 1269) {
-
-                        owl.not('.slick-initialized').slick({
-                            arrows: false,
-                            slidesToShow: 2,
-                            infinite: false,
-                            variableWidth: true
-                        });
-                    } else {
-                        if (owl.hasClass('slick-initialized')) {
-                            owl.slick('unslick');
-                        }
-                    }
-
-                });
-            });
-        </script>
         <?php
         if ('yes' !== $settings['show_quantity']) {
             remove_filter('woocommerce_is_sold_individually', 'pvt_remove_all_quantity_fields');
@@ -1804,53 +1610,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         return $data = sprintf('<ul role="radiogroup" class="variable-items-wrapper button-variable-wrapper variable_items_tiles off" data-attribute_name="%1$s" data-attribute_values="%2$s">%3$s</ul>',  esc_attr(wc_variation_attribute_name($attribute)), wc_esc_json(wp_json_encode(array_values($options))), $contents);
     }
 
-    function action_wc_before_single_variation()
-    {
 
-        $settings = $this->get_settings_for_display();
-        if (!isset($settings['show_cross_cell']) || $settings['show_cross_cell'] != 'yes') return;
-        $icon_settings['cross_cell_product_price_icon'] = $settings['cross_cell_product_price_icon'];
-        $icon_settings['cross_cell_product_price_icon_indent'] = $settings['cross_cell_product_price_icon_indent'];
-        $icon_settings['cross_cell_product_price_icon_align'] = isset($settings['cross_cell_product_price_icon_align']) ? $settings['cross_cell_product_price_icon_align'] : '';
-        if (empty($settings['cross_cell_product_price_icon_align'])) {
-            $settings['cross_cell_product_price_icon_align'] = $this->get_settings('cross_cell_product_price_icon_align');
-        } ?>
-        <div class="variant_cross_cell"></div>
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-
-                $('.elementor-widget-productvarianttilesv2 form.variations_form').on('show_variation', function(event, data) {
-
-                    variation_id = data.variation_id;
-                    var vid = "#vid-" + variation_id;
-                    var cross_cell = $(vid).data("crosscell");
-                    if (cross_cell.length > 0) {
-
-                        $(".variant_cross_cell").html('<div class="variant-loading variant-style"></div>');
-                        html = '<ul class="crosscell_products">';
-                        for (var i = 0; i < cross_cell.length; i++) {
-                            html += '<li class="crosscell_items" data-product_id="' + cross_cell[i]['variation_id'] + '" data-price="' + cross_cell[i]['price'] + '">';
-                            html += '<div class="cross_img" style="background:url(' + cross_cell[i]["image"] + ')"></div>';
-                            html += '<div class="cross_content"><h4>' + cross_cell[i]["product_name"] + '</h4>';
-                            html += '<p class="cross_price">' + cross_cell[i]["price_html"] + '</p>';
-                            html += '</div></li>';
-                        }
-                        html += '</ul>';
-                        $(".variant_cross_cell .variant-loading").remove();
-                        $(html).appendTo(".variant_cross_cell").fadeIn(300);
-                        return false;
-                    } else {
-                        $(".variant_cross_cell").html('');
-                        return false;
-                    }
-
-                });
-
-                return false;
-            });
-        </script>
-        <?php
-    }
 
     function variation_price_preffix($variation_data, $product, $variation)
     {
@@ -2318,53 +2078,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         return $swatch_html;
     }
 
-    function expand_text($seemore)
-    {
 
-        $settings = $this->get_settings_for_display();
-        $migrated = isset($settings['__fa4_migrated']['expand_text_icon']);
-
-        $is_new = empty($settings['icon']) && Icons_Manager::is_migration_allowed();
-        if (!$is_new && empty($settings['expand_text_icon_align'])) {
-
-            $settings['expand_text_icon_align'] = $this->get_settings('expand_text_icon_align');
-        }
-
-        $this->add_render_attribute([
-            'content-wrapper' => [
-                'class' => 'elementor-text-content-wrapper',
-            ],
-            'icon-align' => [
-                'class' => [
-                    'elementor-expand-text-icon',
-                    'elementor-align-icon-' . $settings['expand_text_icon_align'],
-                ],
-            ],
-            'text' => [
-                'class' => 'elementor-button-text',
-            ],
-        ]);
-        ob_start(); ?>
-        <a href="javascript:void(0);" data-id="<?php echo $seemore; ?>" class="tiles-seemore-link">
-            <span <?php echo $this->get_render_attribute_string('content-wrapper'); ?>>
-                <?php if (!empty($settings['expand_text_icon']) && !empty($settings['expand_text_icon']['value'])) : ?>
-
-                    <span <?php echo $this->get_render_attribute_string('icon-align'); ?>>
-                        <?php if ($is_new || $migrated) :
-                            Icons_Manager::render_icon($settings['expand_text_icon'], ['aria-hidden' => 'true']);
-                        else : ?>
-                            <i class="<?php echo esc_attr($settings['expand_text_icon']); ?>" aria-hidden="true"></i>
-                        <?php endif; ?>
-                    </span>
-                <?php endif; ?>
-                <span class="elementor-bundle-label-text elementor-label-text" <?php echo $this->get_render_attribute_string('expand_text'); ?>><?php echo $settings['expand_text']; ?></span>
-
-            </span></a>
-<?php
-        $output = ob_get_contents();
-        ob_end_clean();
-        return $output;
-    }
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
         // Attach custom meta for accordion and badge
