@@ -1,0 +1,182 @@
+/* ZG Product Savings and Accordion Styles */
+
+.zg-product-savings-section {
+  margin-bottom: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue",
+    sans-serif;
+}
+
+/* Accordion Styles */
+.zg-included-items-accordion {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.zg-accordion-header {
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.zg-accordion-header:hover {
+  background-color: #e9ecef;
+}
+
+.zg-accordion-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #212529;
+}
+
+.zg-accordion-icon {
+  font-size: 12px;
+  color: #6c757d;
+  transition: transform 0.3s ease;
+}
+
+.zg-accordion-header.active .zg-accordion-icon {
+  transform: rotate(180deg);
+}
+
+.zg-accordion-content {
+  overflow: hidden;
+  padding: 10px 20px 15px;
+  background-color: #ffffff;
+}
+
+.zg-accordion-content.active {
+  max-height: 200px;
+}
+
+.zg-accordion-content-inner {
+  padding: 15px 20px;
+}
+
+.zg-accordion-text {
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.zg-accordion-preview {
+  color: #6c757d;
+  font-size: 13px;
+  font-style: italic;
+  border-top: 1px solid #f1f3f4;
+  padding-top: 10px;
+}
+
+/* Total Savings Styles */
+.zg-total-savings {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 0;
+  margin-top: 10px;
+  background-color: transparent;
+  border: none;
+}
+
+.zg-savings-label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #212529;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zg-savings-amount {
+  font-weight: 700;
+  font-size: 16px;
+  color: #dc3545;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .zg-accordion-header {
+    padding: 12px 15px;
+  }
+
+  .zg-accordion-title {
+    font-size: 14px;
+  }
+
+  .zg-included-items-list {
+    padding: 12px 15px;
+  }
+
+  .zg-included-item {
+    font-size: 13px;
+  }
+
+  .zg-savings-label {
+    font-size: 13px;
+  }
+
+  .zg-savings-amount {
+    font-size: 16px;
+  }
+}
+
+/* Animation for smooth transitions */
+.zg-product-savings-section {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.zg-accordion-header:focus {
+  outline: 2px solid #007cba;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .zg-included-items-accordion {
+    border: 2px solid #000;
+  }
+
+  .zg-accordion-header {
+    background-color: #fff;
+    border-bottom: 1px solid #000;
+  }
+
+  .zg-savings-amount {
+    color: #000;
+  }
+}
+
+/* Hide WooCommerce variation error messages */
+.woocommerce-error,
+.woocommerce-info,
+.woocommerce-message {
+  display: none !important;
+}
+
+.woocommerce-no-matching-variations {
+  display: none !important;
+}
+
+/* Hide only the main form variation price, keep swatch card prices */
+.single_variation_wrap .woocommerce-variation-price {
+  display: none !important;
+}

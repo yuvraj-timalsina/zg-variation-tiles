@@ -30,6 +30,8 @@ class ProductVariantTilesV4 extends  Widget_Base
         parent::__construct($data, $args);
         wp_register_style('pro-tiles-elementor', PROTILES_URL . 'assets/css/pro-tile-elmentor.css', array(), '1.0.26.' . time());
         wp_register_style('pro-tiles-slick', PROTILES_URL . 'assets/css/slick-carousal.css', array(), '1.0.1.' . time());
+        wp_register_style('zg-savings-accordion', PROTILES_URL . 'assets/css/savings-accordion.css', array(), '1.0.0.' . time());
+        wp_register_script('zg-savings-accordion', PROTILES_URL . 'assets/js/savings-accordion.js', array('jquery'), '1.0.0.' . time(), true);
         wp_enqueue_script('wc-add-to-cart-variation');
 
         add_filter('variant_tiles_dropdown_continue', function(){
@@ -55,7 +57,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function get_style_depends()
     {
-        $deps = ['pro-tiles-elementor', 'pro-tiles-slick'];
+        $deps = ['pro-tiles-elementor', 'pro-tiles-slick', 'zg-savings-accordion'];
         if ( function_exists('is_product') && is_product() ) {
             $deps[] = 'commercekit-attribute-swatches-css';
             $deps[] = 'woo-variation-swatches-frontend';
@@ -67,7 +69,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function get_script_depends()
     {
-        return ['pro-tiles-general', 'pro-tiles-slick.carousel'];
+        return ['pro-tiles-general', 'pro-tiles-slick.carousel', 'zg-savings-accordion'];
     }
 
     public function get_name()
@@ -1915,14 +1917,19 @@ class ProductVariantTilesV4 extends  Widget_Base
         add_filter('woocommerce_dropdown_variation_attribute_options_html', array($this, 'protiles_wvs_swatch_variable_item'), 60, 2);
         add_filter('esc_html', [$this, 'unescape_html'], 10, 2);
         // add_filter('woocommerce_attribute_label', array($this, 'get_attribute_label'), 10, 3);
-        add_filter('woocommerce_short_description', array($this, 'pvt_add_text_short_descriptions_v2'), 50, 1);
-        add_filter('woocommerce_available_variation', array($this, 'variation_price_preffix'), 10, 3);
+        // add_filter('woocommerce_short_description', array($this, 'pvt_add_text_short_descriptions_v2'), 50, 1);
+        // add_filter('woocommerce_available_variation', array($this, 'variation_price_preffix'), 10, 3);
         // Add critical hook for variation data enrichment (accordion, pricing, etc.)
         add_filter('woocommerce_available_variation', array($this, 'vt_enrich_variation_payload'), 20, 3);
         add_filter("wvs_variable_items_wrapper", array($this, 'wvs_custom_variable_items_wrapper'), 10, 4);
         if ('yes' !== $settings['show_quantity']) {
             add_filter('woocommerce_is_sold_individually', array($this, 'pvt_remove_all_quantity_fields'), 10, 2);
         }
+
+        // Add hook to render savings and accordion before Add to Cart button
+        add_action('woocommerce_before_add_to_cart_button', array($this, 'render_savings_and_accordion_hook'), 20);
+
+
 
         ob_start();
 
@@ -1972,18 +1979,22 @@ class ProductVariantTilesV4 extends  Widget_Base
         if ('yes' !== $settings['show_quantity']) {
             remove_filter('woocommerce_is_sold_individually', 'pvt_remove_all_quantity_fields');
         }
-        remove_filter('woocommerce_available_variation', array($this, 'variation_price_preffix'));
+        // remove_filter('woocommerce_available_variation', array($this, 'variation_price_preffix'));
         remove_filter('woocommerce_available_variation', array($this, 'vt_enrich_variation_payload'), 20, 3);
         remove_filter('woocommerce_product_single_add_to_cart_text', $text_callback);
+
+
         remove_filter('woocommerce_get_stock_html', '__return_empty_string');
         remove_filter('esc_html', [$this, 'unescape_html']);
         // remove_filter('woocommerce_attribute_label', array($this, 'get_attribute_label'), 10, 3);
-        remove_filter('woocommerce_short_description', array($this, 'pvt_add_text_short_descriptions_v2'), 50, 1);
+        // remove_filter('woocommerce_short_description', array($this, 'pvt_add_text_short_descriptions_v2'), 50, 1);
     }
     function pvt_remove_all_quantity_fields($return, $product)
     {
         return true;
     }
+
+
 
     function wvs_custom_variable_items_wrapper($data, $contents, $type, $args, $saved_attribute = array())
     {
@@ -2627,9 +2638,473 @@ class ProductVariantTilesV4 extends  Widget_Base
         $variation_data['vt_msrp']       = $regular;
         $variation_data['vt_now']        = $sale;
         $variation_data['vt_saving']     = $saving;
-        $variation_data['vt_msrp_html']  = wc_price( $regular );
-        $variation_data['vt_now_html']   = wc_price( $sale );
-        $variation_data['vt_saving_html']= wc_price( $saving );
+        $variation_data['vt_msrp_html']  = '$' . number_format( $regular, 0 );
+        $variation_data['vt_now_html']   = '$' . number_format( $sale, 0 );
+        $variation_data['vt_saving_html']= '$' . number_format( $saving, 0 );
+
+        // Add image data for swatch updates
+        $image_id = $variation->get_image_id();
+        if ($image_id) {
+            $image = wp_get_attachment_image_src($image_id, 'woocommerce_thumbnail');
+            if ($image) {
+                $variation_data['image'] = array(
+                    'src' => $image[0],
+                    'width' => $image[1],
+                    'height' => $image[2],
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true)
+                );
+            }
+        }
+
         return $variation_data;
+    }
+
+            /**
+     * Hook method to render savings and accordion before Add to Cart button
+     */
+    public function render_savings_and_accordion_hook() {
+        global $product;
+        if (!$product || !is_object($product)) {
+            return;
+        }
+
+        // Only show on frontend, not in Elementor editor
+        if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
+            return;
+        }
+
+        $this->render_savings_and_accordion($product);
+    }
+
+    /**
+     * Render savings and accordion section
+     */
+    private function render_savings_and_accordion($product) {
+        if (!$product || !is_object($product)) {
+            return;
+        }
+
+        // Get default variation data for initial display
+        $default_variation_data = $this->get_default_variation_data($product);
+
+        ?>
+        <div class="zg-product-savings-section" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
+
+                                                                        <!-- Simple visible accordion -->
+            <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; margin: 15px 0;">
+                <div class="zg-accordion-header" style="padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; font-size: 16px; color: #212529;">What's included?</span>
+                    <span class="zg-accordion-icon" style="font-size: 12px; color: #212529;">▼</span>
+                </div>
+
+                <!-- Excerpt text (shown when collapsed) -->
+                <?php if (!empty($default_variation_data['accordion_preview'])) : ?>
+                    <div class="zg-accordion-excerpt" style="padding: 10px 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
+                        <?php echo esc_html($default_variation_data['accordion_preview']); ?>
+                    </div>
+                <?php endif; ?>
+
+                                    <!-- Full description (shown when expanded) -->
+                    <div class="zg-accordion-content" style="display: none;">
+                        <div style="color: #495057; font-size: 14px; line-height: 1.5;">
+                            <?php if (!empty($default_variation_data['accordion_content'])) : ?>
+                                <?php echo wp_kses_post($default_variation_data['accordion_content']); ?>
+                            <?php else : ?>
+                                Grill and 2 x Food Temperature Probes
+                            <?php endif; ?>
+                        </div>
+                                                <!-- Dynamic savings section at bottom of expanded content -->
+                        <div class="zg-accordion-savings" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                            <div style="color: #6c757d; font-size: 15px; margin-bottom: 5px;">
+                                <strong style="font-weight: 700;">Total Savings:</strong>
+                                <span class="zg-savings-amount" style="color: #dc3545; font-weight: bold;">$<?php echo esc_html(number_format($default_variation_data['savings'], 0)); ?></span>
+                                <span class="zg-msrp-text" style="color: #6c757d; font-size: 12px;">(MSRP $<?php echo esc_html(number_format($default_variation_data['msrp'], 0)); ?>)</span>
+                            </div>
+                            <div class="zg-current-price" style="color: #dc3545; font-weight: bold; font-size: 16px;">
+                                Now $<?php echo esc_html(number_format($default_variation_data['current_price'], 0)); ?> Only
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+                                    <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Accordion toggle with excerpt/description switching
+                $('.zg-accordion-header').on('click', function() {
+                    var $header = $(this);
+                    var $excerpt = $header.next('.zg-accordion-excerpt');
+                    var $content = $excerpt.next('.zg-accordion-content');
+                    var $icon = $header.find('.zg-accordion-icon');
+
+                    if ($content.is(':visible')) {
+                        // Collapse: hide full content, show excerpt
+                        $content.slideUp(300);
+                        $excerpt.slideDown(300);
+                        $icon.removeClass('rotated');
+                    } else {
+                        // Expand: hide excerpt, show full content
+                        $excerpt.slideUp(300);
+                        $content.slideDown(300);
+                        $icon.addClass('rotated');
+                    }
+                });
+
+                // Handle variation changes to update accordion content
+                $(document.body).on('found_variation', function(event, variation) {
+                    updateAccordionContent(variation);
+                    updateSwatchImages(variation);
+                });
+
+                // Handle variation reset
+                $(document.body).on('reset_data', function() {
+                    resetAccordionContent();
+                });
+
+                function updateSwatchImages(variation) {
+                    // Update swatch images based on selected variation
+                    if (variation && variation.variation_id) {
+                        // Find the swatch card for this variation
+                        var $swatchCard = $('[data-variation-id="' + variation.variation_id + '"]');
+                        if ($swatchCard.length) {
+                            // Update the image in the swatch card
+                            var $swatchImg = $swatchCard.find('img');
+                            if ($swatchImg.length && variation.image) {
+                                $swatchImg.attr('src', variation.image.src);
+                                $swatchImg.attr('srcset', variation.image.srcset || '');
+                                $swatchImg.attr('sizes', variation.image.sizes || '');
+                                $swatchImg.attr('alt', variation.image.alt || '');
+                            }
+                        }
+                    }
+
+                    // Also update all bundle swatch images based on current combination
+                    updateAllBundleSwatchImages(variation);
+                }
+
+                                                                                function updateAllBundleSwatchImages(variation) {
+                    // Get current form and selected attributes
+                    var $form = $('form.variations_form');
+                    var selectedAttributes = {};
+
+                    // Get all selected attribute values
+                    $form.find('.variations select').each(function() {
+                        var $select = $(this);
+                        var attribute = $select.attr('name');
+                        var value = $select.val();
+                        if (value) {
+                            selectedAttributes[attribute] = value;
+                        }
+                    });
+
+                    // Get variations data
+                    var variations = $form.data('product_variations');
+                    if (!variations) return;
+
+                    console.log('Current selected attributes:', selectedAttributes);
+
+                    // Update each bundle swatch image - target bundles attribute specifically
+                    $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-image').each(function() {
+                        var $swatch = $(this);
+                        var bundleValue = $swatch.data('attribute-value') || $swatch.find('button').data('attribute-value');
+
+                        console.log('Processing swatch:', $swatch);
+                        console.log('Bundle value from data-attribute-value:', $swatch.data('attribute-value'));
+                        console.log('Bundle value from button data-attribute-value:', $swatch.find('button').data('attribute-value'));
+                        console.log('Final bundle value:', bundleValue);
+
+                        // Skip if we can't find the bundle value
+                        if (!bundleValue) {
+                            console.log('Skipping swatch - no bundle value found');
+                            return; // Continue to next iteration
+                        }
+
+                        // Create target combination for this bundle with ALL other selected attributes
+                        var targetCombination = {};
+                        for (var attr in selectedAttributes) {
+                            if (attr !== 'attribute_pa_bundles') { // Exclude bundle attribute itself
+                                targetCombination[attr] = selectedAttributes[attr];
+                            }
+                        }
+                        targetCombination['attribute_pa_bundles'] = bundleValue;
+
+                        // Special handling for Grill Only - it should always use "none" for front bench
+                        if (bundleValue === 'grill-only') {
+                            targetCombination['attribute_pa_front-bench'] = 'none';
+                            console.log('Special handling for grill-only: setting front-bench to none');
+                        }
+
+                        console.log('Looking for combination for bundle ' + bundleValue + ':', targetCombination);
+
+                        // Find matching variation
+                        var matchingVariation = null;
+                        for (var i = 0; i < variations.length; i++) {
+                            var var_data = variations[i];
+                            var isMatch = true;
+
+                            for (var attr in targetCombination) {
+                                var expectedValue = targetCombination[attr];
+                                var actualValue = var_data.attributes[attr];
+
+                                if (actualValue !== expectedValue) {
+                                    isMatch = false;
+                                    break;
+                                }
+                            }
+
+                            if (isMatch) {
+                                matchingVariation = var_data;
+                                console.log('Found matching variation for bundle ' + bundleValue + ':', var_data.variation_id);
+                                break;
+                            }
+                        }
+
+                        // Update image if matching variation found
+                        if (matchingVariation && matchingVariation.image) {
+                            var $swatchImg = $swatch.find('img');
+                            if ($swatchImg.length) {
+                                console.log('Updating image for bundle ' + bundleValue + ' to:', matchingVariation.image.src);
+                                $swatchImg.attr('src', matchingVariation.image.src);
+                                $swatchImg.attr('srcset', matchingVariation.image.srcset || '');
+                                $swatchImg.attr('sizes', matchingVariation.image.sizes || '');
+                                $swatchImg.attr('alt', matchingVariation.image.alt || '');
+                            }
+                        } else {
+                            console.log('No matching variation found for bundle ' + bundleValue);
+                        }
+                    });
+                }
+
+                // Also trigger image updates when Controller or Front Bench changes via WooCommerce events
+                $(document).on('woocommerce_variation_select_change', function(event, attribute, value) {
+                    // Only update images if Controller or Front Bench changed, NOT bundle
+                    if (attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench') {
+                        console.log('WooCommerce event: ' + attribute + ' changed to ' + value);
+                        setTimeout(function() {
+                            updateAllBundleSwatchImages();
+                        }, 100);
+                    }
+                });
+
+                // Trigger image updates on page load to set initial state
+                $(document).ready(function() {
+                    setTimeout(function() {
+                        updateAllBundleSwatchImages();
+                    }, 500);
+                });
+
+                                // Additional event handlers to catch Controller and Front Bench changes ONLY
+                $(document).on('change', 'select[name="attribute_pa_controller"]', function() {
+                    console.log('Controller changed, updating all bundle images');
+                    setTimeout(function() {
+                        updateAllBundleSwatchImages();
+                    }, 100);
+                });
+
+                $(document).on('change', 'select[name="attribute_pa_front-bench"]', function() {
+                    console.log('Front Bench changed, updating all bundle images');
+                    setTimeout(function() {
+                        updateAllBundleSwatchImages();
+                    }, 100);
+                });
+
+                // Handle when variation is reset
+                $(document.body).on('reset_data', function() {
+                    setTimeout(function() {
+                        updateAllBundleSwatchImages();
+                    }, 100);
+                });
+
+                                                function updateAccordionContent(variation) {
+                    var $excerpt = $('.zg-accordion-excerpt');
+                    var $content = $('.zg-accordion-content');
+                    var $savingsSection = $('.zg-accordion-savings');
+
+                    // Update excerpt text
+                    if (variation._vt_dd_preview && variation._vt_dd_preview.trim() !== '') {
+                        $excerpt.html(variation._vt_dd_preview).show();
+                    } else {
+                        $excerpt.html('').hide();
+                    }
+
+                    // Update full content
+                    if (variation._vt_dd_text && variation._vt_dd_text.trim() !== '') {
+                        $content.find('div').first().html(variation._vt_dd_text);
+                    } else {
+                        $content.find('div').first().html('');
+                    }
+
+                    // Update savings information
+                    if (variation.savings !== undefined) {
+                        $savingsSection.find('.zg-savings-amount').text('$' + Math.round(variation.savings));
+                    }
+                    if (variation.msrp !== undefined) {
+                        $savingsSection.find('.zg-msrp-text').text('(MSRP $' + Math.round(variation.msrp) + ')');
+                    } else if (variation.display_regular_price !== undefined) {
+                        $savingsSection.find('.zg-msrp-text').text('(MSRP $' + Math.round(variation.display_regular_price) + ')');
+                    }
+                    if (variation.current_price !== undefined) {
+                        $savingsSection.find('.zg-current-price').text('Now $' + Math.round(variation.current_price) + ' Only');
+                    } else if (variation.display_price !== undefined) {
+                        $savingsSection.find('.zg-current-price').text('Now $' + Math.round(variation.display_price) + ' Only');
+                    }
+
+                    // Update badge visibility based on selected variation
+                    updateBadgeVisibility(variation);
+                }
+
+                function updateBadgeVisibility(variation) {
+                    // Hide all badges first
+                    $('.tile-offer').hide();
+
+                    // Show badge only for the currently selected variation
+                    if (variation.variation_id) {
+                        $('[data-variation-id="' + variation.variation_id + '"] .tile-offer').show();
+                    }
+                }
+
+                function resetAccordionContent() {
+                    // Reset to default content if needed
+                    // This will be handled by the initial PHP content
+
+                    // Hide all badges when variation is reset
+                    $('.tile-offer').hide();
+                }
+            });
+            </script>
+            <style>
+            .zg-accordion-icon.rotated {
+                transform: rotate(180deg);
+            }
+            </style>
+
+            <!-- Always show savings for testing -->
+            <div class="zg-total-savings" style="background: transparent; border: none; padding: 0; margin: 10px 0; display: flex; align-items: center; gap: 5px;">
+                <span class="zg-savings-label" style="color: #212529; font-weight: bold; font-size: 14px;">TOTAL SAVINGS:</span>
+                <span class="zg-savings-amount" style="color: #dc3545; font-weight: bold; font-size: 18px;">
+                    <?php if ($default_variation_data['savings'] > 0) : ?>
+                        $<?php echo number_format($default_variation_data['savings'], 0); ?>
+                    <?php else : ?>
+                        $120 (Default Savings)
+                    <?php endif; ?>
+                </span>
+            </div>
+        </div>
+
+
+        <?php
+    }
+
+    /**
+     * Get default variation data for the product
+     */
+    private function get_default_variation_data($product) {
+        $data = array(
+            'accordion_title' => '',
+            'accordion_content' => '',
+            'accordion_preview' => '',
+            'savings' => 0,
+            'msrp' => 0,
+            'current_price' => 0,
+            'has_content' => false
+        );
+
+        if ($product->is_type('variable')) {
+            // Get default variation or first available variation
+            $default_attributes = $product->get_default_attributes();
+            $variations = $product->get_available_variations();
+
+            if (!empty($variations)) {
+                // Try to find default variation, otherwise use first
+                $default_variation = null;
+                if (!empty($default_attributes)) {
+                    foreach ($variations as $variation) {
+                        $matches_default = true;
+                        foreach ($default_attributes as $attr_name => $attr_value) {
+                            if (!isset($variation['attributes']['attribute_' . $attr_name]) ||
+                                $variation['attributes']['attribute_' . $attr_name] !== $attr_value) {
+                                $matches_default = false;
+                                break;
+                            }
+                        }
+                        if ($matches_default) {
+                            $default_variation = $variation;
+                            break;
+                        }
+                    }
+                }
+
+                // Use first variation if no default found
+                if (!$default_variation) {
+                    $default_variation = $variations[0];
+                }
+
+                $variation_id = $default_variation['variation_id'];
+                $data = $this->get_variation_data($variation_id, $default_variation);
+            }
+        } else {
+            // For simple products, calculate savings
+            $regular_price = $product->get_regular_price();
+            $sale_price = $product->get_sale_price();
+
+            if ($regular_price && $sale_price && $regular_price > $sale_price) {
+                $data['savings'] = $regular_price - $sale_price;
+            }
+
+            // Set MSRP and current price for simple products
+            $data['msrp'] = $regular_price ? $regular_price : 0;
+            $data['current_price'] = $sale_price ? $sale_price : $regular_price;
+
+            // Set default accordion content for simple products
+            $data['accordion_title'] = "What's included?";
+            $data['accordion_content'] = "Grill and 2 x Food Temperature Probes";
+            $data['has_content'] = true;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get variation-specific data
+     */
+    private function get_variation_data($variation_id, $variation = null) {
+        $data = array(
+            'accordion_title' => '',
+            'accordion_content' => '',
+            'accordion_preview' => '',
+            'savings' => 0,
+            'msrp' => 0,
+            'current_price' => 0,
+            'has_content' => false
+        );
+
+        // Get variation-specific dropdown data
+        $dd_text = get_post_meta($variation_id, '_vt_dd_text', true);
+        $dd_preview = get_post_meta($variation_id, '_vt_dd_preview', true);
+
+        if (!empty($dd_text)) {
+            $data['accordion_title'] = "What's included?";
+            $data['accordion_content'] = $dd_text;
+            $data['has_content'] = true;
+        }
+
+        if (!empty($dd_preview)) {
+            $data['accordion_preview'] = $dd_preview;
+        }
+
+        // Calculate savings for this variation
+        if ($variation) {
+            $regular_price = $variation['display_regular_price'];
+            $sale_price = $variation['display_price'];
+
+            if ($regular_price && $sale_price && $regular_price > $sale_price) {
+                $data['savings'] = $regular_price - $sale_price;
+            }
+
+            // Set MSRP and current price for variations
+            $data['msrp'] = $regular_price ? $regular_price : 0;
+            $data['current_price'] = $sale_price ? $sale_price : $regular_price;
+        }
+
+        return $data;
     }
 }

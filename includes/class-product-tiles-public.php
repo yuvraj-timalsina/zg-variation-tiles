@@ -16,6 +16,9 @@ class Product_Tiles_Public
 
 	function __construct()
 	{
+		// Add hooks for savings display and accordion
+		add_action('woocommerce_before_add_to_cart_button', array($this, 'display_total_savings_and_accordion'), 20);
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_savings_accordion_assets'));
 	}
 
 	/**
@@ -890,5 +893,138 @@ class Product_Tiles_Public
 				wp_dequeue_style( 'woo-variation-swatches-frontend' );
 			}
 		}
+	}
+
+	/**
+	 * Enqueue assets for savings display and accordion functionality
+	 */
+	public function enqueue_savings_accordion_assets() {
+		if (is_product()) {
+			wp_enqueue_style(
+				'zg-savings-accordion',
+				PROTILES_URL . 'assets/css/savings-accordion.css',
+				array(),
+				'1.0.0.' . time()
+			);
+
+			wp_enqueue_script(
+				'zg-savings-accordion',
+				PROTILES_URL . 'assets/js/savings-accordion.js',
+				array('jquery'),
+				'1.0.0.' . time(),
+				true
+			);
+		}
+	}
+
+				/**
+	 * Display total savings and accordion section above Add to Cart button
+	 */
+	public function display_total_savings_and_accordion() {
+		// This method is now handled by the v4 widget
+		// Keeping it for backward compatibility but not using it
+		return;
+	}
+
+		/**
+	 * Get default variation data for the product
+	 */
+	private function get_default_variation_data($product) {
+		$data = array(
+			'accordion_title' => '',
+			'accordion_content' => '',
+			'accordion_preview' => '',
+			'savings' => 0,
+			'has_content' => false
+		);
+
+		if ($product->is_type('variable')) {
+			// Get default variation or first available variation
+			$default_attributes = $product->get_default_attributes();
+			$variations = $product->get_available_variations();
+
+			if (!empty($variations)) {
+				// Try to find default variation, otherwise use first
+				$default_variation = null;
+				if (!empty($default_attributes)) {
+					foreach ($variations as $variation) {
+						$matches_default = true;
+						foreach ($default_attributes as $attr_name => $attr_value) {
+							if (!isset($variation['attributes']['attribute_' . $attr_name]) ||
+								$variation['attributes']['attribute_' . $attr_name] !== $attr_value) {
+								$matches_default = false;
+								break;
+							}
+						}
+						if ($matches_default) {
+							$default_variation = $variation;
+							break;
+						}
+					}
+				}
+
+				// Use first variation if no default found
+				if (!$default_variation) {
+					$default_variation = $variations[0];
+				}
+
+				$variation_id = $default_variation['variation_id'];
+				$data = $this->get_variation_data($variation_id, $default_variation);
+			}
+		} else {
+			// For simple products, calculate savings
+			$regular_price = $product->get_regular_price();
+			$sale_price = $product->get_sale_price();
+
+			if ($regular_price && $sale_price && $regular_price > $sale_price) {
+				$data['savings'] = $regular_price - $sale_price;
+			}
+
+			// Set default accordion content for simple products
+			$data['accordion_title'] = "What's included?";
+			$data['accordion_content'] = "Grill and 2 x Food Temperature Probes";
+			$data['has_content'] = true;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get variation-specific data
+	 */
+	private function get_variation_data($variation_id, $variation = null) {
+		$data = array(
+			'accordion_title' => '',
+			'accordion_content' => '',
+			'accordion_preview' => '',
+			'savings' => 0,
+			'has_content' => false
+		);
+
+		// Get variation-specific dropdown data
+		$dd_text = get_post_meta($variation_id, '_vt_dd_text', true);
+		$dd_preview = get_post_meta($variation_id, '_vt_dd_preview', true);
+
+		if (!empty($dd_text)) {
+			$data['accordion_title'] = "What's included?";
+			$data['accordion_content'] = $dd_text;
+			$data['has_content'] = true;
+		}
+
+		if (!empty($dd_preview)) {
+			$data['accordion_preview'] = $dd_preview;
+		}
+
+		// Calculate savings for this variation
+		if ($variation) {
+			$regular_price = $variation['display_regular_price'];
+			$sale_price = $variation['display_price'];
+
+			if ($regular_price && $sale_price && $regular_price > $sale_price) {
+				$data['savings'] = $regular_price - $sale_price;
+			}
+		}
+
+		return $data;
 	}
 }

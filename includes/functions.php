@@ -2,7 +2,7 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
-	
+
 	/**
 	 *  provide term, options, attribute of product
 	 *
@@ -59,16 +59,16 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	function display_variation_price( $term, $option, $attribute, $product  ) {
  		$variation_id = get_variation_id( $term, $option, $attribute, $product  );
 		$parent = wp_get_post_parent_id( $variation_id);
-	    
+
 	    if ( $parent > 0 ) {
 	         $_product = wc_get_product( $variation_id);
 	       	 $price_sale = get_post_meta($variation_id, '_sale_price', true);
 	       	 if($price_sale > 0){
-	       	 	$data['sale'] = wp_kses(wc_price( $_product->get_sale_price() ), array() );
-	       	 
-	       	 	
+	       	 	$data['sale'] = '$' . number_format( $_product->get_sale_price(), 0 );
+
+
 	       	 }
-	       	 	$data['regular'] = wp_kses(wc_price( $_product->get_regular_price() ), array() );
+	       	 	$data['regular'] = '$' . number_format( $_product->get_regular_price(), 0 );
 	    }
 	    return $data;
 	}
@@ -97,7 +97,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	   $svalue = [];
 	  	foreach($field['value'] as $key => $value){
 	  		array_push($svalue,(int)$value);
-	  	} 
+	  	}
 
   	   $args = array(
 	      'post_type'      => 'product',
@@ -107,13 +107,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
 		      array(
 			      'taxonomy' => 'product_type',
 			      'field'    => 'slug',
-			      'terms'    => 'simple', 
+			      'terms'    => 'simple',
 			   ),
 			),
 	      'fields' => 'ids'
 	    );
      	$loop = new WP_Query( $args );
-    
+
  		echo '<p class="form-field ' . esc_attr( $field['id'] ) . '_field ' . esc_attr( $field['wrapper_class'] ) . '"><label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
  		echo '<select id="' . esc_attr( $field['id'] ) . '" name="' . esc_attr( $field['name'] ) . '[]" class="' . esc_attr( $field['class'] ) . '" multiple="multiple" style="width: 100%">';
     	if( $loop->have_posts() ){
@@ -154,7 +154,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	      		array(
 	      			'taxonomy' => 'product_type',
 	      			'field'    => 'slug',
-	      			'terms'    => 'simple', 
+	      			'terms'    => 'simple',
 	      		),
 	      	)
 	    );
@@ -186,7 +186,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
    		?>
     	<script>
     		jQuery(document).ready(function($) {
-    			
+
 	    		$('#<?php echo $field['id'] ?>').select2();
 	    		$('#<?php echo $field['id'] ?>').on("select2:select", function( e ) {
 	    			console.log( 'select' );
@@ -195,34 +195,34 @@ if ( !defined( 'ABSPATH' ) ) exit;
 				    var $element               = $(element);
 				    $element.detach();
 				    $(this).append($element);
-				    $(this).trigger("change");              
+				    $(this).trigger("change");
 				    $('#<?php echo $field['id'] ?>').append('<option value="'+e.params.data.id+'">' +e.params.data.text + '</option>');
 				    $('#<?php echo $field['id'] ?>').trigger('select2:close');
 				    return true;
-				}); 
+				});
 				$('#<?php echo $field['id'] ?>').on('select2:unselect', function( event ) {
 					console.log( 'unselect' );
 				    var detect                 = false;
-				    var element                = event.params.data.text;            
+				    var element                = event.params.data.text;
 				    var selections             = $('#<?php echo $field['id'] ?>').select2('data');
 				    var el                     = event.params.data.element;
 				    var $el                    = $(el);
 				    $el.detach();
-				}); 
+				});
 				$('#<?php echo $field['id'] ?>').on('select2:close', function( event ) {
 					console.log( 'close' );
 				    var select = document.getElementById("<?php echo $field['id'] ?>");
-				    var options = [];           
+				    var options = [];
 				    document.querySelectorAll('#<?php echo $field['id'] ?> > option').forEach(
 				      option => options.push(option)
-				    );          
+				    );
 				    while (select.firstChild) {
 				        select.removeChild(select.firstChild);
-				    }   
-				    options.sort((a, b) => parseInt(a.innerText)-parseInt(b.innerText));        
+				    }
+				    options.sort((a, b) => parseInt(a.innerText)-parseInt(b.innerText));
 				    for (var i in options) {
 				        select.appendChild(options[i]);
-				    }           
+				    }
 				});
 			});
     	</script>
@@ -238,28 +238,28 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	}
 
 	function get_attribute_taxonomy_by_name( $attribute_name ) {
-                
+
 		$transient_key = get_cache_key( sprintf( 'woo_variation_swatches_cache_attribute_taxonomy__%s', $attribute_name ) );
-		
+
 		if ( ! taxonomy_exists( $attribute_name ) ) {
 			return false;
 		}
-		
+
 		if ( 'pa_' === substr( $attribute_name, 0, 3 ) ) {
 			$attribute_name = str_replace( 'pa_', '', wc_sanitize_taxonomy_name( $attribute_name ) );
 		} else {
 			return false;
 		}
-		
+
 		if ( false === ( $attribute_taxonomy = get_transient( $transient_key ) ) ) {
-			
+
 			global $wpdb;
-			
+
 			$attribute_taxonomy = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s", esc_sql( $attribute_name ) ) );
-			
+
 			set_transient( $transient_key, $attribute_taxonomy );
 		}
-		
+
 		return apply_filters( 'woo_variation_swatches_get_wc_attribute_taxonomy', $attribute_taxonomy, $attribute_name );
 	}
 
@@ -284,14 +284,14 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	}
 
 	// function woo_variation_swatches() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-        
+
     //     if ( ! class_exists( 'WooCommerce', false ) ) {
     //         return false;
     //     }
-        
+
     //     if ( function_exists( 'woo_variation_swatches_pro' ) ) {
     //         return woo_variation_swatches_pro();
     //     }
-        
+
     //     return Woo_Variation_Swatches::instance();
     // }

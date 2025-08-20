@@ -97,6 +97,9 @@ class Product_Tiles_Admin {
 	function protiles_load_variation_settings_fields( $variation ) {
 	    $variation['offer_label'] = get_post_meta( $variation[ 'variation_id' ], 'offer_label', true );
 
+	    // Add dropdown data for frontend JavaScript
+	    $variation['_vt_dd_text'] = get_post_meta( $variation[ 'variation_id' ], '_vt_dd_text', true );
+	    $variation['_vt_dd_preview'] = get_post_meta( $variation[ 'variation_id' ], '_vt_dd_preview', true );
 
 	    return $variation;
 	}
@@ -114,6 +117,8 @@ class Product_Tiles_Admin {
 	    );
 		echo '</div>';
 	}
+
+
 	function protiles_linked_products_data_custom_field(){
 
 		   woocommerce_wp_select_multiple_products(

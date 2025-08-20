@@ -2,8 +2,8 @@
 /**
  * Plugin Name: ZG - Product Variant Tile
  * Plugin URI:
- * Description: This plugin allows us to display product variants as tiles
- * Version: 1.1.2
+ * Description: This plugin allows us to display product variants as tiles with total savings and included items accordion
+ * Version: 1.2.0
  * Author:
  * Author URI:
  * Text Domain: product-tiles
