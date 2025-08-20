@@ -439,7 +439,8 @@ span.raw-badge {
 /* Remove the duplicate label - the original label is already there */
 
 /* Selected Bundle Card */
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-selected {
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-selected,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.cgkit-swatch-selected {
   border-color: #bc3116;
   background: linear-gradient(to bottom, #ffffff 0%, #fff5f5 100%);
 }
