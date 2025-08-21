@@ -1193,6 +1193,12 @@ jQuery(document).ready(function ($) {
     if ($("#pa_bundles").val() === "grill-only") {
       setTimeout(function () {
         $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
+
+        // Update bundle images when controller changes and grill-only is selected
+        var currentController = $("#pa_controller").val();
+        if (currentController) {
+          updateAllBundleImagesForGrillOnly(currentController);
+        }
       }, 50);
     }
   });
@@ -1295,8 +1301,92 @@ jQuery(document).ready(function ($) {
     // Reset the preventVariationSearch flag after a delay
     setTimeout(function () {
       window.preventVariationSearch = false;
+
+      // Update all bundle swatch images to match current variation when grill-only is selected
+      if (currentControllerValue && currentControllerValue !== "") {
+        updateAllBundleImagesForGrillOnly(currentControllerValue);
+      }
     }, 1000);
   });
+
+  // Function to update all bundle swatch images when grill-only is selected
+  function updateAllBundleImagesForGrillOnly(controllerValue) {
+    console.log("=== UPDATING ALL BUNDLE IMAGES FOR GRILL-ONLY ===");
+    console.log("Controller value:", controllerValue);
+
+    var $form = $(".variations_form");
+    var variations = $form.data("product_variations");
+
+    if (!variations) {
+      console.log("No variations data found");
+      return;
+    }
+
+    // Get all bundle swatches (Basic Bundle, Pro Bundle, Grill Only)
+    var $allBundleSwatches = $(
+      '.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-image .cgkit-swatch'
+    );
+
+    $allBundleSwatches.each(function () {
+      var $swatch = $(this);
+      var bundleValue = $swatch.data("attribute-value");
+      var $swatchImg = $swatch.find("img");
+
+      if (!$swatchImg.length) {
+        console.log("No image found for bundle:", bundleValue);
+        return;
+      }
+
+      // Find the best matching variation for this bundle with current controller
+      var matchingVariation = null;
+
+      for (var i = 0; i < variations.length; i++) {
+        var variation = variations[i];
+
+        // For each bundle, find a variation that matches the current controller
+        if (variation.attributes["attribute_pa_bundles"] === bundleValue) {
+          // For grill-only, we only care about controller
+          if (bundleValue === "grill-only") {
+            if (variation.attributes["attribute_pa_controller"] === controllerValue) {
+              matchingVariation = variation;
+              break;
+            }
+          } else {
+            // For other bundles, try to find a variation with current controller
+            // If no exact match, use the first available variation for this bundle
+            if (variation.attributes["attribute_pa_controller"] === controllerValue) {
+              matchingVariation = variation;
+              break;
+            } else if (!matchingVariation) {
+              // Fallback to first variation for this bundle
+              matchingVariation = variation;
+            }
+          }
+        }
+      }
+
+      // Update the image if we found a matching variation
+      if (matchingVariation && matchingVariation.image) {
+        console.log("Updating image for bundle:", bundleValue, "with controller:", controllerValue);
+        console.log("New image src:", matchingVariation.image.src);
+
+        // Preload the image to prevent flickering
+        var newImg = new Image();
+        newImg.onload = function () {
+          $swatchImg.attr("src", matchingVariation.image.src);
+          $swatchImg.attr("srcset", matchingVariation.image.srcset || "");
+          $swatchImg.attr("sizes", matchingVariation.image.sizes || "");
+          $swatchImg.attr("alt", matchingVariation.image.alt || "");
+        };
+        newImg.onerror = function () {
+          console.log("Failed to load image for bundle:", bundleValue);
+        };
+        newImg.src = matchingVariation.image.src;
+      } else {
+        console.log("No matching variation found for bundle:", bundleValue, "with controller:", controllerValue);
+      }
+    });
+  }
 
   $('.swatch[data-clicker="cgkit-swatch-selected"]').each(function (i, ele) {
     if (!$(ele).hasClass("cgkit-swatch-selected")) {
