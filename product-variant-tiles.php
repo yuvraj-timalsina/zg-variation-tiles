@@ -34,6 +34,9 @@ if( !defined( 'PROTILES_ADMIN' ) ) {
 
 // require_once( PROTILES_DIR . '/includes/class-woo-variation-swatches.php' );
 
+// Include helper functions
+require_once( PROTILES_DIR . '/includes/helpers.php' );
+
 // ADD Elementor Widgets Class
 require_once( PROTILES_DIR . '/includes/class-product-tiles-plugin-loaded.php' );
 

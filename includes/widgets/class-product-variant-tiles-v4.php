@@ -2080,6 +2080,14 @@ class ProductVariantTilesV4 extends  Widget_Base
         $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
         $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
 
+        // Add variant tile image data
+        $dd_image_id = get_post_meta($variation->get_id(), '_vt_dd_image_id', true);
+        if ($dd_image_id && wp_attachment_is_image($dd_image_id)) {
+            $variation_data['_vt_dd_image_url'] = wp_get_attachment_image_url($dd_image_id, 'medium');
+        } else {
+            $variation_data['_vt_dd_image_url'] = '';
+        }
+
         // Pricing breakdown for accordion
         $regular = (float) wc_get_price_to_display( $variation, array( 'price' => $variation->get_regular_price() ) );
         $sale    = (float) wc_get_price_to_display( $variation, array( 'price' => $variation->get_price() ) );
@@ -2350,12 +2358,22 @@ class ProductVariantTilesV4 extends  Widget_Base
                         $excerpt.html('').hide();
                     }
 
-                    // Update full content
-                    if (variation._vt_dd_text && variation._vt_dd_text.trim() !== '') {
-                        $content.find('div').first().html(variation._vt_dd_text);
-                    } else {
-                        $content.find('div').first().html('');
+                    // Update full content with image and text
+                    var contentHtml = '';
+
+                    // Add image if available
+                    if (variation._vt_dd_image_url && variation._vt_dd_image_url.trim() !== '') {
+                        contentHtml += '<div style="margin-bottom: 15px; width: 100%;">';
+                        contentHtml += '<img src="' + variation._vt_dd_image_url + '" alt="Variant tile image" class="zg-accordion-image" style="width: 100%; height: auto; display: block;">';
+                        contentHtml += '</div>';
                     }
+
+                    // Add text content
+                    if (variation._vt_dd_text && variation._vt_dd_text.trim() !== '') {
+                        contentHtml += variation._vt_dd_text;
+                    }
+
+                    $content.find('div').first().html(contentHtml);
 
                                                                                 // Update savings information - always show section, conditionally show savings line
                     var regularPrice = parseFloat(variation.display_regular_price);
@@ -2430,6 +2448,8 @@ class ProductVariantTilesV4 extends  Widget_Base
             'accordion_title' => '',
             'accordion_content' => '',
             'accordion_preview' => '',
+            'accordion_image' => '',
+            'accordion_image_url' => '',
             'savings' => 0,
             'msrp' => 0,
             'current_price' => 0,
@@ -2499,6 +2519,8 @@ class ProductVariantTilesV4 extends  Widget_Base
             'accordion_title' => '',
             'accordion_content' => '',
             'accordion_preview' => '',
+            'accordion_image' => '',
+            'accordion_image_url' => '',
             'savings' => 0,
             'msrp' => 0,
             'current_price' => 0,
@@ -2508,6 +2530,13 @@ class ProductVariantTilesV4 extends  Widget_Base
         // Get variation-specific dropdown data
         $dd_text = get_post_meta($variation_id, '_vt_dd_text', true);
         $dd_preview = get_post_meta($variation_id, '_vt_dd_preview', true);
+        $dd_image_id = get_post_meta($variation_id, '_vt_dd_image_id', true);
+
+        // Get image data
+        if ($dd_image_id && wp_attachment_is_image($dd_image_id)) {
+            $data['accordion_image'] = wp_get_attachment_image($dd_image_id, 'medium', false, array('class' => 'zg-accordion-image'));
+            $data['accordion_image_url'] = wp_get_attachment_image_url($dd_image_id, 'medium');
+        }
 
         if (!empty($dd_text)) {
             $data['accordion_title'] = "What's included?";
@@ -2558,6 +2587,12 @@ class ProductVariantTilesV4 extends  Widget_Base
             <!-- Full description (shown when expanded) -->
             <div class="zg-accordion-content" style="display: none;">
                 <div style="color: #495057; font-size: 14px; line-height: 1.5;">
+                    <?php if (!empty($default_variation_data['accordion_image'])) : ?>
+                        <div style="margin-bottom: 15px; width: 100%;">
+                            <?php echo $default_variation_data['accordion_image']; ?>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (!empty($default_variation_data['accordion_content'])) : ?>
                         <?php echo wp_kses_post($default_variation_data['accordion_content']); ?>
                     <?php else : ?>
