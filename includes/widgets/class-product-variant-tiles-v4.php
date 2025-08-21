@@ -1569,8 +1569,8 @@ class ProductVariantTilesV4 extends  Widget_Base
 
         // Add stock message section below Add to Cart button
         echo '<div style="text-align: center; width: 100%;">';
-        echo '<div id="vt-in-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px; vertical-align: middle; display: inline-block;"><circle cx="12" cy="12" r="10" fill="#4CAF50"/></svg><span style="vertical-align: middle;">In Stock</span></div>';
-        echo '<div id="vt-low-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px; vertical-align: middle; display: inline-block;"><circle cx="12" cy="12" r="10" fill="#FFC107"/></svg><span style="vertical-align: middle;">Low in Stock</span></div>';
+        echo '<div id="vt-in-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><div class="stock-dot in-stock" style="margin-right: 8px; vertical-align: middle; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: #4CAF50; position: relative;"></div><span style="vertical-align: middle;">In Stock</span></div>';
+        echo '<div id="vt-low-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><div class="stock-dot low-stock" style="margin-right: 8px; vertical-align: middle; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: #FFC107; position: relative;"></div><span style="vertical-align: middle;">Low in Stock</span></div>';
         echo '</div>';
 
 ?>

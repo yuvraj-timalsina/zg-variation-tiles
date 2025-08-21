@@ -1466,3 +1466,98 @@ li.cgkit-attribute-swatch {
     height: 110px !important;
   }
 }
+
+/* ===== STOCK STATUS RIPPLE EFFECTS ===== */
+
+/* Stock message container */
+#vt-in-stock-message,
+#vt-low-stock-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Stock dot base styling */
+.stock-dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* In Stock styling */
+.stock-dot.in-stock {
+  background-color: #4caf50;
+}
+
+/* Low Stock styling */
+.stock-dot.low-stock {
+  background-color: #ffc107;
+}
+
+/* Ripple effect using ::before and ::after */
+.stock-dot::before,
+.stock-dot::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* First ripple wave */
+.stock-dot::before {
+  border: 2px solid #4caf50;
+  animation: ripple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Second ripple wave with delay */
+.stock-dot::after {
+  border: 2px solid #4caf50;
+  animation: ripple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+/* Low stock ripple color */
+.stock-dot.low-stock::before,
+.stock-dot.low-stock::after {
+  border-color: #ffc107;
+}
+
+/* Ripple animation keyframes */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Stock text styling */
+#vt-in-stock-message span,
+#vt-low-stock-message span {
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1;
+}
