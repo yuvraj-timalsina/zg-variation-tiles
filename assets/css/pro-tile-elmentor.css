@@ -432,7 +432,12 @@ span.raw-badge {
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  overflow: hidden !important;
+  overflow: visible !important; /* Allow badges to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+  position: relative !important; /* Ensure positioning context for badges */
 }
 
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
@@ -442,9 +447,10 @@ span.raw-badge {
   padding: 0 !important;
   transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Only transition border and shadow */
   box-shadow: none !important;
-  overflow: hidden !important;
+  overflow: visible !important; /* Allow badge to show outside */
   border-radius: 8px !important;
   border: 1px solid #e0e0e0 !important;
+  position: relative !important; /* Ensure positioning context for badges */
 }
 
 /* Bundle Images */
@@ -463,7 +469,14 @@ span.raw-badge {
   padding: 0;
   width: auto !important;
   max-width: 100% !important;
-  overflow: hidden;
+  overflow: visible !important; /* Allow badge to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+/* Ensure li containers have proper positioning for badges */
+li.cgkit-attribute-swatch {
+  position: relative !important;
+  overflow: visible !important;
 }
 
 .cgkit-attribute-swatch button.swatch.cgkit-swatch {
@@ -968,6 +981,44 @@ span.raw-badge {
   border-radius: 8px !important;
 }
 
+/* Ensure all possible parent containers allow badge overflow */
+.cgkit-as-wrap,
+.cgkit-attribute-swatches,
+.cgkit-attribute-swatch,
+li.cgkit-attribute-swatch,
+.cgkit-attribute-swatch button.swatch.cgkit-swatch {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Specific override for any grid containers */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important; /* Allow badges to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+.cgkit-attribute-swatch {
+  margin: 0;
+  padding: 0;
+  width: auto !important;
+  max-width: 100% !important;
+  overflow: visible !important; /* Allow badge to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+/* Ensure li containers have proper positioning for badges */
+li.cgkit-attribute-swatch {
+  position: relative !important;
+  overflow: visible !important;
+}
+
 /* Futureproof message visibility control */
 .select-wireless-txt {
   display: none;
@@ -1032,19 +1083,23 @@ span.raw-badge {
   line-height: 1.5;
 }
 
-/* "Best Value" Badge for specific combination only */
+/* "Best Value" Badge for specific combination only - Using old plugin's working approach */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-offer {
   position: absolute !important;
-  top: 8px !important;
-  right: 8px !important;
-  background: var(--vt-accent) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  border-radius: 12px !important;
-  padding: 3px 6px !important;
-  font-size: 10px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-  z-index: 999 !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-width: max-content !important;
+  margin: 0 auto !important;
+  top: -12px !important; /* Half outside, half inside */
+  background: var(--vt-accent) !important; /* Same as ATC button */
+  color: white !important; /* White text */
+  font-weight: bold !important;
+  border-radius: 9999px !important; /* rounded-3xl equivalent */
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  border: 2px solid var(--vt-accent) !important; /* Same color as background */
+  z-index: 9999 !important;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
