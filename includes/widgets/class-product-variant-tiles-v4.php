@@ -2440,9 +2440,9 @@ class ProductVariantTilesV4 extends  Widget_Base
             </style>
 
             <!-- Always show savings for testing -->
-            <div class="zg-total-savings" style="background: transparent; border: none; padding: 0; margin: 10px 0; display: flex; align-items: center; gap: 5px;">
-                <span class="zg-savings-label" style="color: #212529; font-weight: bold; font-size: 14px;">TOTAL SAVINGS:</span>
-                <span class="zg-savings-amount" style="color: #dc3545; font-weight: bold; font-size: 18px;">
+                                            <div class="zg-total-savings" style="background: transparent; border: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span class="zg-savings-label" style="color: #212529; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Inter';">TOTAL SAVINGS:</span>
+                    <span class="zg-savings-amount" style="color: #dc3545; font-weight: 700; font-size: 18px; font-family: 'Inter';">
                     <?php if ($default_variation_data['savings'] > 0) : ?>
                         $<?php echo number_format($default_variation_data['savings'], 0); ?>
                     <?php else : ?>

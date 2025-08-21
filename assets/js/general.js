@@ -144,8 +144,6 @@ jQuery(document).ready(function ($) {
 
   // Function to show "Best Value" badge only for specific combination
   function updateBestValueBadge() {
-    console.log("=== UPDATE BEST VALUE BADGE START ===");
-
     // Get current selections first
     var $form = $(".variations_form");
     var currentSelections = {};
@@ -159,8 +157,6 @@ jQuery(document).ready(function ($) {
       }
     });
 
-    console.log("Current selections:", currentSelections);
-
     // Check if controller is Wireless Enabled (ignore bundle and front bench)
     var isWirelessEnabled = currentSelections["attribute_pa_controller"] === "wireless-enabled";
 
@@ -168,38 +164,24 @@ jQuery(document).ready(function ($) {
     var currentFrontBench = currentSelections["attribute_pa_front-bench"];
     var hasValidCombination = isWirelessEnabled && currentFrontBench;
 
-    console.log("Is wireless enabled:", isWirelessEnabled);
-    console.log("Current front bench:", currentFrontBench);
-    console.log("Has valid combination:", hasValidCombination);
-
     // Always remove existing badges first to ensure clean update
     window.isRemovingBadges = true;
     var existingBadges = $(".tile-offer").length;
-    console.log("Existing badges found:", existingBadges);
-    if (existingBadges > 0) {
-      console.log("Removing existing badges...");
-    }
     $(".tile-offer").remove();
     window.isRemovingBadges = false;
 
     // Exit early if we don't have a valid combination
     if (!hasValidCombination) {
-      console.log("No valid combination - exiting");
       return;
     }
 
     // Show badge if we have both controller and front bench
     if (hasValidCombination) {
-      console.log("Valid combination found - proceeding with badge creation");
-
       // Get variations data to find variations with offer labels
       var variations = $form.data("product_variations");
       if (!variations) {
-        console.log("No variations data found");
         return;
       }
-
-      console.log("Total variations found:", variations.length);
 
       // Find all variations with current controller and front bench that have offer labels
       var variationsWithOffers = [];
@@ -214,11 +196,8 @@ jQuery(document).ready(function ($) {
           variation._vt_offer_label.trim() !== ""
         ) {
           variationsWithOffers.push(variation);
-          console.log("Found variation with offer:", variation);
         }
       }
-
-      console.log("Variations with offers found:", variationsWithOffers.length);
 
       // Update badge count in state
       lastBadgeState.badgeCount = variationsWithOffers.length;
@@ -226,96 +205,39 @@ jQuery(document).ready(function ($) {
       // Add badges for each variation that has an offer label
       variationsWithOffers.forEach(function (variation) {
         var bundleValue = variation.attributes["attribute_pa_bundles"];
-        console.log("Processing bundle:", bundleValue);
 
         var $bundleCard = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]').find(
           '.cgkit-swatch[data-attribute-value="' + bundleValue + '"]'
         );
 
-        console.log("Bundle card found:", $bundleCard.length);
-        console.log("Bundle card element:", $bundleCard[0]);
-
         // Only add badge if it doesn't already exist
         if ($bundleCard.length && $bundleCard.find(".tile-offer").length === 0) {
-          console.log("Creating badge for bundle:", bundleValue);
-          console.log("Badge text:", variation._vt_offer_label);
-
           var $badge = $(
             '<span class="tile-offer" style="position: absolute !important; left: 0 !important; right: 0 !important; max-width: max-content !important; margin: 0 auto !important; top: -12px !important; background: var(--vt-accent) !important; color: white !important; font-weight: bold !important; border-radius: 9999px !important; padding: 4px 12px !important; font-size: 12px !important; text-align: center !important; border: 2px solid var(--vt-accent) !important; z-index: 9999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
               variation._vt_offer_label +
               "</span>"
           );
 
-          console.log("Badge element created:", $badge[0]);
-          console.log("Badge computed styles:", {
-            position: $badge.css("position"),
-            top: $badge.css("top"),
-            left: $badge.css("left"),
-            right: $badge.css("right"),
-            zIndex: $badge.css("z-index"),
-            display: $badge.css("display"),
-            visibility: $badge.css("visibility"),
-            opacity: $badge.css("opacity"),
-          });
-
           // Append to the li container instead of the button
           var $liContainer = $bundleCard.closest("li.cgkit-attribute-swatch");
           $liContainer.append($badge);
 
-          console.log("Badge appended to li container");
+          // Add a class to the badge to make it easier to target
 
           // Check the parent container's positioning
           var $parentContainer = $liContainer;
-          console.log("Parent container:", $parentContainer[0]);
-          console.log("Parent container position:", $parentContainer.css("position"));
-          console.log("Parent container overflow:", $parentContainer.css("overflow"));
-
-          // Check the bundle card's positioning
-          console.log("Bundle card position:", $bundleCard.css("position"));
-          console.log("Bundle card overflow:", $bundleCard.css("overflow"));
 
           // Check if badge is visible after appending
           setTimeout(function () {
             var $appendedBadge = $liContainer.find(".tile-offer");
-            console.log("Appended badge found:", $appendedBadge.length);
-            if ($appendedBadge.length) {
-              console.log("Appended badge computed styles:", {
-                position: $appendedBadge.css("position"),
-                top: $appendedBadge.css("top"),
-                left: $appendedBadge.css("left"),
-                right: $appendedBadge.css("right"),
-                zIndex: $appendedBadge.css("z-index"),
-                display: $appendedBadge.css("display"),
-                visibility: $appendedBadge.css("visibility"),
-                opacity: $appendedBadge.css("opacity"),
-                width: $appendedBadge.css("width"),
-                height: $appendedBadge.css("height"),
-              });
-              console.log("Badge offset:", $appendedBadge.offset());
-              console.log("Badge is visible:", $appendedBadge.is(":visible"));
 
-              // Check all parent containers up the DOM tree
+            if ($appendedBadge.length) {
               var $currentParent = $appendedBadge.parent();
               var level = 1;
               while ($currentParent.length && level <= 10) {
-                console.log("Parent level " + level + ":", $currentParent[0]);
-                console.log("Parent level " + level + " position:", $currentParent.css("position"));
-                console.log("Parent level " + level + " overflow:", $currentParent.css("overflow"));
-                console.log("Parent level " + level + " height:", $currentParent.css("height"));
-                console.log("Parent level " + level + " max-height:", $currentParent.css("max-height"));
-
-                // Check if this parent might be clipping the badge
                 var parentTop = $currentParent.offset().top;
                 var badgeTop = $appendedBadge.offset().top;
                 if (badgeTop < parentTop) {
-                  console.log(
-                    "WARNING: Parent level " +
-                      level +
-                      " might be clipping badge! Badge top: " +
-                      badgeTop +
-                      ", Parent top: " +
-                      parentTop
-                  );
                 }
 
                 $currentParent = $currentParent.parent();
@@ -324,16 +246,12 @@ jQuery(document).ready(function ($) {
             }
           }, 100);
         } else if ($bundleCard.find(".tile-offer").length > 0) {
-          console.log("Badge already exists for bundle:", bundleValue);
         }
       });
 
       if (variationsWithOffers.length === 0) {
-        console.log("No variations with offers found");
       }
     }
-
-    console.log("=== UPDATE BEST VALUE BADGE END ===");
   }
 
   function captureCurrentSelections() {
@@ -349,10 +267,8 @@ jQuery(document).ready(function ($) {
   }
 
   function ensureAllVariationsEnabled() {
-    // Remove disabled class from ALL variation swatches - NEVER disable anything
     $(".cgkit-swatch").removeClass("cgkit-disabled");
 
-    // Ensure all required options exist in select dropdowns
     var $bundleSelect = $('select[name="attribute_pa_bundles"]');
     if ($bundleSelect.length) {
       var requiredOptions = ["grill-only", "basic-bundle", "pro-bundle"];
@@ -1835,18 +1751,13 @@ jQuery(document).ready(function ($) {
 
   // Initialize "Best Value" badge on page load
   $(document).ready(function () {
-    console.log("=== DOCUMENT READY - INITIALIZING BADGE ===");
     setTimeout(function () {
-      console.log("Calling updateBestValueBadge from document ready");
       updateBestValueBadge();
     }, 500);
   });
 
   // Update "Best Value" badge when variations change
   $(document).on("found_variation", function (event, variation) {
-    console.log("=== FOUND VARIATION EVENT - UPDATING BADGE ===");
-    console.log("Variation found:", variation);
-
     // Update ATC button price
     if (variation.display_price) {
       $(".single_add_to_cart_button").html("Add to Cart - " + variation.price_html);
@@ -1860,21 +1771,12 @@ jQuery(document).ready(function ($) {
     var controllerChanged = window.previousControllerValue !== currentController;
     var frontBenchChanged = window.previousFrontBenchValue !== currentFrontBench;
 
-    console.log("Previous controller:", window.previousControllerValue);
-    console.log("Current controller:", currentController);
-    console.log("Controller changed:", controllerChanged);
-    console.log("Previous front bench:", window.previousFrontBenchValue);
-    console.log("Current front bench:", currentFrontBench);
-    console.log("Front bench changed:", frontBenchChanged);
-
     // Update previous values
     window.previousControllerValue = currentController;
     window.previousFrontBenchValue = currentFrontBench;
 
     // Only update images if controller or front bench changed
     if (controllerChanged || frontBenchChanged) {
-      console.log("Controller or front bench changed - updating images and badge");
-
       // Get current selections
       var currentSelections = {};
       $(".variations_form select").each(function () {
@@ -1891,14 +1793,10 @@ jQuery(document).ready(function ($) {
         currentSelections["attribute_pa_controller"] = window.previousControllerValue;
       }
 
-      console.log("Current selections for image update:", currentSelections);
       debouncedUpdateBundleSwatchImages($(".variations_form"), currentSelections, "attribute_pa_bundles");
 
       // Update badge
-      console.log("Calling updateBestValueBadge from found_variation");
       updateBestValueBadge();
-    } else {
-      console.log("No relevant changes - skipping image and badge updates");
     }
   });
 

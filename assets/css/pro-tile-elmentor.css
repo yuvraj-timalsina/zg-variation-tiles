@@ -70,9 +70,24 @@
 .variable-item .variable-item-span.variable-item-span-button,
 .woocommerce-variation-description label,
 .woocommerce-variation-description {
-  font-weight: 600;
+  font-weight: 900;
   font-family: "Inter";
   font-size: 16px;
+  color: #212529;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Ensure strong elements within variation labels have 900 weight */
+.variations .label label strong,
+.woo-selected-variation-item-name strong,
+.woocommerce-variation-description label strong {
+  font-weight: 900 !important;
+  font-family: "Inter";
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .woo-selected-variation-item-name {
   display: none;
@@ -792,10 +807,8 @@ li.cgkit-attribute-swatch {
   button.swatch.cgkit-swatch {
   width: 100% !important;
   max-width: 100% !important;
-  /* padding: 14px 16px !important; */
   border: none !important;
-  /* border-right: 1px solid var(--vt-border) !important; */
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   background: #fff !important;
   box-shadow: none !important;
   font-weight: 700;
@@ -852,7 +865,6 @@ li.cgkit-attribute-swatch {
   margin: 0 auto;
   width: 100% !important;
   height: auto !important;
-  min-height: 280px !important; /* Match the swatch min-height */
 }
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch {
   width: 100%;
