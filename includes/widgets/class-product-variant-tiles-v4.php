@@ -2587,7 +2587,7 @@ class ProductVariantTilesV4 extends  Widget_Base
     private function render_accordion($default_variation_data) {
         ?>
         <!-- Simple visible accordion -->
-        <div style="background: #efefef; border: 1px solid #e9ecef; border-radius: 8px; margin: 15px 0;">
+        <div class="zg-accordion-container" style="background: #efefef; border: 1px solid #e9ecef; border-radius: 8px;">
             <div class="zg-accordion-header" style="padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 600; font-size: 16px; color: #212529;">What's included?</span>
                 <span class="zg-accordion-icon dashicons dashicons-arrow-down-alt2" style="font-size: 16px; color: #212529;"></span>
@@ -2595,7 +2595,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             <!-- Excerpt text (shown when collapsed) -->
             <?php if (!empty($default_variation_data['accordion_preview'])) : ?>
-                <div class="zg-accordion-excerpt" style="padding: 10px 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
+                                            <div class="zg-accordion-excerpt" style="padding: 0 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
                     <?php echo esc_html($default_variation_data['accordion_preview']); ?>
                 </div>
             <?php endif; ?>

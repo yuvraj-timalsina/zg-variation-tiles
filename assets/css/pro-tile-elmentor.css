@@ -1007,7 +1007,7 @@ li.cgkit-attribute-swatch,
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 10px;
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -1301,14 +1301,168 @@ li.cgkit-attribute-swatch {
   line-height: 1 !important;
 }
 
-/* Remove border from selected image swatches */
+/* Add border for selected image swatches */
 .cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch-selected::before {
   border: 2px solid var(--vt-accent) !important;
   border-radius: 8px !important;
+}
+
+/* Override product.min.css padding for last variation row */
+.product .summary table.variations tr:last-child .value {
+  padding-bottom: 0.2rem !important;
 }
 
 /* Add border for image swatches without ::before */
 .cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch {
   border-radius: 10px !important;
   box-sizing: border-box !important;
+}
+
+/* ===== RESPONSIVE DESIGN FOR VARIATION SWATCH CARDS ===== */
+
+/* Small Devices (Mobile) - Up to 767px */
+@media (max-width: 767px) {
+  /* Bundle swatches - 3 columns with tight spacing */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  /* Bundle card sizing for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 220px !important;
+  }
+
+  /* Bundle images for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 140px !important;
+  }
+
+  /* Title and price sizing for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 16px !important;
+    max-height: 32px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 20px !important;
+    max-height: 28px !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Price elements for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 10px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 13px !important;
+  }
+
+  /* Front bench swatches for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] {
+    gap: 8px;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 120px !important;
+  }
+
+  /* Badge positioning for mobile */
+  .tile-offer {
+    font-size: 8px !important;
+    padding: 2px 6px !important;
+    top: -6px !important;
+  }
+}
+
+/* Extra Small Devices (Small Mobile) - Up to 480px */
+@media (max-width: 480px) {
+  /* Bundle swatches - 3 columns with minimal spacing */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  /* Bundle card sizing for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 200px !important;
+  }
+
+  /* Bundle images for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: auto !important;
+  }
+
+  /* Title and price sizing for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 14px !important;
+    max-height: 28px !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 3px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 18px !important;
+    max-height: 24px !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Price elements for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 9px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 12px !important;
+  }
+
+  /* Front bench swatches for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100px !important;
+  }
+
+  /* Badge positioning for small mobile */
+  .tile-offer {
+    font-size: 7px !important;
+    padding: 1px 4px !important;
+    top: -4px !important;
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  /* Bundle swatches in landscape */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    gap: 10px;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 180px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 110px !important;
+  }
 }

@@ -5,6 +5,49 @@
   overflow: hidden;
   border: 1px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0.8rem 0 15px 0;
+}
+
+/* Responsive margin for accordion container */
+.zg-accordion-container {
+  margin-top: 0.8rem;
+}
+
+/* Remove top padding from accordion excerpt */
+.zg-accordion-excerpt {
+  padding-top: 0 !important;
+}
+
+/* Reduce font size for savings section inside accordion content */
+.zg-accordion-savings {
+  font-size: 13px !important;
+}
+
+.zg-accordion-savings strong {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-savings-amount {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-current-price {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-msrp-text {
+  font-size: 11px !important;
+}
+
+/* Remove margin-top for mobile screens */
+@media (max-width: 767px) {
+  .zg-accordion-container {
+    margin-top: 0 !important;
+  }
+
+  .zg-included-items-accordion {
+    margin: 0 0 15px 0 !important;
+  }
 }
 
 .zg-accordion-header {
