@@ -1897,10 +1897,10 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             // print_r($_variations[$attribute_raw][$item_attri_val]['variation']);
             $swatch_html = '';
-                        // Generate basic swatch HTML first (following old plugin structure)
+                                                // Generate basic swatch HTML first (following old plugin structure exactly)
             $swatch_html = $this->zg_commercekit_as_get_swatch_html($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);
 
-                        // Add price AFTER basic swatch HTML (following old plugin structure exactly)
+            // Add price AFTER basic swatch HTML (following old plugin structure exactly)
             if(isset($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']) && $swatch_type == 'image'){
                 // Ensure consistent price HTML structure to prevent layout shifts
                 $price_html = $this->standardize_price_html($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']);
@@ -1908,29 +1908,25 @@ class ProductVariantTilesV4 extends  Widget_Base
                 $swatch_html .= '<span class="tile-price">' . $price_html . '</span>';
             }
 
-            // Handle variation image override (simplified approach - only if needed)
+            // Handle variation image override (restored for proper image display)
             if ('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['cgkit_image_id'])) {
                 $var_img_id = $_variations[$attribute_raw][$item_attri_val]['variation']['cgkit_image_id'];
                 if ($var_img_id) {
                     $var_image = wp_get_attachment_image_src($var_img_id, 'woocommerce_thumbnail');
                     if ($var_image) {
-                        // Only override if the variation image is different from the term image
-                        $term_img_id = isset($attribute_swatches[$attribute_id][$item->term_id]['img']) ? $attribute_swatches[$attribute_id][$item->term_id]['img'] : 0;
-                        if ($var_img_id != $term_img_id) {
-                            // Extract existing title and price
-                            $tile_title_html = '';
-                            $tile_price_html = '';
+                        // Extract existing title and price
+                        $tile_title_html = '';
+                        $tile_price_html = '';
 
-                            if (preg_match('/<span class="tile-title">(.*?)<\/span>/', $swatch_html, $matches)) {
-                                $tile_title_html = $matches[0];
-                            }
-                            if (preg_match('/<span class="tile-price">(.*?)<\/span>/', $swatch_html, $matches)) {
-                                $tile_price_html = $matches[0];
-                            }
-
-                            // Rebuild swatch HTML with new image but preserve title and price
-                            $swatch_html = '<span class="cross">&nbsp;</span><img alt="' . esc_attr($item->name) . '" width="' . esc_attr($var_image[1]) . '" height="' . esc_attr($var_image[2]) . '" src="' . esc_url($var_image[0]) . '" />' . $tile_title_html . $tile_price_html;
+                        if (preg_match('/<span class="tile-title">(.*?)<\/span>/', $swatch_html, $matches)) {
+                            $tile_title_html = $matches[0];
                         }
+                        if (preg_match('/<span class="tile-price">(.*?)<\/span>/', $swatch_html, $matches)) {
+                            $tile_price_html = $matches[0];
+                        }
+
+                        // Rebuild swatch HTML with variation image but preserve title and price
+                        $swatch_html = '<span class="cross">&nbsp;</span><img alt="' . esc_attr($item->name) . '" width="' . esc_attr($var_image[1]) . '" height="' . esc_attr($var_image[2]) . '" src="' . esc_url($var_image[0]) . '" />' . $tile_title_html . $tile_price_html;
                     }
                 }
             }
@@ -2244,6 +2240,19 @@ class ProductVariantTilesV4 extends  Widget_Base
                         }
                     });
 
+                    // Prevent variation searching when grill-only is selected with non-wireless controller
+                    if (selectedAttributes['attribute_pa_bundles'] === 'grill-only' &&
+                        selectedAttributes['attribute_pa_controller'] === 'non-wireless') {
+                        console.log('PHP: Grill-only with non-wireless detected - skipping all variation searches');
+                        return;
+                    }
+
+                    // Check global flag to prevent variation searching
+                    if (typeof window.preventVariationSearch !== 'undefined' && window.preventVariationSearch) {
+                        console.log('PHP: Global preventVariationSearch flag is true - skipping all variation searches');
+                        return;
+                    }
+
                     // Get variations data
                     var variations = $form.data('product_variations');
                     if (!variations) return;
@@ -2254,8 +2263,6 @@ class ProductVariantTilesV4 extends  Widget_Base
                     $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-image').each(function() {
                         var $swatch = $(this);
                         var bundleValue = $swatch.data('attribute-value') || $swatch.find('button').data('attribute-value');
-
-
 
                         // Skip if we can't find the bundle value
                         if (!bundleValue) {
@@ -2275,10 +2282,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                         // Special handling for Grill Only - it should always use "none" for front bench
                         if (bundleValue === 'grill-only') {
                             targetCombination['attribute_pa_front-bench'] = 'none';
-
                         }
-
-
 
                         // Find matching variation
                         var matchingVariation = null;
@@ -2298,7 +2302,6 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                             if (isMatch) {
                                 matchingVariation = var_data;
-
                                 break;
                             }
                         }
@@ -2307,7 +2310,6 @@ class ProductVariantTilesV4 extends  Widget_Base
                         if (matchingVariation && matchingVariation.image) {
                             var $swatchImg = $swatch.find('img');
                             if ($swatchImg.length) {
-
                                 $swatchImg.attr('src', matchingVariation.image.src);
                                 $swatchImg.attr('srcset', matchingVariation.image.srcset || '');
                                 $swatchImg.attr('sizes', matchingVariation.image.sizes || '');

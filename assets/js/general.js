@@ -843,8 +843,8 @@ jQuery(document).ready(function ($) {
       }
     });
 
-    // Update bundle swatch images based on current combination
-    updateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+    // Don't update bundle swatch images when switching bundles - keep term images as they are
+    // Images are related to other variation selections (controller, front bench, etc.)
 
     // Handle None Terms
     if ($("#pa_bundles").val() !== "") {
@@ -881,17 +881,20 @@ jQuery(document).ready(function ($) {
         bundleAttribute = "attribute_pa_bundle";
       }
 
-      // Update images if we have enough attributes and a bundle attribute
-      if (Object.keys(selectedAttributes).length >= 2 && bundleAttribute) {
-        setTimeout(function () {
-          updateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
-        }, 100); // Small delay to ensure the selection is processed
-      }
+      // Don't update bundle swatch images when switching bundles - keep term images as they are
+      // Images are related to other variation selections (controller, front bench, etc.)
     }
   });
 
-  // Trigger initial image sync when page loads
+  // Initialize previous values and trigger initial image sync when page loads
   $(document).ready(function () {
+    // Initialize previous values to track changes
+    var $form = $(".variations_form");
+    if ($form.length) {
+      window.previousControllerValue = $form.find('select[name="attribute_pa_controller"]').val();
+      window.previousFrontBenchValue = $form.find('select[name="attribute_pa_front-bench"]').val();
+    }
+
     setTimeout(function () {
       var $form = $(".variations_form");
       if ($form.length) {
@@ -909,17 +912,78 @@ jQuery(document).ready(function ($) {
           bundleAttribute = "attribute_pa_bundle";
         }
 
-        if (Object.keys(selectedAttributes).length >= 2 && bundleAttribute) {
-          updateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+        // Update images on initial load to show correct variation images
+        if (bundleAttribute) {
+          debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
         }
       }
     }, 500);
   });
 
-  // Function to update bundle swatch images
+  // Debounce function to prevent rapid-fire updates
+  function debounce(func, wait) {
+    var timeout;
+    return function executedFunction() {
+      var later = function () {
+        clearTimeout(timeout);
+        func();
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // Track current update state to prevent overlapping updates
+  var imageUpdateInProgress = false;
+  var pendingImageUpdate = null;
+
+  // Function to update bundle swatch images (improved to prevent flickering during fast switching)
   function updateBundleSwatchImages($form, selectedAttributes, bundleAttribute) {
+    console.log("=== UPDATE_BUNDLE_SWATCH_IMAGES START ===");
+    console.log("Selected attributes:", selectedAttributes);
+    console.log("Bundle attribute:", bundleAttribute);
+
+    // Only allow updates for bundle attributes, not controller or front bench
+    if (bundleAttribute !== "attribute_pa_bundles" && bundleAttribute !== "attribute_pa_bundle") {
+      console.log("Skipping image update for non-bundle attribute:", bundleAttribute);
+      return;
+    }
+
+    // Check global flag to prevent variation searching
+    if (window.preventVariationSearch) {
+      console.log("Global preventVariationSearch flag is true - skipping all image updates");
+      return;
+    }
+
+    // Prevent image updates when grill-only is selected with non-wireless controller
+    if (
+      selectedAttributes["attribute_pa_bundles"] === "grill-only" &&
+      selectedAttributes["attribute_pa_controller"] === "non-wireless"
+    ) {
+      console.log("Grill-only with non-wireless detected - skipping image updates to prevent flickering");
+      return;
+    }
+
+    // If an update is already in progress, queue this one
+    if (imageUpdateInProgress) {
+      console.log("Image update already in progress, queuing...");
+      pendingImageUpdate = {
+        $form: $form,
+        selectedAttributes: selectedAttributes,
+        bundleAttribute: bundleAttribute,
+      };
+      return;
+    }
+
+    imageUpdateInProgress = true;
+    console.log("Starting image update...");
+
     var variations = $form.data("product_variations");
-    if (!variations) return;
+    if (!variations) {
+      console.log("No variations data found, aborting image update");
+      imageUpdateInProgress = false;
+      return;
+    }
 
     // Get only image-type bundle swatches
     var $bundleSwatches = $(
@@ -928,9 +992,17 @@ jQuery(document).ready(function ($) {
         '"] .cgkit-attribute-swatch.cgkit-image .cgkit-swatch'
     );
 
+    var updatePromises = [];
+
     $bundleSwatches.each(function () {
       var $swatch = $(this);
       var bundleValue = $swatch.data("attribute-value");
+
+      // Only process bundle swatches, not controller or front bench swatches
+      if (bundleAttribute !== "attribute_pa_bundles" && bundleAttribute !== "attribute_pa_bundle") {
+        console.log("Skipping non-bundle swatch:", bundleAttribute);
+        return;
+      }
 
       // Create the combination we want to match
       var targetCombination = {};
@@ -945,36 +1017,108 @@ jQuery(document).ready(function ($) {
       // Add the specific bundle value we're looking for
       targetCombination[bundleAttribute] = bundleValue;
 
-      // REMOVED: Special handling that was forcing front bench to "none" for grill-only
+      // Special handling for Grill Only - find the best matching variation
+      if (bundleValue === "grill-only") {
+        console.log("=== GRILL-ONLY IMAGE MATCHING ===");
+        console.log("Looking for grill-only variation with controller:", selectedAttributes["attribute_pa_controller"]);
 
-      // Find the matching variation for this bundle with current attributes
-      var matchingVariation = null;
-      for (var i = 0; i < variations.length; i++) {
-        var variation = variations[i];
-        var isMatch = true;
+        // For grill-only, we need to find a variation that matches the controller
+        // but we don't force front-bench to 'none' as it might not exist in variations
+        var controllerValue = selectedAttributes["attribute_pa_controller"];
+        if (controllerValue) {
+          // For grill-only, we ONLY care about the controller, not other attributes
+          // This prevents issues when switching FROM other bundles TO grill-only
+          var controllerMatch = null;
 
-        // Check if this variation matches our target combination exactly
-        for (var attr in targetCombination) {
-          if (variation.attributes[attr] !== targetCombination[attr]) {
-            isMatch = false;
+          for (var i = 0; i < variations.length; i++) {
+            var variation = variations[i];
+
+            // Check for controller match (grill-only + controller) - this is the primary match
+            if (
+              variation.attributes["attribute_pa_bundles"] === "grill-only" &&
+              variation.attributes["attribute_pa_controller"] === controllerValue
+            ) {
+              controllerMatch = variation;
+              console.log("Found grill-only controller match:", variation);
+              break; // Use the first match we find
+            }
+          }
+
+          // Use controller match for grill-only
+          if (controllerMatch) {
+            matchingVariation = controllerMatch;
+            console.log("Using controller match for grill-only:", matchingVariation);
+          } else {
+            console.log("No controller match found for grill-only");
+          }
+        } else {
+          console.log("No controller value found for grill-only");
+        }
+      } else {
+        // For non-grill-only bundles, use normal matching logic
+        // Find the matching variation for this bundle with current attributes
+        for (var i = 0; i < variations.length; i++) {
+          var variation = variations[i];
+          var isMatch = true;
+
+          // Check if this variation matches our target combination exactly
+          for (var attr in targetCombination) {
+            if (variation.attributes[attr] !== targetCombination[attr]) {
+              isMatch = false;
+              break;
+            }
+          }
+
+          if (isMatch) {
+            matchingVariation = variation;
             break;
           }
-        }
-
-        if (isMatch) {
-          matchingVariation = variation;
-          break;
         }
       }
 
       // Update the swatch image if we found a matching variation
       if (matchingVariation && matchingVariation.image) {
+        // Debug logging for grill-only
+        if (bundleValue === "grill-only") {
+          console.log("Grill-only variation found:", {
+            bundle: bundleValue,
+            controller: selectedAttributes["attribute_pa_controller"],
+            frontBench: selectedAttributes["attribute_pa_front-bench"],
+            variationAttributes: matchingVariation.attributes,
+            imageSrc: matchingVariation.image.src,
+          });
+        }
         var $swatchImg = $swatch.find("img");
         if ($swatchImg.length) {
-          $swatchImg.attr("src", matchingVariation.image.src);
-          $swatchImg.attr("srcset", matchingVariation.image.srcset || "");
-          $swatchImg.attr("sizes", matchingVariation.image.sizes || "");
-          $swatchImg.attr("alt", matchingVariation.image.alt || "");
+          // Create a promise for this image update
+          var updatePromise = new Promise(function (resolve) {
+            // Check if this is still the current selection before updating
+            var currentBundleValue = $form.find('select[name="' + bundleAttribute + '"]').val();
+            if (currentBundleValue !== bundleValue) {
+              resolve(); // Skip update if selection changed
+              return;
+            }
+
+            // Preload the new image to prevent flickering
+            var newImg = new Image();
+            newImg.onload = function () {
+              // Double-check selection hasn't changed during load
+              var currentBundleValue = $form.find('select[name="' + bundleAttribute + '"]').val();
+              if (currentBundleValue === bundleValue) {
+                $swatchImg.attr("src", matchingVariation.image.src);
+                $swatchImg.attr("srcset", matchingVariation.image.srcset || "");
+                $swatchImg.attr("sizes", matchingVariation.image.sizes || "");
+                $swatchImg.attr("alt", matchingVariation.image.alt || "");
+              }
+              resolve();
+            };
+            newImg.onerror = function () {
+              resolve(); // Resolve even on error to continue
+            };
+            newImg.src = matchingVariation.image.src;
+          });
+
+          updatePromises.push(updatePromise);
         } else {
           // If no image exists, create one
           var $newImg = $(
@@ -982,11 +1126,52 @@ jQuery(document).ready(function ($) {
           );
           $swatch.prepend($newImg);
         }
+      } else {
+        // Debug logging when no matching variation is found
+        if (bundleValue === "grill-only") {
+          console.log("No matching variation found for grill-only:", {
+            bundle: bundleValue,
+            controller: selectedAttributes["attribute_pa_controller"],
+            frontBench: selectedAttributes["attribute_pa_front-bench"],
+            targetCombination: targetCombination,
+          });
+        }
       }
+    });
 
-      // CommerceKit handles price updates naturally - no custom price logic
+    // Wait for all image updates to complete
+    Promise.all(updatePromises).then(function () {
+      imageUpdateInProgress = false;
+
+      // Process any pending update
+      if (pendingImageUpdate) {
+        var pending = pendingImageUpdate;
+        pendingImageUpdate = null;
+        setTimeout(function () {
+          updateBundleSwatchImages(pending.$form, pending.selectedAttributes, pending.bundleAttribute);
+        }, 50);
+      }
     });
   }
+
+  // Debounced version for rapid switching
+  var debouncedUpdateBundleSwatchImages = debounce(function ($form, selectedAttributes, bundleAttribute) {
+    // Check global flag to prevent variation searching
+    if (window.preventVariationSearch) {
+      console.log("Debounced: Global preventVariationSearch flag is true - skipping all image updates");
+      return;
+    }
+
+    // Prevent image updates when grill-only is selected with non-wireless controller
+    if (
+      selectedAttributes["attribute_pa_bundles"] === "grill-only" &&
+      selectedAttributes["attribute_pa_controller"] === "non-wireless"
+    ) {
+      console.log("Debounced: Grill-only with non-wireless detected - skipping image updates");
+      return;
+    }
+    updateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+  }, 150);
 
   $(".variations_form").on("woocommerce_variation_select_change", function (e, v) {});
   $(document).on("show_variation", function (event, variation) {});
@@ -1013,21 +1198,63 @@ jQuery(document).ready(function ($) {
   });
 
   $(document).on("click", '.cgkit-swatch[data-attribute-value="grill-only"]', function (ele) {
+    console.log("=== GRILL-ONLY CLICK - CONTROLLER LAYOUT DEBUG ===");
+
+    // Set global flag to prevent variation searching
+    window.preventVariationSearch = true;
+
     var $clickedSwatch = $(ele.target);
     var $form = $(".variations_form");
+
+    // Log controller swatch state before changes
+    var $controllerSwatches = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch');
+    console.log("Controller swatches before:", $controllerSwatches.length);
+    $controllerSwatches.each(function (index) {
+      var $swatch = $(this);
+      console.log("Controller swatch", index, ":", {
+        value: $swatch.data("attribute-value"),
+        selected: $swatch.hasClass("cgkit-swatch-selected"),
+        classes: $swatch.attr("class"),
+        width: $swatch.width(),
+        height: $swatch.height(),
+        position: $swatch.position(),
+      });
+    });
 
     // Preserve ALL current selections using CommerceKit-aware system
     var allCurrentSelections = captureCurrentSelections();
 
-    // Handle grill-only selection
+    // PREVENT controller selection loss by immediately preserving it
+    var $currentControllerSwatch = $(
+      '.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.cgkit-swatch-selected'
+    );
+    var currentControllerValue = $currentControllerSwatch.data("attribute-value");
+
+    // If no visual selection, check the actual form value
+    if (!currentControllerValue) {
+      currentControllerValue = $("#pa_controller").val();
+    }
+
+    // If still no controller value, check if there's a previous selection stored
+    if (!currentControllerValue && window.previousControllerValue) {
+      currentControllerValue = window.previousControllerValue;
+      console.log("Using previous controller selection:", currentControllerValue);
+    }
+
+    console.log("Preserving controller selection:", currentControllerValue);
+
+    // Handle grill-only selection WITHOUT affecting controller
     if (!$clickedSwatch.hasClass("cgkit-swatch-selected")) {
-      // Remove selection from other bundle swatches
+      console.log("Grill-only not selected, adding selection...");
+      // Remove selection from other bundle swatches ONLY
       $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch').removeClass(
         "cgkit-swatch-selected"
       );
       // Add selection to grill-only
       $clickedSwatch.addClass("cgkit-swatch-selected");
       $("#pa_bundles").val("grill-only");
+    } else {
+      console.log("Grill-only already selected");
     }
 
     // Set front bench to "none" and hide the front bench selection for grill-only
@@ -1035,126 +1262,40 @@ jQuery(document).ready(function ($) {
     $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
     $(".single_add_to_cart_button").removeClass("disabled");
 
-    // Restore ALL other selections (especially controller)
-    setTimeout(function () {
-      // Ensure grill-only stays selected
-      if (!$clickedSwatch.hasClass("cgkit-swatch-selected")) {
-        $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch').removeClass(
-          "cgkit-swatch-selected"
-        );
-        $clickedSwatch.addClass("cgkit-swatch-selected");
-      }
-
-      // Restore all other preserved selections
-      Object.keys(allCurrentSelections).forEach(function (attribute) {
-        if (attribute !== "attribute_pa_bundles") {
-          // Don't restore bundle, we want grill-only
-          var value = allCurrentSelections[attribute];
-          var $targetSwatch = $(
-            '.cgkit-attribute-swatches[data-attribute="' +
-              attribute +
-              '"] .cgkit-swatch[data-attribute-value="' +
-              value +
-              '"]'
-          );
-          if ($targetSwatch.length && !$targetSwatch.hasClass("cgkit-swatch-selected")) {
-            // Remove selection from other swatches in this attribute
-            $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch').removeClass(
-              "cgkit-swatch-selected"
-            );
-            // Add selection to correct swatch
-            $targetSwatch.addClass("cgkit-swatch-selected");
-
-            // Also update the select dropdown
-            var selectName = attribute.replace("attribute_", "");
-            $("#" + selectName).val(value);
-          }
-        }
+    // IMMEDIATELY ensure controller selection is maintained (prevent loss)
+    if (currentControllerValue && currentControllerValue !== "") {
+      // Find the target controller swatch
+      var $targetControllerSwatch = $(
+        '.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch[data-attribute-value="' +
+          currentControllerValue +
+          '"]'
+      ).filter(function () {
+        return $(this).width() > 0 && $(this).height() > 0;
       });
 
-      // Ensure all variations stay enabled
-      ensureAllVariationsEnabled();
-
-      // Trigger variation events
-      $form.trigger("woocommerce_variation_select_change");
-      $form.trigger("check_variations");
-
-      // Final check and manual variation trigger
-      setTimeout(function () {
-        // Final restoration to ensure nothing was lost
-        Object.keys(allCurrentSelections).forEach(function (attribute) {
-          if (attribute !== "attribute_pa_bundles") {
-            var value = allCurrentSelections[attribute];
-            var $targetSwatch = $(
-              '.cgkit-attribute-swatches[data-attribute="' +
-                attribute +
-                '"] .cgkit-swatch[data-attribute-value="' +
-                value +
-                '"]'
-            );
-            if ($targetSwatch.length && !$targetSwatch.hasClass("cgkit-swatch-selected")) {
-              $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch').removeClass(
-                "cgkit-swatch-selected"
-              );
-              $targetSwatch.addClass("cgkit-swatch-selected");
-              var selectName = attribute.replace("attribute_", "");
-              $("#" + selectName).val(value);
-            }
-          }
-        });
-
-        // Ensure grill-only styling is applied
-        if (!$clickedSwatch.hasClass("cgkit-swatch-selected")) {
-          $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch').removeClass(
+      if ($targetControllerSwatch.length) {
+        // Ensure the controller swatch is selected (don't remove others first to prevent flicker)
+        if (!$targetControllerSwatch.hasClass("cgkit-swatch-selected")) {
+          // Only remove selection from other controller swatches if this one isn't already selected
+          $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch').removeClass(
             "cgkit-swatch-selected"
           );
-          $clickedSwatch.addClass("cgkit-swatch-selected");
+          $targetControllerSwatch.addClass("cgkit-swatch-selected");
         }
+        // Ensure form value is set
+        $("#pa_controller").val(currentControllerValue);
+        console.log("Controller selection maintained:", currentControllerValue);
+      } else {
+        console.log("Target controller swatch not found for value:", currentControllerValue);
+      }
+    } else {
+      console.log("No valid controller value to maintain");
+    }
 
-        // Manual variation lookup and trigger
-        var variations = $form.data("product_variations");
-        if (variations) {
-          var currentSelection = {
-            attribute_pa_bundles: "grill-only",
-            "attribute_pa_front-bench": "none",
-          };
-
-          // Include all other current selections
-          $form.find("select").each(function () {
-            var attrName = $(this).attr("name");
-            var attrValue = $(this).val();
-            if (attrValue && attrName !== "attribute_pa_bundles" && attrName !== "attribute_pa_front-bench") {
-              currentSelection[attrName] = attrValue;
-            }
-          });
-
-          // Find matching variation
-          var matchingVariation = null;
-          for (var i = 0; i < variations.length; i++) {
-            var variation = variations[i];
-            var matches = true;
-
-            for (var attr in currentSelection) {
-              if (variation.attributes[attr] !== currentSelection[attr]) {
-                matches = false;
-                break;
-              }
-            }
-
-            if (matches) {
-              matchingVariation = variation;
-              break;
-            }
-          }
-
-          // Trigger found_variation event manually
-          if (matchingVariation) {
-            $form.trigger("found_variation", [matchingVariation]);
-          } else {
-          }
-        }
-      }, 100);
-    }, 50);
+    // Reset the preventVariationSearch flag after a delay
+    setTimeout(function () {
+      window.preventVariationSearch = false;
+    }, 1000);
   });
 
   $('.swatch[data-clicker="cgkit-swatch-selected"]').each(function (i, ele) {
@@ -1253,15 +1394,11 @@ jQuery(document).ready(function ($) {
             );
             if ($targetSwatch.length && !$targetSwatch.hasClass("cgkit-swatch-selected")) {
               // Remove selection from other swatches in this attribute
-              $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch').removeClass(
-                "cgkit-swatch-selected"
-              );
-              // Add selection to correct swatch
+              $targetSwatch
+                .closest(".cgkit-attribute-swatches")
+                .find(".cgkit-swatch")
+                .removeClass("cgkit-swatch-selected");
               $targetSwatch.addClass("cgkit-swatch-selected");
-
-              // Also update the select dropdown
-              var selectName = attribute.replace("attribute_", "");
-              $("#" + selectName).val(value);
             }
           }
         });
@@ -1695,7 +1832,7 @@ jQuery(document).ready(function ($) {
     return originalRemoveClass.apply(this, arguments);
   };
 
-  // Hook into WooCommerce variation events
+  // Hook into WooCommerce variation events (improved to prevent flickering)
   $(document).on("found_variation", function (event, variation) {
     var $form = $(event.target);
     var currentSelections = {};
@@ -1708,42 +1845,73 @@ jQuery(document).ready(function ($) {
       }
     });
 
+    // Ensure controller is always included in selections
+    if (!currentSelections["attribute_pa_controller"] && window.previousControllerValue) {
+      currentSelections["attribute_pa_controller"] = window.previousControllerValue;
+    }
+
     // Update ATC button text with price
     var $atcButton = $form.find(".single_add_to_cart_button");
     if ($atcButton.length) {
       var price = variation.display_price || variation.price;
-      var regularPrice = variation.display_regular_price || variation.regular_price;
-
       if (price) {
         var formattedPrice = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(price);
-
-        var buttonText = "Add to cart - " + formattedPrice;
-        $atcButton.text(buttonText);
+        $atcButton.text("Add to cart - " + formattedPrice);
       }
     }
 
-    // Update bundle prices
+    // Update bundle prices only - NO image updates for bundle changes
     var variations = $form.data("product_variations");
     var controllerValue = currentSelections["attribute_pa_controller"];
     var currentFrontBench = currentSelections["attribute_pa_front-bench"];
 
     if (variations && controllerValue) {
-      // Skip grill-only for found_variation events to prevent flickering
-      // Grill-only should only update when controller actually changes
+      // Update bundle prices only
       updateBundleCardPrices(variations, controllerValue, currentFrontBench);
-    }
 
-    // Update badge when any variation is found
-    updateBestValueBadgeOptimized();
+      // Update bundle images ONLY when controller or front bench changes (not for bundle changes)
+      // Check if this variation change was triggered by controller or front bench
+      var changedAttribute = null;
+      if (currentSelections["attribute_pa_controller"] !== window.previousControllerValue) {
+        changedAttribute = "controller";
+        window.previousControllerValue = currentSelections["attribute_pa_controller"];
+      } else if (currentSelections["attribute_pa_front-bench"] !== window.previousFrontBenchValue) {
+        // Special handling for front bench changes
+        var newFrontBench = currentSelections["attribute_pa_front-bench"];
+        var previousFrontBench = window.previousFrontBenchValue;
+
+        // Don't trigger image updates when switching to grill-only (front bench becomes "none")
+        if (newFrontBench === "none" && currentSelections["attribute_pa_bundles"] === "grill-only") {
+          window.previousFrontBenchValue = newFrontBench;
+        } else {
+          changedAttribute = "front-bench";
+          window.previousFrontBenchValue = newFrontBench;
+        }
+      }
+
+      // Only update images if controller or front bench changed
+      if (changedAttribute) {
+        var bundleAttribute = null;
+        if (currentSelections["attribute_pa_bundles"]) {
+          bundleAttribute = "attribute_pa_bundles";
+        } else if (currentSelections["attribute_pa_bundle"]) {
+          bundleAttribute = "attribute_pa_bundle";
+        }
+
+        if (bundleAttribute) {
+          debouncedUpdateBundleSwatchImages($form, currentSelections, bundleAttribute);
+        }
+      }
+    }
   });
 
-  // Also hook into front bench changes specifically
+  // Hook into controller and front bench changes specifically (images should only change for these)
   $(document).on("woocommerce_variation_select_change", function (event, variation) {
     var $select = $(event.target);
-    if ($select.attr("name") === "attribute_pa_front-bench") {
+    if ($select.attr("name") === "attribute_pa_controller" || $select.attr("name") === "attribute_pa_front-bench") {
       setTimeout(function () {
         var $form = $(".variations_form");
         var variations = $form.data("product_variations");
@@ -1751,18 +1919,33 @@ jQuery(document).ready(function ($) {
 
         if (variations && controllerValue) {
           updateBundleCardPrices(variations, controllerValue);
-        }
 
-        // Update badge when front bench changes
-        updateBestValueBadgeOptimized();
+          // Update bundle images ONLY when controller or front bench changes
+          var bundleAttribute = null;
+          if ($form.find('select[name="attribute_pa_bundles"]').val()) {
+            bundleAttribute = "attribute_pa_bundles";
+          } else if ($form.find('select[name="attribute_pa_bundle"]').val()) {
+            bundleAttribute = "attribute_pa_bundle";
+          }
+
+          if (bundleAttribute) {
+            var selectedAttributes = {};
+            $form.find("select").each(function () {
+              var $select = $(this);
+              var attrName = $select.attr("name");
+              var attrValue = $select.val();
+              if (attrName && attrValue) {
+                selectedAttributes[attrName] = attrValue;
+              }
+            });
+            debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+          }
+        }
       }, 100);
     }
   });
 
   $(document).on("reset_data", function () {
-    updateBestValueBadgeOptimized(); // Update "Best Value" badge for specific combination
-    enforceSelectionStates();
-
     // Update bundle prices when variation is reset
     var $form = $(".variations_form");
     var variations = $form.data("product_variations");
@@ -1771,6 +1954,27 @@ jQuery(document).ready(function ($) {
 
     if (variations && controllerValue) {
       updateBundleCardPrices(variations, controllerValue, currentFrontBench);
+
+      // Update bundle images when variation is reset to ensure correct state
+      var bundleAttribute = null;
+      if ($form.find('select[name="attribute_pa_bundles"]').val()) {
+        bundleAttribute = "attribute_pa_bundles";
+      } else if ($form.find('select[name="attribute_pa_bundle"]').val()) {
+        bundleAttribute = "attribute_pa_bundle";
+      }
+
+      if (bundleAttribute) {
+        var selectedAttributes = {};
+        $form.find("select").each(function () {
+          var $select = $(this);
+          var attrName = $select.attr("name");
+          var attrValue = $select.val();
+          if (attrName && attrValue) {
+            selectedAttributes[attrName] = attrValue;
+          }
+        });
+        debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+      }
     }
   });
 
