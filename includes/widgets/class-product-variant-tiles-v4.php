@@ -1897,40 +1897,40 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             // print_r($_variations[$attribute_raw][$item_attri_val]['variation']);
             $swatch_html = '';
-            // Badge rendering completely removed - admin field only
-            // if('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['save']) && filter_var(wp_strip_all_tags($_variations[$attribute_raw][$item_attri_val]['variation']['save']), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) > 360){
-            //     $swatch_html .= '<div class="sale-badge-price top"><span>Save ' . ($_variations[$attribute_raw][$item_attri_val]['variation']['save']) . '</span></div>';
-            // }
+                        // Generate basic swatch HTML first (following old plugin structure)
+            $swatch_html = $this->zg_commercekit_as_get_swatch_html($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);
 
-                                                $swatch_html .= $this->zg_commercekit_as_get_swatch_html($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);
-
-
-
-            // Add price (following CommerceKit structure exactly)
+                        // Add price AFTER basic swatch HTML (following old plugin structure exactly)
             if(isset($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']) && $swatch_type == 'image'){
-                $swatch_html .= '<span class="tile-price">' . $_variations[$attribute_raw][$item_attri_val]['variation']['price_html'] . '</span>';
+                // Ensure consistent price HTML structure to prevent layout shifts
+                $price_html = $this->standardize_price_html($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']);
+
+                $swatch_html .= '<span class="tile-price">' . $price_html . '</span>';
             }
 
-            // Add variation image if this is an image swatch and we have a variation image
-            // This should override the image but preserve tile-title and tile-price
+            // Handle variation image override (simplified approach - only if needed)
             if ('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['cgkit_image_id'])) {
                 $var_img_id = $_variations[$attribute_raw][$item_attri_val]['variation']['cgkit_image_id'];
                 if ($var_img_id) {
                     $var_image = wp_get_attachment_image_src($var_img_id, 'woocommerce_thumbnail');
                     if ($var_image) {
-                        // Extract the tile-title and tile-price from the existing swatch_html
-                        $tile_title_html = '';
-                        $tile_price_html = '';
+                        // Only override if the variation image is different from the term image
+                        $term_img_id = isset($attribute_swatches[$attribute_id][$item->term_id]['img']) ? $attribute_swatches[$attribute_id][$item->term_id]['img'] : 0;
+                        if ($var_img_id != $term_img_id) {
+                            // Extract existing title and price
+                            $tile_title_html = '';
+                            $tile_price_html = '';
 
-                        if (preg_match('/<span class="tile-title">(.*?)<\/span>/', $swatch_html, $matches)) {
-                            $tile_title_html = $matches[0];
-                        }
-                        if (preg_match('/<span class="tile-price">(.*?)<\/span>/', $swatch_html, $matches)) {
-                            $tile_price_html = $matches[0];
-                        }
+                            if (preg_match('/<span class="tile-title">(.*?)<\/span>/', $swatch_html, $matches)) {
+                                $tile_title_html = $matches[0];
+                            }
+                            if (preg_match('/<span class="tile-price">(.*?)<\/span>/', $swatch_html, $matches)) {
+                                $tile_price_html = $matches[0];
+                            }
 
-                        // Replace only the image part, preserve tile-title and tile-price
-                        $swatch_html = '<span class="cross">&nbsp;</span><img alt="' . esc_attr($item->name) . '" width="' . esc_attr($var_image[1]) . '" height="' . esc_attr($var_image[2]) . '" src="' . esc_url($var_image[0]) . '" />' . $tile_title_html . $tile_price_html;
+                            // Rebuild swatch HTML with new image but preserve title and price
+                            $swatch_html = '<span class="cross">&nbsp;</span><img alt="' . esc_attr($item->name) . '" width="' . esc_attr($var_image[1]) . '" height="' . esc_attr($var_image[2]) . '" src="' . esc_url($var_image[0]) . '" />' . $tile_title_html . $tile_price_html;
+                        }
                     }
                 }
             }
@@ -2027,7 +2027,7 @@ class ProductVariantTilesV4 extends  Widget_Base
     function zg_commercekit_as_get_swatch_html($swatch_type, $data, $item, $image_label = '')
     {
         $swatch_html = '';
-                if ('image' === $swatch_type) {
+        if ('image' === $swatch_type) {
             $image = null;
             // Try to get image from CommerceKit data first, then fallback to term meta
             if (isset($data['img']) && !empty($data['img'])) {
@@ -2115,6 +2115,20 @@ class ProductVariantTilesV4 extends  Widget_Base
         }
 
         return $variation_data;
+    }
+
+    /**
+     * Standardize price HTML to prevent layout shifts
+     */
+    private function standardize_price_html($price_html) {
+        // Ensure consistent price structure
+        $price_html = str_replace('<span class="price">', '<span class="price" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">', $price_html);
+
+        // Ensure del and ins elements are properly contained
+        $price_html = str_replace('<del>', '<del style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">', $price_html);
+        $price_html = str_replace('<ins>', '<ins style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">', $price_html);
+
+        return $price_html;
     }
 
             /**

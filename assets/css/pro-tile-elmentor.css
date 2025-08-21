@@ -440,7 +440,7 @@ span.raw-badge {
   height: auto;
   max-width: 100% !important;
   padding: 0 !important;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Only transition border and shadow */
   box-shadow: none !important;
   overflow: hidden !important;
   border-radius: 8px !important;
@@ -472,7 +472,7 @@ span.raw-badge {
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Only transition border and shadow, not all properties */
   min-width: 120px;
   min-height: 120px;
   display: flex;
@@ -484,6 +484,8 @@ span.raw-badge {
   max-width: 100% !important;
   overflow: hidden;
   box-sizing: border-box;
+  height: auto !important; /* Allow natural height */
+  flex-shrink: 0 !important; /* Prevent shrinking */
 }
 
 /* General swatch hover - but bundle cards have their own styling */
@@ -495,7 +497,7 @@ span.raw-badge {
 /* Image swatch hover effects (CommerceKit style) */
 .cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch:hover {
   border-color: var(--vt-accent);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease; /* Only transition border color */
 }
 
 /* Image swatch selected state (CommerceKit style) */
@@ -626,6 +628,11 @@ span.raw-badge {
     gap: 10px;
   }
 
+  /* Ensure consistent sizing on mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 240px !important; /* Slightly smaller on mobile */
+  }
+
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
     min-height: 200px;
     padding: 5px;
@@ -636,6 +643,7 @@ span.raw-badge {
     button.swatch.cgkit-swatch
     img {
     margin-bottom: 5px;
+    height: 160px !important; /* Smaller image height on mobile */
   }
 
   .cgkit-attribute-swatch button.swatch.cgkit-swatch {
@@ -658,6 +666,13 @@ span.raw-badge {
     width: 100%;
     height: auto;
     margin-bottom: 0;
+  }
+
+  /* Ensure price and title elements don't cause layout shifts on mobile */
+  .tile-price,
+  .tile-title {
+    min-height: 20px !important;
+    max-height: 30px !important; /* Smaller max height on mobile */
   }
 }
 /* Controller (button) as full-width toggle switch */
@@ -810,15 +825,21 @@ span.raw-badge {
   pointer-events: none;
 }
 
-/* Bundles: 3-up grid, card style */
+/* Bundles: 3-up grid, card style - Fixed layout to prevent shifting */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   width: 100%;
+  align-items: start !important; /* Align items to top to prevent stretching */
 }
+
+/* Ensure each swatch item has consistent sizing */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
   margin: 0 auto;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 280px !important; /* Match the swatch min-height */
 }
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch {
   width: 100%;
@@ -848,7 +869,7 @@ span.raw-badge {
   transform: none;
 }
 
-/* Bundle image fit full inside */
+/* Bundle image fit full inside - Fixed layout to prevent shifting */
 .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
   display: flex;
   flex-direction: column;
@@ -860,17 +881,20 @@ span.raw-badge {
   max-width: 100% !important;
   width: 100% !important;
   border: 1px solid #e0e0e0 !important;
+  min-height: 280px !important; /* Prevent layout shifts - accommodate image + title + price */
+  box-sizing: border-box !important; /* Ensure padding/border included in sizing */
 }
 .cgkit-attribute-swatch.cgkit-image .cgkit-swatch img {
   display: block;
   width: 100% !important;
-  height: 200px;
+  height: 200px !important; /* Fixed height to prevent layout shifts */
   max-width: 100% !important;
   object-fit: cover;
   border-radius: 8px 8px 0 0 !important;
   margin: 0;
   padding: 0;
   overflow: hidden !important;
+  flex-shrink: 0 !important; /* Prevent image from shrinking */
 }
 
 /* Title and price area */
@@ -1028,7 +1052,7 @@ span.raw-badge {
   line-height: 1 !important;
 }
 
-/* Tile title (bundle name) */
+/* Tile title (bundle name) - Fixed layout to prevent shifting */
 .tile-title {
   display: block !important;
   margin-top: 8px;
@@ -1039,11 +1063,15 @@ span.raw-badge {
   line-height: 1.2;
   visibility: visible !important;
   opacity: 1 !important;
+  min-height: 20px !important; /* Prevent layout shifts */
+  max-height: 40px !important; /* Prevent layout shifts */
+  overflow: hidden !important; /* Prevent content overflow */
+  position: relative !important; /* Ensure proper positioning */
 }
 
 /* Let CommerceKit handle tile-title and tile-price styling naturally */
 
-/* Ensure tile-title is visible for bundle swatches */
+/* Ensure tile-title is visible for bundle swatches - Fixed layout to prevent shifting */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
   display: block !important;
   visibility: visible !important;
@@ -1053,9 +1081,13 @@ span.raw-badge {
   text-align: center !important;
   font-weight: bold !important;
   color: #333333 !important;
+  min-height: 20px !important; /* Prevent layout shifts */
+  max-height: 40px !important; /* Prevent layout shifts */
+  overflow: hidden !important; /* Prevent content overflow */
+  position: relative !important; /* Ensure proper positioning */
 }
 
-/* Tile price */
+/* Tile price - Fixed layout to prevent shifting */
 .tile-price {
   display: block !important;
   margin-top: 6px;
@@ -1066,9 +1098,13 @@ span.raw-badge {
   line-height: 1.2;
   visibility: visible !important;
   opacity: 1 !important;
+  min-height: 24px !important; /* Prevent layout shifts */
+  max-height: 32px !important; /* Prevent layout shifts */
+  overflow: hidden !important; /* Prevent content overflow */
+  position: relative !important; /* Ensure proper positioning */
 }
 
-/* Bundle-specific price styling - let CommerceKit handle content, we just prevent layout shifts */
+/* Bundle-specific price styling - Fixed layout to prevent shifting */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
   text-align: center;
   margin-top: 10px;
@@ -1076,9 +1112,12 @@ span.raw-badge {
   visibility: visible !important;
   opacity: 1 !important;
   min-height: 24px !important; /* Prevent layout shifts */
+  max-height: 32px !important; /* Prevent layout shifts */
   line-height: 1.2 !important; /* Consistent line height */
   font-size: 14px !important; /* Consistent font size */
   transition: opacity 0.2s ease !important; /* Smooth transitions */
+  overflow: hidden !important; /* Prevent content overflow */
+  position: relative !important; /* Ensure proper positioning */
 }
 
 /* Hide the "Total:" prefix in prices */
@@ -1126,9 +1165,27 @@ span.raw-badge {
   text-decoration: none;
 }
 
-/* Price transitions to prevent layout shifts */
+/* Price styling to prevent layout shifts */
 .tile-price {
-  transition: opacity 0.2s ease !important;
+  word-wrap: break-word !important; /* Prevent long prices from breaking layout */
+  white-space: normal !important; /* Allow text wrapping */
+}
+
+/* Ensure price content is properly contained */
+.tile-price .price {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Prevent price elements from causing layout shifts */
+.tile-price del,
+.tile-price ins {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Let CommerceKit handle price styling naturally */

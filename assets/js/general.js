@@ -667,47 +667,13 @@ jQuery(document).ready(function ($) {
         .find('.cgkit-swatch[data-attribute-value="' + bundle + '"]')
         .find(".tile-price");
 
-      if ($priceElement.length) {
-        // Update all bundles the same way - only if price actually changed
-        var currentPrice = $priceElement.html();
-
-        // For grill-only, only update if we have a valid new price to prevent white flash
-        if (bundle === "grill-only") {
-          if (cleanPriceHtml && cleanPriceHtml.trim() !== "" && currentPrice !== cleanPriceHtml) {
-            $priceElement.html(cleanPriceHtml);
-          } else if (!cleanPriceHtml || cleanPriceHtml.trim() === "") {
-          }
-        } else {
-          // For other bundles, update normally
-          if (currentPrice !== cleanPriceHtml) {
-            $priceElement.html(cleanPriceHtml);
-          }
-        }
+      if ($priceElement.length && cleanPriceHtml) {
+        // Simple update without complex comparison (following old plugin approach)
+        $priceElement.html(cleanPriceHtml);
       }
     });
 
-    // Ensure grill-only always has a price displayed (robust fallback for slow connections)
-    var $grillOnlyPrice = $('.cgkit-attribute-swatches[data-attribute="' + lastAttribute + '"]')
-      .find('.cgkit-swatch[data-attribute-value="grill-only"]')
-      .find(".tile-price");
-
-    if (
-      $grillOnlyPrice.length &&
-      ($grillOnlyPrice.text().trim() === "" || $grillOnlyPrice.text().trim() === "&nbsp;")
-    ) {
-      // Look for any grill-only variation to get a price
-      for (var i = 0; i < variations.length; i++) {
-        var variation = variations[i];
-        if (variation.attributes && variation.attributes[lastAttribute] === "grill-only") {
-          var fallbackPrice = variation.price_html || variation.display_price || variation.price;
-          if (fallbackPrice) {
-            var cleanFallbackPrice = fallbackPrice.toString().replace(/Total:\s*/g, "");
-            $grillOnlyPrice.html(cleanFallbackPrice);
-            break;
-          }
-        }
-      }
-    }
+    // Simplified approach - let CommerceKit handle price display naturally
   }
 
   // Initial setup
@@ -846,9 +812,7 @@ jQuery(document).ready(function ($) {
         }
       }
     });
-    // Clear previous prices
-    $('.cgkit-attribute-swatches[data-attribute="' + bundleAttribute + '"] .tile-price').empty();
-    // Update with new prices
+    // Update with new prices (following old plugin's smooth approach)
     Object.keys(availableBundles).forEach(function (bundle) {
       var priceHtml = availableBundles[bundle];
       var cleanPriceHtml = "";
@@ -861,7 +825,10 @@ jQuery(document).ready(function ($) {
         .find('.cgkit-swatch[data-attribute-value="' + bundle + '"]')
         .find(".tile-price");
 
-      $target.html(cleanPriceHtml);
+      // Update content directly without clearing first (prevents layout shifts)
+      if (cleanPriceHtml) {
+        $target.html(cleanPriceHtml);
+      }
     });
     Object.keys(availableBadgeBundles).forEach(function (bundle) {
       var badgeHtml = availableBadgeBundles[bundle];
@@ -1590,37 +1557,8 @@ jQuery(document).ready(function ($) {
       preserveControllerSelections();
     }
 
-    // Monitor grill-only price specifically for slow connections
-    var $grillOnlyPrice = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]')
-      .find('.cgkit-swatch[data-attribute-value="grill-only"]')
-      .find(".tile-price");
-
-    if (
-      $grillOnlyPrice.length &&
-      ($grillOnlyPrice.text().trim() === "" || $grillOnlyPrice.text().trim() === "&nbsp;")
-    ) {
-      var $form = $(".variations_form");
-      var variations = $form.data("product_variations");
-      var controllerValue = $form.find('select[name="attribute_pa_controller"]').val();
-      var currentFrontBench = $form.find('select[name="attribute_pa_front-bench"]').val();
-
-      if (variations && controllerValue) {
-        // Force update grill-only price immediately
-        updateBundleCardPrices(variations, controllerValue, currentFrontBench);
-      }
-    }
-
-    // Also ensure grill-only price is always displayed
-    ensureGrillOnlyPrice();
-
-    // Only check for missing prices every 3 seconds to reduce flickering
-    if (!window.lastPriceCheck || Date.now() - window.lastPriceCheck > 3000) {
-      window.lastPriceCheck = Date.now();
-
-      var $form = $(".variations_form");
-      var variations = $form.data("product_variations");
-      // CommerceKit handles price updates naturally
-    }
+    // Simplified price monitoring (following old plugin approach)
+    // Let CommerceKit handle price updates naturally without complex monitoring
   }, 1000);
 
   // Monitor badges, savings, and selection states - check every 2 seconds
