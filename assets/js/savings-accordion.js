@@ -29,7 +29,7 @@
       $header.toggleClass("active");
       $content.toggleClass("active");
 
-      // Animate icon rotation
+      // Animate icon rotation for dashicons
       if ($header.hasClass("active")) {
         $icon.css("transform", "rotate(180deg)");
       } else {
@@ -198,7 +198,7 @@
    */
   function removeLoadingState() {
     $(".zg-accordion-header").removeClass("loading");
-    $(".zg-accordion-icon").html("▼");
+    $(".zg-accordion-icon").html('<span class="dashicons dashicons-arrow-down-alt2"></span>');
   }
 
   // Expose functions globally for potential external use

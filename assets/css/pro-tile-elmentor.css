@@ -125,11 +125,17 @@ span.elementor-bundle-label-text.elementor-label-text {
   width: 15px;
   top: 0;
   height: 100%;
-  pointer-events: none; /*makes the linkes behind clickable*/
+  pointer-events: none;
   right: 0;
-  /*background: linear-gradient(to left, rgba(255, 255, 255, 1) 0px, rgba(0, 0, 0, 0));*/
 }
-
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button::before {
+  border: 0;
+}
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button:hover::before {
+  border-radius: 10px;
+  border: 1px solid #353c4e;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+}
 .elementor-kit-7675 button.owl-prev:hover,
 .elementor-kit-7675 button.owl-next:hover {
   box-shadow: none;
@@ -426,29 +432,19 @@ span.raw-badge {
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
   width: 100% !important;
   height: auto;
-  min-height: 250px; /* Maintain existing height for consistency */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  max-width: none !important;
+  max-width: 100% !important;
   padding: 0 !important;
-  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: none !important;
-}
-
-.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
-  .cgkit-attribute-swatch
-  button.swatch.cgkit-swatch:hover {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 /* Bundle Images */
@@ -801,7 +797,7 @@ span.raw-badge {
 .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
   .cgkit-attribute-swatch.cgkit-button
   button.swatch.cgkit-swatch:hover {
-  background: #faf2ef !important;
+  background: #eee !important;
 }
 .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
   .cgkit-attribute-swatch.cgkit-button
@@ -840,7 +836,7 @@ span.raw-badge {
 .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch:hover {
   background: #fafafa !important;
   border-color: #ccc;
-  box-shadow: none;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
   transform: none;
   transition: all 0.2s ease;
 }
@@ -858,19 +854,23 @@ span.raw-badge {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 8px !important;
+  overflow: hidden !important;
   position: relative !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  border: 1px solid #e0e0e0 !important;
 }
 .cgkit-attribute-swatch.cgkit-image .cgkit-swatch img {
   display: block;
-  width: 100%;
+  width: 100% !important;
   height: 200px;
-  max-width: 100%;
+  max-width: 100% !important;
   object-fit: cover;
-  border-radius: 0;
+  border-radius: 8px 8px 0 0 !important;
   margin: 0;
   padding: 0;
+  overflow: hidden !important;
 }
 
 /* Title and price area */
@@ -882,6 +882,10 @@ span.raw-badge {
   color: #333;
   text-align: center;
   margin-bottom: 8px;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  word-wrap: break-word !important;
+  border-radius: 0 0 8px 8px !important;
 }
 .cgkit-attribute-swatches .tile-price {
   display: flex;
@@ -891,6 +895,10 @@ span.raw-badge {
   padding: 0 12px 12px;
   flex-direction: row;
   flex-wrap: nowrap;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  word-wrap: break-word !important;
+  border-radius: 0 0 8px 8px !important;
 }
 .cgkit-attribute-swatches .tile-price .price del {
   color: var(--vt-muted);
@@ -930,8 +938,10 @@ span.raw-badge {
 .cgkit-attribute-swatches,
 .cgkit-attribute-swatch,
 .cgkit-attribute-swatch .cgkit-swatch {
-  max-width: 100%;
-  overflow: hidden;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
 }
 
 /* Futureproof message visibility control */
@@ -979,7 +989,7 @@ span.raw-badge {
   margin: 10px 0;
   border: 1px solid var(--vt-border);
   border-radius: 8px;
-  background: #fff;
+  background: #efefef;
 }
 .vt-accordion > summary {
   cursor: pointer;
@@ -1176,6 +1186,5 @@ span.raw-badge {
 /* Add border for image swatches without ::before */
 .cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch {
   border-radius: 10px !important;
-  border: 0;
   box-sizing: border-box !important;
 }
