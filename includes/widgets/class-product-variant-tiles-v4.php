@@ -2522,12 +2522,11 @@ class ProductVariantTilesV4 extends  Widget_Base
         $variations  = commercekit_get_available_variations($product);
 
 
+
+
         $default_attributes = $product->get_default_attributes();
 
-        // DEBUG: Temporary debug output to understand default attributes structure
-        if (strpos($args['attribute'], 'bundles') !== false) {
-            echo '<!-- DEBUG: Default attributes for ' . $args['attribute'] . ': ' . print_r($default_attributes, true) . ' -->';
-        }
+
 
 
 
@@ -2626,10 +2625,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 $custom_selected = true;
             }
 
-            // DEBUG: Temporary debug output for selection logic
-            if (strpos($args['attribute'], 'bundles') !== false) {
-                echo '<!-- DEBUG: Comparing ' . $item_attri_val . ' with default ' . (isset($default_attributes[$current_attribute_name]) ? $default_attributes[$current_attribute_name] : 'none') . ' for ' . $current_attribute_name . ' - Selected: ' . ($custom_selected ? 'YES' : 'NO') . ' -->';
-            }
+
 
             // $is_selected = (isset($args['selected']) && sanitize_title( $args['selected'] ) == $item_attri_val ) ? true : false;
 
@@ -2644,16 +2640,12 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             // print_r($_variations[$attribute_raw][$item_attri_val]['variation']);
             $swatch_html = '';
-                                                // Generate basic swatch HTML first (following old plugin structure exactly)
-            $swatch_html = $this->zg_commercekit_as_get_swatch_html($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);
+                                                // Generate basic swatch HTML independently (bypass CommerceKit)
+            $swatch_html = $this->generate_swatch_html_independent($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);
 
-            // Add price AFTER basic swatch HTML (following old plugin structure exactly)
-            if(isset($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']) && $swatch_type == 'image'){
-                // Ensure consistent price HTML structure to prevent layout shifts
-                $price_html = $this->standardize_price_html($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']);
 
-                $swatch_html .= '<span class="tile-price">' . $price_html . '</span>';
-            }
+
+
 
             // Handle variation image override (restored for proper image display)
             if ('image' === $swatch_type && isset($_variations[$attribute_raw][$item_attri_val]['variation']['cgkit_image_id'])) {
@@ -2690,6 +2682,11 @@ class ProductVariantTilesV4 extends  Widget_Base
             // RENDER BADGE USING ELEMENTOR SETTINGS
             $swatch_html .= $this->render_tile_badge($attribute_raw, $item_attri_val, $_variations);
 
+            // SIMPLE PRICE DISPLAY - EXACTLY LIKE TILES-OLD (which works perfectly)
+            if(isset($_variations[$attribute_raw][$item_attri_val]['variation']['price_html']) && $swatch_type == 'image'){
+                $swatch_html .= '<span class="tile-price">' . $_variations[$attribute_raw][$item_attri_val]['variation']['price_html'] . '</span>';
+            }
+
             $item_title  = 'button' === $swatch_type && isset($attribute_swatches[$attribute_id][$item->term_id]['btn']) ? $attribute_swatches[$attribute_id][$item->term_id]['btn'] : $item->name;
             if (isset($single_attr_oos[$attribute_raw][$item_attri_val]) && true === $single_attr_oos[$attribute_raw][$item_attri_val]) {
                 $selected  .= ' cgkit-as-outofstock';
@@ -2704,8 +2701,12 @@ class ProductVariantTilesV4 extends  Widget_Base
             }
             $gal_img_slug   = is_numeric($item->term_id) ? $item->term_id : sanitize_title($item->term_id);
             $item_gimg_id   = isset($_gal_images[$gal_img_slug]) ? $_gal_images[$gal_img_slug] : '';
+
+
             // $raw_badge = isset($_variations[$attribute_raw][$item_attri_val]['variation']['raw_badge']) ? '<br>' . $_variations[$attribute_raw][$item_attri_val]['variation']['raw_badge'] : '';
             $swatches_html .= sprintf('<li class="cgkit-attribute-swatch cgkit-%s %s" %s data-variation-id="%s"><button type="button" data-type="%s" data-attribute-value="%s" data-attribute-text="%s" aria-label="%s" data-oos-text="%s" title="%s" class="swatch cgkit-swatch %s" data-clicker="%s" data-gimg_id="%s">%s<span class="raw-badge"></span></button></li>', $swatch_type, $item_class, $item_tooltip, $_variations[$attribute_raw][$item_attri_val]['variation']['variation_id'], $swatch_type, esc_attr($item_attri_val), esc_attr($item->name), esc_attr($item_title), $item_oos_text, esc_attr($item_title), $selected, $selected, $item_gimg_id, $swatch_html);
+
+
 
             // Final HTML structure generated
         }
@@ -2763,6 +2764,65 @@ class ProductVariantTilesV4 extends  Widget_Base
         // $swatches_html .= '<section class="clearfix">' . do_action('after_product_swatch_' . $attribute_name) . '</section>';
 
         return $swatches_html;
+    }
+
+        /**
+     * Generate swatch HTML independently (bypass CommerceKit)
+     *
+     * @param string $swatch_type type of swatch.
+     * @param string $data data of attribute.
+     * @param string $item data of term.
+     * @param string $image_label label for image.
+     */
+    function generate_swatch_html_independent($swatch_type, $data, $item, $image_label = '')
+    {
+        $swatch_html = '';
+        if ('image' === $swatch_type) {
+            $image = null;
+            // Try to get image from CommerceKit data first, then fallback to term meta
+            if (isset($data['img']) && !empty($data['img'])) {
+                $cgkit_image_swatch = 'woocommerce_thumbnail';
+
+                // Only call CommerceKit function if it exists
+                if (function_exists('commercekit_as_generate_attachment_size')) {
+                    commercekit_as_generate_attachment_size($data['img'], $cgkit_image_swatch);
+                }
+                $image = wp_get_attachment_image_src($data['img'], $cgkit_image_swatch);
+            } else {
+                // Fallback to term meta image if CommerceKit image not set
+                $term_img_id = get_term_meta($item->term_id, 'product_attribute_image', true);
+                if ($term_img_id) {
+                    $image = wp_get_attachment_image_src($term_img_id, 'woocommerce_thumbnail');
+                }
+            }
+            if ($image) {
+                $swatch_html = '<span class="cross">&nbsp;</span><img alt="' . esc_attr($item->name) . '" width="' . esc_attr($image[1]) . '" height="' . esc_attr($image[2]) . '" src="' . esc_url($image[0]) . '" />' . ($image_label ? '<span class="tile-title">'.$image_label.'</span>' : '');
+            } else {
+                // For bundle swatches, still show the title even if no image data
+                $swatch_html = '<span class="cross">&nbsp;</span>' . ($image_label ? '<span class="tile-title">'.$image_label.'</span>' : '');
+            }
+
+        } elseif ('color' === $swatch_type) {
+            if (isset($data['clr']) && !empty($data['clr'])) {
+                $bg_color2  = isset($data['clr2']) ? $data['clr2'] : '';
+                $bg_type    = isset($data['ctyp']) ? (int) $data['ctyp'] : 1;
+                $background = $data['clr'];
+                if (2 === $bg_type && !empty($bg_color2)) {
+                    $background = 'linear-gradient(135deg, ' . $data['clr'] . ' 50%, ' . $bg_color2 . ' 50%)';
+                }
+                $swatch_html = '<span class="cross">&nbsp;</span><span class="color-div" style="background: ' . esc_attr($background) . ';" data-color="' . esc_attr($data['clr']) . '" aria-hidden="true">&nbsp;' . esc_attr($item->name) . '</span>';
+            } else {
+                $swatch_html = '<span class="cross">&nbsp;</span><span class="color-div" style="" data-color="" aria-hidden="true">&nbsp;' . esc_attr($item->name) . '</span>';
+            }
+        } elseif ('button' === $swatch_type) {
+            if (isset($data['btn']) && strlen($data['btn'])) {
+                $swatch_html = '<span class="cross">&nbsp;</span>' . esc_attr($data['btn']);
+            } else {
+                $swatch_html = '<span class="cross">&nbsp;</span>' . esc_attr($item->name);
+            }
+        }
+
+        return $swatch_html;
     }
 
     /**
@@ -2827,6 +2887,14 @@ class ProductVariantTilesV4 extends  Widget_Base
         $variation_data['_vt_offer_label'] = get_post_meta($variation->get_id(), '_vt_offer_label', true);
         $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
         $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
+
+        // DEBUG: Log variant tile data enrichment
+        if(strpos($product->get_name(), '450A') !== false){
+            error_log('VARIANT TILE DEBUG: Enriching variation ' . $variation->get_id() . ' for product ' . $product->get_name());
+            error_log('VARIANT TILE DEBUG: _vt_dd_text = ' . ($variation_data['_vt_dd_text'] ?: 'EMPTY'));
+            error_log('VARIANT TILE DEBUG: _vt_dd_preview = ' . ($variation_data['_vt_dd_preview'] ?: 'EMPTY'));
+            error_log('VARIANT TILE DEBUG: _vt_offer_label = ' . ($variation_data['_vt_offer_label'] ?: 'EMPTY'));
+        }
 
         // Add variant tile image data
         $dd_image_id = get_post_meta($variation->get_id(), '_vt_dd_image_id', true);
@@ -3715,22 +3783,21 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                 // Global event handler to prevent grill-only selection loss
                 $(document).on('click', '.cgkit-swatch[data-attribute-value="grill-only"]', function(e) {
-                    console.log('🔥 GRILL-ONLY CLICK DEBUG:');
-                    console.log('  - Event target:', e.target);
-                    console.log('  - Current controller:', $('select[name="attribute_pa_controller"]').val());
-                    console.log('  - Current bundle:', $('select[name="attribute_pa_bundles"]').val());
-                    console.log('  - Clicked swatch:', $(this));
-                    console.log('  - Swatch data value:', $(this).data('attribute-value'));
-
                     // Prevent other event handlers from interfering
                     e.stopPropagation();
 
-                    // CRITICAL: Preserve controller in persistent memory immediately
-                    var $selectedControllerSwatch = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.cgkit-swatch-selected, .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.zg-permanent-selected');
-                    var currentControllerValue = $selectedControllerSwatch.length ? $selectedControllerSwatch.data('attribute-value') : $('select[name="attribute_pa_controller"]').val();
+                    // Check if this is a bundle-only product (no controller attribute)
+                    var $controllerSelect = $('select[name="attribute_pa_controller"]');
+                    var hasController = $controllerSelect.length > 0;
 
-                    if (currentControllerValue && currentControllerValue !== '') {
-                        window.persistentControllerSelection = currentControllerValue;
+                    // CRITICAL: Preserve controller in persistent memory immediately (only if controller exists)
+                    if (hasController) {
+                        var $selectedControllerSwatch = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.cgkit-swatch-selected, .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.zg-permanent-selected');
+                        var currentControllerValue = $selectedControllerSwatch.length ? $selectedControllerSwatch.data('attribute-value') : $controllerSelect.val();
+
+                        if (currentControllerValue && currentControllerValue !== '') {
+                            window.persistentControllerSelection = currentControllerValue;
+                        }
                     }
 
                     // Ensure the selection is maintained
@@ -3749,9 +3816,11 @@ class ProductVariantTilesV4 extends  Widget_Base
                         $bundleSelect.val('grill-only');
                     }
 
-                    // Ensure front bench is set to none for grill-only
+                    // Ensure front bench is set to none for grill-only (only if front bench exists)
                     var $frontBenchSelect = $('select[name="attribute_pa_front-bench"]');
-                    $frontBenchSelect.val('none');
+                    if ($frontBenchSelect.length > 0) {
+                        $frontBenchSelect.val('none');
+                    }
 
                     // CRITICAL: Store grill-only in persistent memory immediately
                     window.persistentBundleSelection = 'grill-only';
@@ -4081,17 +4150,17 @@ class ProductVariantTilesV4 extends  Widget_Base
                     private function render_tile_badge($attribute_raw, $item_attri_val, $_variations) {
         $settings = $this->get_settings_for_display();
 
-        // Check if badges are enabled
-        if (!isset($settings['enable_badges']) || $settings['enable_badges'] !== 'yes') {
-            return '';
-        }
-
         $badge_text = '';
 
         // Only render badges on bundle swatches
         if ($attribute_raw === 'bundles') {
             // Get current controller selection (persistent, not affected by other variations)
             $current_controller = $this->get_current_controller_selection($_variations);
+
+            // Skip badge rendering for bundle-only products (no controller)
+            if ($current_controller === null) {
+                return '';
+            }
 
             // Map controller + bundle combinations to badge settings
             $badge_map = [
@@ -4126,6 +4195,11 @@ class ProductVariantTilesV4 extends  Widget_Base
      * Get current controller selection for badge logic
      */
     private function get_current_controller_selection($_variations) {
+        // For bundle-only products (no controller variations), return null to disable badges
+        if (!isset($_variations['controller']) || empty($_variations['controller'])) {
+            return null;
+        }
+
         // Try to get from URL parameters first (for direct links)
         if (isset($_GET['attribute_pa_controller'])) {
             return sanitize_text_field($_GET['attribute_pa_controller']);
