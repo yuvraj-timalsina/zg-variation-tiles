@@ -2,6 +2,33 @@ jQuery(document).ready(function ($) {
   // COMMERCEKIT-AWARE SOLUTION: Work with CommerceKit's patterns
   var globalSelectionState = {};
 
+  // Central function to update ATC button price - single source of truth
+  function updateATCButtonPrice(variation) {
+    if (!variation) return;
+
+    var $button = $(".single_add_to_cart_button");
+    if (!$button.length) return;
+
+    var price = variation.display_price || variation.price;
+    if (!price) return;
+
+    // Use consistent price formatting
+    var formattedPrice = "";
+    if (typeof wc_price !== "undefined") {
+      formattedPrice = wc_price(price);
+    } else {
+      // Fallback formatting
+      formattedPrice = "$" + parseFloat(price).toFixed(2);
+    }
+
+    var $buttonText = $button.find(".elementor-button-text");
+    if ($buttonText.length) {
+      $buttonText.text("Add to Cart - " + formattedPrice);
+    } else {
+      $button.text("Add to Cart - " + formattedPrice);
+    }
+  }
+
   // Comprehensive initialization function
   function initializeProductPage() {
     // Wait for CommerceKit to be ready
@@ -715,35 +742,8 @@ jQuery(document).ready(function ($) {
     // Clear any existing savings display
     $("#vt-total-savings").remove();
 
-    if (variation) {
-      var $btn = $(".single_add_to_cart_button.elementor-button");
-      // Use display_price for final sale price, fallback to price
-      var finalPrice = "";
-      if (variation.display_price !== undefined && variation.display_price !== "") {
-        finalPrice = variation.display_price;
-      } else if (variation.price !== undefined && variation.price !== "") {
-        finalPrice = variation.price;
-      }
-
-      if (finalPrice) {
-        // Format the price with currency symbol
-        var formattedPrice = "";
-        if (typeof wc_price !== "undefined") {
-          formattedPrice = wc_price(finalPrice);
-        } else {
-          // Fallback formatting
-          formattedPrice = "$" + parseFloat(finalPrice).toFixed(2);
-        }
-
-        // Update the entire button text to show "Add to cart - $price"
-        var buttonText = "Add to cart - " + formattedPrice;
-        if ($btn.find(".elementor-button-text").length) {
-          $btn.find(".elementor-button-text").text(buttonText);
-        } else {
-          $btn.text(buttonText);
-        }
-      }
-    }
+    // Update ATC button price using central function
+    updateATCButtonPrice(variation);
 
     // Clear any existing badge display
     $("#vt-offer-badge").remove();
@@ -1833,19 +1833,8 @@ jQuery(document).ready(function ($) {
     // Update stock status
     setTimeout(handleFutureproofMessage, 100);
 
-    // Update ATC button price
-    if (variation.display_price) {
-      // Simple approach: use display_price directly with proper formatting
-      var currentPrice = "$" + variation.display_price.toLocaleString();
-
-      // If there's a sale price, use the sale price instead
-      if (variation.display_regular_price && variation.display_regular_price > variation.display_price) {
-        currentPrice = "$" + variation.display_price.toLocaleString();
-      }
-
-      $(".single_add_to_cart_button").html("Add to Cart - " + currentPrice);
-    } else {
-    }
+    // Update ATC button price using central function
+    updateATCButtonPrice(variation);
 
     // Track previous values for comparison
     var currentController = $("#pa_controller").val();
@@ -1890,9 +1879,18 @@ jQuery(document).ready(function ($) {
     var $excerpt = $(".zg-accordion-excerpt");
     var $content = $(".zg-accordion-content");
 
-    // Update excerpt text from Preview Text field
+    // Update excerpt text from Preview Text field with character limit
     if (variation._vt_dd_preview && variation._vt_dd_preview.trim() !== "") {
-      $excerpt.html(variation._vt_dd_preview).show();
+      var previewText = variation._vt_dd_preview.trim();
+
+      // Apply character limit if available
+      if (typeof zgAccordionSettings !== "undefined" && zgAccordionSettings.previewTextLimit > 0) {
+        if (previewText.length > zgAccordionSettings.previewTextLimit) {
+          previewText = previewText.substring(0, zgAccordionSettings.previewTextLimit) + "...";
+        }
+      }
+
+      $excerpt.html(previewText).show();
     } else {
       $excerpt.html("").hide();
     }
@@ -2056,18 +2054,8 @@ jQuery(document).ready(function ($) {
       currentSelections["attribute_pa_controller"] = window.previousControllerValue;
     }
 
-    // Update ATC button text with price
-    var $atcButton = $form.find(".single_add_to_cart_button");
-    if ($atcButton.length) {
-      var price = variation.display_price || variation.price;
-      if (price) {
-        var formattedPrice = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(price);
-        $atcButton.text("Add to cart - " + formattedPrice);
-      }
-    }
+    // Update ATC button price using central function
+    updateATCButtonPrice(variation);
 
     // Update bundle prices only - NO image updates for bundle changes
     var variations = $form.data("product_variations");

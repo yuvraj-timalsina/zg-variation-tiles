@@ -1539,54 +1539,22 @@ class ProductVariantTiles extends  Widget_Base
 	 */
 	protected function render_text()
 	{
-		$settings = $this->get_settings_for_display();
-
-		$migrated = isset($settings['__fa4_migrated']['selected_icon']);
-		$is_new = empty($settings['icon']) && Icons_Manager::is_migration_allowed();
-
-		if (!$is_new && empty($settings['icon_align'])) {
-			// @todo: remove when deprecated
-			// added as bc in 2.6
-			//old default
-			$settings['icon_align'] = $this->get_settings('icon_align');
-		}
+		// Use uniform "Add to Cart" text for all products
+		$button_text = __('Add to Cart', 'woocommerce');
 
 		$this->add_render_attribute([
 			'content-wrapper' => [
 				'class' => 'elementor-button-content-wrapper',
 			],
-			'icon-align' => [
-				'class' => [
-					'elementor-button-icon',
-					'elementor-align-icon-left',
-				],
-			],
 			'text' => [
 				'class' => 'elementor-button-text',
 			],
 		]);
-		if (!$is_new && empty($settings['number_of_tiles'])) {
-			// @todo: remove when deprecated
-			// added as bc in 2.6
-			//old default
-			$settings['number_of_tiles'] = $this->get_settings('number_of_tiles');
-		}
-
 
 		$this->add_inline_editing_attributes('text', 'none');
 		?>
 		<span <?php echo $this->get_render_attribute_string('content-wrapper'); ?>>
-			<?php if (!empty($settings['icon']) || !empty($settings['selected_icon']['value'])) : ?>
-				<span <?php echo $this->get_render_attribute_string('icon-align'); ?>>
-					<?php if ($is_new || $migrated) :
-						Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']);
-					else : ?>
-						<i class="<?php echo esc_attr($settings['icon']); ?>" aria-hidden="true"></i>
-					<?php endif;
-					$this->get_settings('icon_align'); ?>
-				</span>
-			<?php endif; ?>
-			<span <?php echo $this->get_render_attribute_string('text'); ?>><?php echo $settings['text']; ?></span>
+			<span <?php echo $this->get_render_attribute_string('text'); ?>><?php echo $button_text; ?></span>
 		</span>
 	<?php
 	}

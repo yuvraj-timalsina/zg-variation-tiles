@@ -51,8 +51,8 @@ class Product_Tiles_Admin {
 	    			    			    		<div style="margin-top: 10px;">
 	    				    				    			<!-- Two Column Layout -->
 	    			<div style="display: flex; gap: 20px; align-items: flex-start;">
-	    				<!-- Left Column: Image + Offer Label -->
-	    				<div style="flex: 1;">
+	    				<!-- Left Column: Image (Full Height) -->
+	    				<div style="flex: 1; display: flex; flex-direction: column;">
 	    					<?php
 	    					// Image upload field
 	    					$image_id = get_post_meta( $variation->ID, '_vt_dd_image_id', true );
@@ -64,7 +64,7 @@ class Product_Tiles_Admin {
 	    						$has_image = true;
 	    					}
 	    					?>
-	    					<div class="vt-field-group" style="margin-bottom: 10px;">
+	    					<div class="vt-field-group" style="margin-bottom: 10px; flex: 1; display: flex; flex-direction: column;">
 	    						<label for="_vt_dd_image_id<?php echo esc_attr( $loop ); ?>" style="margin-bottom: 10px;"><?php esc_html_e( 'Dropdown Image', 'woocommerce' ); ?></label>
 	    						<input type="hidden"
 	    						       id="_vt_dd_image_id<?php echo esc_attr( $loop ); ?>"
@@ -72,16 +72,16 @@ class Product_Tiles_Admin {
 	    						       value="<?php echo esc_attr( $image_id ); ?>"
 	    						       class="vt-image-id" />
 
-	    						<div class="vt-media-upload-container">
-	    							<div class="vt-media-preview" id="vt-media-preview-<?php echo esc_attr( $loop ); ?>" <?php echo ! $has_image ? 'style="display:none;"' : ''; ?>>
+	    						<div class="vt-media-upload-container" style="flex: 1; display: flex; flex-direction: column;">
+	    							<div class="vt-media-preview" id="vt-media-preview-<?php echo esc_attr( $loop ); ?>" <?php echo ! $has_image ? 'style="display:none;"' : ''; ?> style="flex: 1; display: flex; align-items: center; justify-content: center;">
 	    								<?php if ( $has_image && $image_url ) : ?>
-	    									<div class="vt-media-item">
-	    										<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php esc_attr_e( 'Variant tile image', 'woocommerce' ); ?>" style="max-width: 150px; height: auto;" />
+	    									<div class="vt-media-item" style="text-align: center;">
+	    										<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php esc_attr_e( 'Variant tile image', 'woocommerce' ); ?>" style="max-width: 100%; max-height: 300px; height: auto; object-fit: contain;" />
 	    									</div>
 	    								<?php endif; ?>
 	    							</div>
 
-	    							<div class="vt-media-actions">
+	    							<div class="vt-media-actions" style="margin-top: auto;">
 	    								<button type="button" class="button vt-media-upload-btn" data-loop="<?php echo esc_attr( $loop ); ?>">
 	    									<span class="dashicons dashicons-plus-alt2"></span>
 	    									<?php esc_html_e( 'Add Media', 'woocommerce' ); ?>
@@ -98,14 +98,7 @@ class Product_Tiles_Admin {
 	    						</div>
 	    					</div>
 
-	    					<div class="vt-field-group" style="margin-bottom: 10px;">
-	    						<label for="_vt_offer_label<?php echo esc_attr( $loop ); ?>" style="margin-bottom: 10px;"><?php esc_html_e( 'Offer Label', 'woocommerce' ); ?></label>
-	    						<input type="text"
-	    						       id="_vt_offer_label<?php echo esc_attr( $loop ); ?>"
-	    						       name="_vt_offer_label[<?php echo esc_attr( $loop ); ?>]"
-	    						       value="<?php echo esc_attr( get_post_meta( $variation->ID, '_vt_offer_label', true ) ); ?>"
-	    						       class="short" />
-	    					</div>
+
 	    				</div>
 
 	    				<!-- Right Column: Preview Text + Dropdown Text -->
@@ -166,9 +159,7 @@ class Product_Tiles_Admin {
 	    if ( isset( $_POST['_vt_dd_preview'][ $loop ] ) ) {
 	    	update_post_meta( $variation_id, '_vt_dd_preview', sanitize_textarea_field( $_POST['_vt_dd_preview'][ $loop ] ) );
 	    }
-	    if ( isset( $_POST['_vt_offer_label'][ $loop ] ) ) {
-	    	update_post_meta( $variation_id, '_vt_offer_label', sanitize_text_field( $_POST['_vt_offer_label'][ $loop ] ) );
-	    }
+
 	}
 
 	function protiles_load_variation_settings_fields( $variation ) {

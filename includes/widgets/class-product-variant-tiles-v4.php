@@ -251,28 +251,14 @@ class ProductVariantTilesV4 extends  Widget_Base
     protected function register_controls()
     {
 
+        // General Settings Section
         $this->start_controls_section(
-            'section_product',
+            'section_general',
             [
-                'label' => __('Product', 'elementor-pro'),
+                'label' => __('General Settings', 'elementor-pro'),
+                'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
-
-		$this->add_control(
-			'product_id',
-			[
-				'label' => __('Product', 'elementor-pro'),
-				'type' => Module::QUERY_CONTROL_ID,
-				'options' => [],
-				'label_block' => true,
-				'autocomplete' => [
-					'object' => Module::QUERY_OBJECT_POST,
-					'query' => [
-						'post_type' => ['product'],
-					],
-				],
-			]
-		);
 
         $this->add_control(
             'dropdown_location',
@@ -301,15 +287,13 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
 
-
-
         $this->end_controls_section();
 
-        // Section Arrangement Controls
+        // Layout & Ordering Controls
         $this->start_controls_section(
             'section_arrangement',
             [
-                'label' => __('Section Arrangement', 'elementor-pro'),
+                'label' => __('Layout & Ordering', 'elementor-pro'),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -336,6 +320,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     '3' => __('3rd', 'elementor-pro'),
                 ],
                 'description' => __('Set the order in which the Controller section appears', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
@@ -351,6 +336,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     '3' => __('3rd', 'elementor-pro'),
                 ],
                 'description' => __('Set the order in which the Bundles section appears', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
@@ -366,6 +352,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     '3' => __('3rd', 'elementor-pro'),
                 ],
                 'description' => __('Set the order in which the Front Bench section appears', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
@@ -390,6 +377,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     'wireless-enabled,non-wireless' => __('Wireless Enabled → Non-Wireless', 'elementor-pro'),
                 ],
                 'description' => __('Set the order of controller options within the Controller section', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
@@ -408,6 +396,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     'pro-bundle,basic-bundle,grill-only' => __('Pro Bundle → Basic Bundle → Grill Only', 'elementor-pro'),
                 ],
                 'description' => __('Set the order of bundle options within the Bundles section', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
@@ -417,6 +406,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 'label' => __('Front Bench Options Order', 'elementor-pro'),
                 'type' => Controls_Manager::SELECT,
                 'default' => 'wood,stainless-steel',
+                'label_block' => true,
                 'options' => [
                     'wood,stainless-steel' => __('Wood → Stainless Steel', 'elementor-pro'),
                     'stainless-steel,wood' => __('Stainless Steel → Wood', 'elementor-pro'),
@@ -445,465 +435,15 @@ class ProductVariantTilesV4 extends  Widget_Base
                 'max' => 500,
                 'step' => 10,
                 'description' => __('Maximum characters for accordion preview text. Text will be truncated with "..." if longer.', 'elementor-pro'),
+                'label_block' => true,
             ]
         );
 
         $this->end_controls_section();
 
-        $this->start_controls_section(
-            'section_button',
-            [
-                'label' => __('Cart Button', 'elementor'),
-                'tab' => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_control(
-            'button_type',
-            [
-                'label' => __('Type', 'elementor'),
-                'type' => Controls_Manager::SELECT,
-                'default' => '',
-                'options' => [
-                    '' => __('Default', 'elementor'),
-                    'info' => __('Info', 'elementor'),
-                    'success' => __('Success', 'elementor'),
-                    'warning' => __('Warning', 'elementor'),
-                    'danger' => __('Danger', 'elementor'),
-                ],
-                'prefix_class' => 'elementor-button-',
-            ]
-        );
-
-        $this->add_control(
-            'text',
-            [
-                'label' => __('Add To Cart', 'elementor'),
-                'type' => Controls_Manager::TEXT,
-                'dynamic' => [
-                    'active' => true,
-                ],
-                'default' => __('Add To Cart', 'elementor'),
-                'placeholder' => __('Add To Cart', 'elementor'),
-            ]
-        );
-
-        $this->add_control(
-            'link',
-            [
-                'type' => Controls_Manager::HIDDEN,
-                'default' => [
-                    'url' => '',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'addtocart_width',
-            [
-                'label' => __('Add To Cart Width', 'elementor') . ' (px)',
-                'type' => Controls_Manager::SLIDER,
-                'desktop_default' => ['size' => '100', 'unit' => "%"],
-                'tablet_default' => ['size' => '100', 'unit' => "%"],
-                'mobile_default' => ['size' => '100', 'unit' => "%"],
-                'range' => [
-                    'px' => [
-                        'min' => 10,
-                        'max' => 2000,
-                        'step' => 10,
-                    ],
-                    '%' => [
-                        'min' => 1,
-                        'max' => 100,
-                        'step' => 1,
-                    ],
-                ],
-                'size_units' => ['px', '%', 'em'],
-
-                'selectors' => [
-
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button' => 'width: {{SIZE}}{{UNIT}}',
-
-                ],
-
-            ]
-        );
-
-        $this->add_responsive_control(
-            'align',
-            [
-                'label' => __('Alignment', 'elementor'),
-                'type' => Controls_Manager::CHOOSE,
-                'options' => [
-                    'left'    => [
-                        'title' => __('Left', 'elementor'),
-                        'icon' => 'eicon-text-align-left',
-                    ],
-                    'center' => [
-                        'title' => __('Center', 'elementor'),
-                        'icon' => 'eicon-text-align-center',
-                    ],
-                    'right' => [
-                        'title' => __('Right', 'elementor'),
-                        'icon' => 'eicon-text-align-right',
-                    ],
-                    'justify' => [
-                        'title' => __('Justified', 'elementor'),
-                        'icon' => 'eicon-text-align-justify',
-                    ],
-                ],
-                'prefix_class' => 'elementor%s-align-',
-                'desktop_default' => 'left',
-                'tablet_default' => 'left',
-                'mobile_default' => 'center',
-            ]
-        );
-
-        $this->add_control(
-            'size',
-            [
-                'label' => __('Size', 'elementor'),
-                'type' => Controls_Manager::SELECT,
-                'default' => 'sm',
-                'options' => self::get_button_sizes(),
-                'style_transfer' => true,
-                'condition' => [
-                    'show_quantity' => 'no',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'selected_icon',
-            [
-                'label' => __('Icon', 'elementor'),
-                'type' => Controls_Manager::ICONS,
-                'fa4compatibility' => 'icon',
-                'skin' => 'inline',
-                'label_block' => false,
-
-            ]
-        );
-
-        $this->add_control(
-            'icon_align',
-            [
-                'label' => __('Icon Position', 'elementor'),
-                'type' => Controls_Manager::SELECT,
-                'default' => 'left',
-                'options' => [
-                    'left' => __('Before', 'elementor'),
-                    'right' => __('After', 'elementor'),
-                ],
-                'condition' => [
-                    'selected_icon[value]!' => '',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'icon_indent',
-            [
-                'label' => __('Icon Spacing', 'elementor'),
-                'type' => Controls_Manager::SLIDER,
-                'range' => [
-                    'px' => [
-                        'max' => 50,
-                    ],
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button .elementor-align-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
-                    '{{WRAPPER}} .elementor-button .elementor-align-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
-                ],
-            ]
-        );
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'typography',
-                'global' => [
-                    'default' => Global_Typography::TYPOGRAPHY_ACCENT,
-                ],
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button',
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Text_Shadow::get_type(),
-            [
-                'name' => 'text_shadow',
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button',
-            ]
-        );
-
-        $this->start_controls_tabs('tabs_button_style');
-
-        $this->start_controls_tab(
-            'tab_button_normal',
-            [
-                'label' => __('Normal', 'elementor'),
-            ]
-        );
-
-        $this->add_control(
-            'button_text_color',
-            [
-                'label' => __('Text Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'default' => '#F3E9DC',
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button' => 'fill: {{VALUE}}; color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Background::get_type(),
-            [
-                'name' => 'background',
-                'label' => __('Background', 'elementor'),
-                'types' => ['classic', 'gradient'],
-                'exclude' => ['image'],
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button',
-                'fields_options' => [
-                    'background' => [
-                        'default' => 'classic',
-                    ],
-                    'color' => [
-                        'default' => '#BC3116',
-                    ],
-                ],
-            ]
-        );
-
-        $this->end_controls_tab();
-
-        $this->start_controls_tab(
-            'tab_button_hover',
-            [
-                'label' => __('Hover', 'elementor'),
-            ]
-        );
-
-        $this->add_control(
-            'hover_color',
-            [
-                'label' => __('Text Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button:hover, {{WRAPPER}} .elementor-button:focus' => 'color: {{VALUE}};',
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button:hover svg, {{WRAPPER}} .elementor-button:focus svg' => 'fill: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Background::get_type(),
-            [
-                'name' => 'button_background_hover',
-                'label' => __('Background', 'elementor'),
-                'types' => ['classic', 'gradient'],
-                'exclude' => ['image'],
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button:hover, {{WRAPPER}} .elementor-button:focus',
-                'fields_options' => [
-                    'background' => [
-                        'default' => 'classic',
-                    ], 'color' => [
-                        'default' => '#BC3116',
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'button_hover_border_color',
-            [
-                'label' => __('Border Color', 'elementor'),
-                'type' => Controls_Manager::COLOR,
-                'condition' => [
-                    'border_border!' => '',
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button:hover, {{WRAPPER}} .elementor-button:focus' => 'border-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'hover_animation',
-            [
-                'label' => __('Hover Animation', 'elementor'),
-                'type' => Controls_Manager::HOVER_ANIMATION,
-            ]
-        );
-
-        $this->end_controls_tab();
-
-        $this->end_controls_tabs();
-
-        $this->add_group_control(
-            Group_Control_Border::get_type(),
-            [
-                'name' => 'border',
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button',
-                'separator' => 'before',
-            ]
-        );
-
-        $this->add_control(
-            'border_radius',
-            [
-                'label' => __('Border Radius', 'elementor'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em'],
-                'default'    => [
-                    'top' => 100,
-                    'bottom' => 100,
-                    'left' => 100,
-                    'right' => 100,
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Box_Shadow::get_type(),
-            [
-                'name' => 'button_box_shadow',
-                'selector' => '{{WRAPPER}} .elementor-button.single_add_to_cart_button',
-            ]
-        );
-
-        $this->add_responsive_control(
-            'text_padding',
-            [
-                'label' => __('Padding', 'elementor'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .elementor-button.single_add_to_cart_button .elementor-button-text' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-
-                'desktop_default'    => ['top' => 5, 'bottom' => 5, 'left' => 45, 'right' => 45],
-                'tablet_default'    => ['top' => 5, 'bottom' => 5, 'left' => 45, 'right' => 45],
-                'mobile_default'    => ['top' => 5, 'bottom' => 5, 'left' => 45, 'right' => 45],
-                'separator' => 'before',
-            ]
-        );
 
 
-        $this->add_control(
-            'view',
-            [
-                'label' => __('View', 'elementor'),
-                'type' => Controls_Manager::HIDDEN,
-                'default' => 'traditional',
-            ]
-        );
-        $this->end_controls_section();
 
-        // $this->start_controls_section(
-        //     'bundle_prefix',
-        //     [
-        //         'label' => __('Bundle Prefix', 'elementor'),
-        //         'tab' => Controls_Manager::TAB_STYLE,
-        //     ]
-        // );
-        // $this->add_control(
-        //     'bundle_prefix_text',
-        //     [
-        //         'label'   => __('Bundle Prefix Text', 'elementor'),
-        //         'type'    => Controls_Manager::TEXT,
-        //         'default' => 'Choose Your Bundle:'
-        //     ]
-        // );
-        // $this->add_control(
-        //     'bundle_prefix_color',
-        //     [
-        //         'label'     => __('Text Color', 'elementor'),
-        //         'type'         => Controls_Manager::COLOR,
-        //         'default'     => '#555555',
-        //         'selectors' => [
-        //             '{{WRAPPER}} .variations td.label label, .woo-selected-variation-item-name' => 'color: {{VALUE}};'
-
-        //         ],
-
-        //     ]
-        // );
-        // $this->add_group_control(
-        //     Group_Control_Typography::get_type(),
-        //     [
-        //         'name' => 'bundle_prefix_typography',
-        //         'selector' => '{{WRAPPER}} .variations td.label label, .woo-selected-variation-item-name',
-        //         'fields_options' => [
-        //             'font_weight' => ['default' => '600'],
-        //             'font_family' => ['default' => "Inter",],
-        //             'font_size'   => ['default' => ['unit' => 'px', 'size' => '18']],
-        //             'line_height' => ['default' => ['unit' => 'px', 'size' => '22']],
-        //             'text_transform' => ['default' => 'capitalize']
-        //         ],
-        //     ]
-        // );
-        // $this->add_responsive_control(
-        //     'bundle_prefix_icon',
-        //     [
-        //         'label' => __('Prefix Icon', 'elementor'),
-        //         'type' => Controls_Manager::ICONS,
-        //         'fa4compatibility' => 'icon',
-        //         'skin' => 'inline',
-        //         'label_block' => false,
-        //     ]
-        // );
-
-        // $this->add_control(
-        //     'bundle_prefix_icon_width',
-        //     [
-        //         'label'     => __('Icon Width', 'elementor'),
-        //         'type'         => Controls_Manager::TEXT,
-        //         'default'     => '50',
-        //         'selectors' => [
-        //             '{{WRAPPER}} .variations .elementor-bundle-text-icon svg' => 'width: {{VALUE}}px;'
-
-        //         ],
-
-        //     ]
-        // );
-
-        // $this->add_control(
-        //     'bundle_prefix_icon_height',
-        //     [
-        //         'label'     => __('Icon Height', 'elementor'),
-        //         'type'         => Controls_Manager::TEXT,
-        //         'default'     => '50',
-        //         'selectors' => [
-        //             '{{WRAPPER}} .variations .elementor-bundle-text-icon svg' => 'height: {{VALUE}}px;'
-
-        //         ],
-
-        //     ]
-        // );
-
-        // $this->add_responsive_control(
-        //     'bundle_prefix_icon_indent',
-        //     [
-        //         'label' => __('Icon Spacing', 'elementor'),
-        //         'type' => Controls_Manager::SLIDER,
-        //         'range' => [
-        //             'px' => [
-        //                 'max' => 100,
-        //             ],
-        //         ],
-        //         'desktop_default' => ['size' => '5', 'unit' => "px"],
-        //         'tablet_default' => ['size' => '5', 'unit' => "px"],
-        //         'mobile_default' => ['size' => '5', 'unit' => "px"],
-        //         'selectors' => [
-        //             '{{WRAPPER}} .elementor-align-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
-        //             '{{WRAPPER}} .elementor-align-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
-        //         ],
-        //     ]
-        // );
 
         // $this->add_responsive_control(
         //     'bundle_prefix_padding',
@@ -1301,7 +841,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         $this->start_controls_section(
             'badge_controls',
             [
-                'label' => __('Tile Badges', 'elementor'),
+                'label' => __('Variant Badges', 'elementor'),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -1862,11 +1402,9 @@ class ProductVariantTilesV4 extends  Widget_Base
     {
         global $product, $post;
         $settings = $this->get_settings_for_display();
-        $settings['product_id'] = $post->ID; //$this->get_settings('product_id');
-		if(empty(wc_get_product($settings['product_id']))){
-        	$settings['product_id'] = $this->get_settings('product_id');
-		}
-        $settings['number_of_tiles'] = $this->get_settings('number_of_tiles');
+        $settings['product_id'] = $post->ID;
+
+        // Get product ID from current post or AJAX request
         if (!empty($settings['product_id'])) {
             $product_id = $settings['product_id'];
         } elseif (wp_doing_ajax()) {
@@ -2368,56 +1906,22 @@ class ProductVariantTilesV4 extends  Widget_Base
      */
     protected function render_text()
     {
-
-        $settings = $this->get_settings_for_display();
-
-        $migrated = isset($settings['__fa4_migrated']['selected_icon']);
-        $is_new = empty($settings['icon']) && Icons_Manager::is_migration_allowed();
-
-        if (!$is_new && empty($settings['icon_align'])) {
-            // @todo: remove when deprecated
-            // added as bc in 2.6
-            //old default
-            $settings['icon_align'] = $this->get_settings('icon_align');
-        }
+        // Use uniform "Add to Cart" text for all products
+        $button_text = __('Add to Cart', 'woocommerce');
 
         $this->add_render_attribute([
             'content-wrapper' => [
                 'class' => 'elementor-button-content-wrapper',
             ],
-            'icon-align' => [
-                'class' => [
-                    'elementor-button-icon',
-                    'elementor-align-icon-left',
-                ],
-            ],
             'text' => [
                 'class' => 'elementor-button-text',
             ],
         ]);
-        if (!$is_new && empty($settings['number_of_tiles'])) {
-            // @todo: remove when deprecated
-            // added as bc in 2.6
-            //old default
-            $settings['number_of_tiles'] = $this->get_settings('number_of_tiles');
-        }
-
 
         $this->add_inline_editing_attributes('text', 'none');
         ?>
-        <span <?php echo $this->get_render_attribute_string('content-wrapper'); ?>
-            >
-            <?php if (!empty($settings['icon']) || !empty($settings['selected_icon']['value'])) : ?>
-                <span <?php echo $this->get_render_attribute_string('icon-align'); ?>>
-                    <?php if ($is_new || $migrated) :
-                        Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']);
-                    else : ?>
-                        <i class="<?php echo esc_attr($settings['icon']); ?>" aria-hidden="true"></i>
-                    <?php endif;
-                    $this->get_settings('icon_align'); ?>
-                </span>
-            <?php endif; ?>
-            <span <?php echo $this->get_render_attribute_string('text'); ?>><?php echo $settings['text']; ?></span>
+        <span <?php echo $this->get_render_attribute_string('content-wrapper'); ?>>
+            <span <?php echo $this->get_render_attribute_string('text'); ?>><?php echo $button_text; ?></span>
             <span class="vt-button-price"></span>
         </span>
     <?php
@@ -2883,8 +2387,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
-        // Attach custom meta for accordion and badge
-        $variation_data['_vt_offer_label'] = get_post_meta($variation->get_id(), '_vt_offer_label', true);
+        // Attach custom meta for accordion
         $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
         $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
 
@@ -2893,7 +2396,6 @@ class ProductVariantTilesV4 extends  Widget_Base
             error_log('VARIANT TILE DEBUG: Enriching variation ' . $variation->get_id() . ' for product ' . $product->get_name());
             error_log('VARIANT TILE DEBUG: _vt_dd_text = ' . ($variation_data['_vt_dd_text'] ?: 'EMPTY'));
             error_log('VARIANT TILE DEBUG: _vt_dd_preview = ' . ($variation_data['_vt_dd_preview'] ?: 'EMPTY'));
-            error_log('VARIANT TILE DEBUG: _vt_offer_label = ' . ($variation_data['_vt_offer_label'] ?: 'EMPTY'));
         }
 
         // Add variant tile image data

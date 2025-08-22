@@ -99,9 +99,18 @@
       $section.find(".zg-included-items-accordion").hide();
     }
 
-    // Update preview text if available
+    // Update preview text if available with character limit
     if (variationData._vt_dd_preview) {
-      $accordionPreview.text(variationData._vt_dd_preview).show();
+      var previewText = variationData._vt_dd_preview.trim();
+
+      // Apply character limit if available
+      if (typeof zgAccordionSettings !== "undefined" && zgAccordionSettings.previewTextLimit > 0) {
+        if (previewText.length > zgAccordionSettings.previewTextLimit) {
+          previewText = previewText.substring(0, zgAccordionSettings.previewTextLimit) + "...";
+        }
+      }
+
+      $accordionPreview.text(previewText).show();
     } else {
       $accordionPreview.hide();
     }
