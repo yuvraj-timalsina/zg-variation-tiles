@@ -306,6 +306,29 @@ class ProductVariantTilesV4 extends  Widget_Base
             ]
         );
 
+        // Accordion Settings Group
+        $this->add_control(
+            'accordion_settings_heading',
+            [
+                'label' => __('Accordion Settings', 'elementor-pro'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'preview_text_limit',
+            [
+                'label' => __('Preview Text Character Limit', 'elementor-pro'),
+                'type' => Controls_Manager::NUMBER,
+                'default' => 100,
+                'min' => 20,
+                'max' => 500,
+                'step' => 10,
+                'description' => __('Maximum characters for accordion preview text. Text will be truncated with "..." if longer.', 'elementor-pro'),
+            ]
+        );
+
         $this->end_controls_section();
 
         $this->start_controls_section(
@@ -1878,6 +1901,23 @@ class ProductVariantTilesV4 extends  Widget_Base
     }
 
     /**
+     * Truncate text to specified character limit with ellipsis
+     */
+    private function truncate_text($text, $limit = 100) {
+        if (empty($text)) {
+            return $text;
+        }
+
+        $text = strip_tags($text);
+
+        if (strlen($text) <= $limit) {
+            return $text;
+        }
+
+        return substr($text, 0, $limit) . '...';
+    }
+
+    /**
      * Reorder attribute terms based on arrangement settings
      */
     public function reorder_attribute_terms($terms, $product, $taxonomy, $args) {
@@ -2658,7 +2698,14 @@ class ProductVariantTilesV4 extends  Widget_Base
         }
         ?>
 
-                                    <script type="text/javascript">
+        <script type="text/javascript">
+            // Pass settings to JavaScript
+            var zgAccordionSettings = {
+                previewTextLimit: <?php echo isset($settings['preview_text_limit']) ? (int)$settings['preview_text_limit'] : 100; ?>
+            };
+        </script>
+
+        <script type="text/javascript">
             jQuery(document).ready(function($) {
                 // Accordion toggle with excerpt/description switching
                 $('.zg-accordion-header').on('click', function() {
@@ -2852,11 +2899,19 @@ class ProductVariantTilesV4 extends  Widget_Base
                                                 function updateAccordionContent(variation) {
                     var $excerpt = $('.zg-accordion-excerpt');
                     var $content = $('.zg-accordion-content');
-                    var $savingsSection = $('.zg-accordion-savings');
+                    // var $savingsSection = $('.zg-accordion-savings'); // COMMENTED OUT
 
-                    // Update excerpt text
+                    // Update excerpt text with character limiting
                     if (variation._vt_dd_preview && variation._vt_dd_preview.trim() !== '') {
-                        $excerpt.html(variation._vt_dd_preview).show();
+                        var previewText = variation._vt_dd_preview.trim();
+                        var previewLimit = typeof zgAccordionSettings !== 'undefined' ? zgAccordionSettings.previewTextLimit : 100;
+
+                        // Truncate text if it exceeds the limit
+                        if (previewText.length > previewLimit) {
+                            previewText = previewText.substring(0, previewLimit) + '...';
+                        }
+
+                        $excerpt.html(previewText).show();
                     } else {
                         $excerpt.html('').hide();
                     }
@@ -2878,7 +2933,8 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                     $content.find('div').first().html(contentHtml);
 
-                                                                                // Update savings information - always show section, conditionally show savings line
+                    // Update savings information - COMMENTED OUT
+                    /*
                     var regularPrice = parseFloat(variation.display_regular_price);
                     var salePrice = parseFloat(variation.display_price);
                     var $savingsLine = $savingsSection.find('div').first(); // The div with "Total Savings"
@@ -2897,14 +2953,15 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                     // Always update "Now $X Only" price
                     $savingsSection.find('.zg-current-price').text('Now $' + Math.round(salePrice || regularPrice) + ' Only');
-
-                                                        }
+                    */
+                }
 
                 function resetAccordionContent() {
                     // Reset to default content if needed
                     // This will be handled by the initial PHP content
 
-                    // Reset accordion savings section visibility - always show section, conditionally show savings line
+                    // Reset accordion savings section visibility - COMMENTED OUT
+                    /*
                     var $savingsSection = $('.zg-accordion-savings');
                     var $savingsLine = $savingsSection.find('div').first(); // The div with "Total Savings"
                     var defaultSavings = <?php echo $default_variation_data['savings']; ?>;
@@ -2917,12 +2974,26 @@ class ProductVariantTilesV4 extends  Widget_Base
                     } else {
                         $savingsLine.hide(); // Hide the "Total Savings" line
                     }
+                    */
                 }
             });
             </script>
             <style>
             .zg-accordion-icon.rotated {
                 transform: rotate(180deg);
+            }
+
+            /* Prevent layout shifts in accordion excerpt */
+            .zg-accordion-excerpt {
+                min-height: 20px;
+                line-height: 1.4;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            /* Ensure consistent spacing */
+            .zg-accordion-container {
+                transition: all 0.3s ease;
             }
             </style>
 
@@ -3048,7 +3119,9 @@ class ProductVariantTilesV4 extends  Widget_Base
         }
 
         if (!empty($dd_preview)) {
-            $data['accordion_preview'] = $dd_preview;
+            $settings = $this->get_settings_for_display();
+            $preview_limit = isset($settings['preview_text_limit']) ? (int)$settings['preview_text_limit'] : 100;
+            $data['accordion_preview'] = $this->truncate_text($dd_preview, $preview_limit);
         }
 
         // Calculate savings for this variation
@@ -3082,9 +3155,11 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             <!-- Excerpt text (shown when collapsed) -->
             <?php if (!empty($default_variation_data['accordion_preview'])) : ?>
-                                            <div class="zg-accordion-excerpt" style="padding: 0 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic;">
+                <div class="zg-accordion-excerpt" style="padding: 0 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic; min-height: 20px;">
                     <?php echo esc_html($default_variation_data['accordion_preview']); ?>
                 </div>
+            <?php else : ?>
+                <div class="zg-accordion-excerpt" style="padding: 0 20px 15px 20px; color: #6c757d; font-size: 13px; font-style: italic; min-height: 20px; display: none;"></div>
             <?php endif; ?>
 
             <!-- Full description (shown when expanded) -->
@@ -3102,7 +3177,8 @@ class ProductVariantTilesV4 extends  Widget_Base
                         Grill and 2 x Food Temperature Probes
                     <?php endif; ?>
                 </div>
-                <!-- Dynamic savings section at bottom of expanded content -->
+                <!-- Dynamic savings section at bottom of expanded content - COMMENTED OUT -->
+                <!--
                 <div class="zg-accordion-savings" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
                     <div style="color: #6c757d; font-size: 15px; margin-bottom: 5px;">
                         <strong style="font-weight: 700;">Total Savings:</strong>
@@ -3113,6 +3189,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                         Now $<?php echo esc_html(number_format($default_variation_data['current_price'], 0)); ?> Only
                     </div>
                 </div>
+                -->
             </div>
         </div>
         <?php
