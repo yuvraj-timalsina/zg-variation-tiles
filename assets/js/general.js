@@ -1665,8 +1665,6 @@ jQuery(document).ready(function ($) {
 
   // Handle Futureproof message display (following old plugin logic)
   function handleFutureproofMessage() {
-    console.log("=== STOCK STATUS DEBUG ===");
-
     var $inStockMessage = $("#vt-in-stock-message");
     var $lowStockMessage = $("#vt-low-stock-message");
 
@@ -1677,8 +1675,6 @@ jQuery(document).ready(function ($) {
       var attributeValue = $(this).data("attribute-value");
       selectedAttributes[attributeName] = attributeValue;
     });
-
-    console.log("Selected attributes:", selectedAttributes);
 
     // SIMPLE LOGIC: Check controller selection ONLY
     var controllerValue = null;
@@ -1691,19 +1687,14 @@ jQuery(document).ready(function ($) {
       }
     }
 
-    console.log("Controller value found:", controllerValue);
-
     // Simple stock status logic based ONLY on controller selection
     if (controllerValue && (controllerValue.includes("non-wireless") || controllerValue.includes("disabled"))) {
-      console.log("Showing: Low in Stock (Non-Wireless selected)");
       $inStockMessage.hide();
       $lowStockMessage.show();
     } else if (controllerValue && (controllerValue.includes("wireless") || controllerValue.includes("enabled"))) {
-      console.log("Showing: In Stock (Wireless selected)");
       $inStockMessage.show();
       $lowStockMessage.hide();
     } else {
-      console.log("No controller selected, hiding stock messages");
       $inStockMessage.hide();
       $lowStockMessage.hide();
     }
@@ -1734,15 +1725,11 @@ jQuery(document).ready(function ($) {
       }
     }
 
-    console.log("Controller attribute found:", controllerAttribute, "with value:", controllerValue);
-
     // Handle futureproof message if controller is found
     if (controllerAttribute && controllerValue) {
       var $controllerSwatches = $('.cgkit-attribute-swatches[data-attribute="' + controllerAttribute + '"]');
       var isNonWirelessSelected = controllerValue.includes("non-wireless") || controllerValue.includes("disabled");
       var isWirelessSelected = controllerValue.includes("wireless") || controllerValue.includes("enabled");
-
-      console.log("Controller selection - Non-wireless:", isNonWirelessSelected, "Wireless:", isWirelessSelected);
 
       // Only create message if it doesn't exist and non-wireless is selected
       if (isNonWirelessSelected && $(".select-wireless-txt").length <= 0) {
@@ -1810,22 +1797,6 @@ jQuery(document).ready(function ($) {
 
   // Update "Best Value" badge when variations change
   $(document).on("found_variation", function (event, variation) {
-    // Debug: Log variation data
-    console.log("=== FOUND VARIATION DEBUG ===");
-    console.log("Variation object:", variation);
-    console.log("Variation attributes:", variation.attributes);
-    console.log("Variation price:", variation.price);
-    console.log("Variation display_price:", variation.display_price);
-    console.log("Variation price_html:", variation.price_html);
-    console.log("Variation is_in_stock:", variation.is_in_stock);
-
-    // Debug: Log new variant tile data
-    console.log("=== VARIANT TILE DATA DEBUG ===");
-    console.log("_vt_dd_text:", variation._vt_dd_text);
-    console.log("_vt_dd_preview:", variation._vt_dd_preview);
-    console.log("_vt_dd_image_url:", variation._vt_dd_image_url);
-    console.log("_vt_offer_label:", variation._vt_offer_label);
-
     // Update accordion content
     updateAccordionContent(variation);
 
@@ -1834,8 +1805,6 @@ jQuery(document).ready(function ($) {
 
     // Update ATC button price
     if (variation.display_price) {
-      console.log("Updating ATC button price to:", variation.price_html);
-
       // Simple approach: use display_price directly with proper formatting
       var currentPrice = "$" + variation.display_price.toLocaleString();
 
@@ -1844,10 +1813,8 @@ jQuery(document).ready(function ($) {
         currentPrice = "$" + variation.display_price.toLocaleString();
       }
 
-      console.log("Formatted current price:", currentPrice);
       $(".single_add_to_cart_button").html("Add to Cart - " + currentPrice);
     } else {
-      console.log("No display_price found, skipping ATC button update");
     }
 
     // Track previous values for comparison
@@ -1889,23 +1856,14 @@ jQuery(document).ready(function ($) {
 
   // Function to update accordion content - only new variant tile data
   function updateAccordionContent(variation) {
-    console.log("=== UPDATING ACCORDION CONTENT ===");
-
     // Update the accordion system (zg-accordion)
     var $excerpt = $(".zg-accordion-excerpt");
     var $content = $(".zg-accordion-content");
 
-    console.log("Found accordion elements:", {
-      excerpt: $excerpt.length,
-      content: $content.length,
-    });
-
     // Update excerpt text from Preview Text field
     if (variation._vt_dd_preview && variation._vt_dd_preview.trim() !== "") {
-      console.log("Updating excerpt with Preview Text:", variation._vt_dd_preview);
       $excerpt.html(variation._vt_dd_preview).show();
     } else {
-      console.log("No Preview Text data, hiding excerpt");
       $excerpt.html("").hide();
     }
 
@@ -1914,7 +1872,6 @@ jQuery(document).ready(function ($) {
 
     // Add Dropdown Image if available
     if (variation._vt_dd_image_url && variation._vt_dd_image_url.trim() !== "") {
-      console.log("Adding Dropdown Image to content:", variation._vt_dd_image_url);
       contentHtml += '<div style="margin-bottom: 15px; width: 100%;">';
       contentHtml +=
         '<img src="' +
@@ -1925,10 +1882,8 @@ jQuery(document).ready(function ($) {
 
     // Add Dropdown Text content
     if (variation._vt_dd_text && variation._vt_dd_text.trim() !== "") {
-      console.log("Adding Dropdown Text to content:", variation._vt_dd_text.substring(0, 100) + "...");
       contentHtml += variation._vt_dd_text;
     } else {
-      console.log("No Dropdown Text available");
     }
 
     $content.find("div").first().html(contentHtml);

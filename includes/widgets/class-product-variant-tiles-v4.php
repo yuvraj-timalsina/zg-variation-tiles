@@ -186,6 +186,128 @@ class ProductVariantTilesV4 extends  Widget_Base
 
         $this->end_controls_section();
 
+        // Section Arrangement Controls
+        $this->start_controls_section(
+            'section_arrangement',
+            [
+                'label' => __('Section Arrangement', 'elementor-pro'),
+                'tab' => Controls_Manager::TAB_CONTENT,
+            ]
+        );
+
+        // Section Order Group
+        $this->add_control(
+            'section_order_heading',
+            [
+                'label' => __('Section Order', 'elementor-pro'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'controller_order',
+            [
+                'label' => __('Controller Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => '1',
+                'options' => [
+                    '1' => __('1st', 'elementor-pro'),
+                    '2' => __('2nd', 'elementor-pro'),
+                    '3' => __('3rd', 'elementor-pro'),
+                ],
+                'description' => __('Set the order in which the Controller section appears', 'elementor-pro'),
+            ]
+        );
+
+        $this->add_control(
+            'bundles_order',
+            [
+                'label' => __('Bundles Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => '2',
+                'options' => [
+                    '1' => __('1st', 'elementor-pro'),
+                    '2' => __('2nd', 'elementor-pro'),
+                    '3' => __('3rd', 'elementor-pro'),
+                ],
+                'description' => __('Set the order in which the Bundles section appears', 'elementor-pro'),
+            ]
+        );
+
+        $this->add_control(
+            'front_bench_order',
+            [
+                'label' => __('Front Bench Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => '3',
+                'options' => [
+                    '1' => __('1st', 'elementor-pro'),
+                    '2' => __('2nd', 'elementor-pro'),
+                    '3' => __('3rd', 'elementor-pro'),
+                ],
+                'description' => __('Set the order in which the Front Bench section appears', 'elementor-pro'),
+            ]
+        );
+
+        // Options Order Group
+        $this->add_control(
+            'options_order_heading',
+            [
+                'label' => __('Options Order', 'elementor-pro'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'controller_options_order',
+            [
+                'label' => __('Controller Options Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => 'non-wireless,wireless-enabled',
+                'options' => [
+                    'non-wireless,wireless-enabled' => __('Non-Wireless → Wireless Enabled', 'elementor-pro'),
+                    'wireless-enabled,non-wireless' => __('Wireless Enabled → Non-Wireless', 'elementor-pro'),
+                ],
+                'description' => __('Set the order of controller options within the Controller section', 'elementor-pro'),
+            ]
+        );
+
+        $this->add_control(
+            'bundles_options_order',
+            [
+                'label' => __('Bundles Options Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => 'grill-only,basic-bundle,pro-bundle',
+                'options' => [
+                    'grill-only,basic-bundle,pro-bundle' => __('Grill Only → Basic Bundle → Pro Bundle', 'elementor-pro'),
+                    'grill-only,pro-bundle,basic-bundle' => __('Grill Only → Pro Bundle → Basic Bundle', 'elementor-pro'),
+                    'basic-bundle,grill-only,pro-bundle' => __('Basic Bundle → Grill Only → Pro Bundle', 'elementor-pro'),
+                    'basic-bundle,pro-bundle,grill-only' => __('Basic Bundle → Pro Bundle → Grill Only', 'elementor-pro'),
+                    'pro-bundle,grill-only,basic-bundle' => __('Pro Bundle → Grill Only → Basic Bundle', 'elementor-pro'),
+                    'pro-bundle,basic-bundle,grill-only' => __('Pro Bundle → Basic Bundle → Grill Only', 'elementor-pro'),
+                ],
+                'description' => __('Set the order of bundle options within the Bundles section', 'elementor-pro'),
+            ]
+        );
+
+        $this->add_control(
+            'front_bench_options_order',
+            [
+                'label' => __('Front Bench Options Order', 'elementor-pro'),
+                'type' => Controls_Manager::SELECT,
+                'default' => 'wood,stainless-steel',
+                'options' => [
+                    'wood,stainless-steel' => __('Wood → Stainless Steel', 'elementor-pro'),
+                    'stainless-steel,wood' => __('Stainless Steel → Wood', 'elementor-pro'),
+                ],
+                'description' => __('Set the order of front bench options within the Front Bench section', 'elementor-pro'),
+            ]
+        );
+
+        $this->end_controls_section();
+
         $this->start_controls_section(
             'section_button',
             [
@@ -1558,7 +1680,8 @@ class ProductVariantTilesV4 extends  Widget_Base
         // Add hook to render savings and accordion before Add to Cart button
         add_action('woocommerce_before_add_to_cart_button', array($this, 'render_savings_and_accordion_hook'), 20);
 
-
+        // Add arrangement filters
+        $this->setup_arrangement_filters($settings);
 
         ob_start();
 
@@ -1572,6 +1695,31 @@ class ProductVariantTilesV4 extends  Widget_Base
         echo '<div id="vt-in-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><div class="stock-dot in-stock" style="margin-right: 8px; vertical-align: middle; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: #4CAF50; position: relative;"></div><span style="vertical-align: middle;">In Stock</span></div>';
         echo '<div id="vt-low-stock-message" style="margin-top: 10px; display: none; align-items: center; justify-content: center; color: #333; font-size: 14px; font-weight: bold; line-height: 1;"><div class="stock-dot low-stock" style="margin-right: 8px; vertical-align: middle; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: #FFC107; position: relative;"></div><span style="vertical-align: middle;">Low in Stock</span></div>';
         echo '</div>';
+
+        // Add custom CSS for arrangement styling
+        echo '<style>
+        .zg-variant-tiles-arranged .variations {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .zg-variant-tiles-arranged .variations .value {
+            margin-bottom: 0;
+        }
+        .zg-variant-tiles-arranged .variations .label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+        </style>';
+        echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var variationsForm = document.querySelector(".variations_form");
+            if (variationsForm) {
+                variationsForm.classList.add("zg-variant-tiles-arranged");
+            }
+        });
+        </script>';
 
 ?>
 
@@ -1588,10 +1736,345 @@ class ProductVariantTilesV4 extends  Widget_Base
         remove_filter('esc_html', [$this, 'unescape_html']);
         // remove_filter('woocommerce_attribute_label', array($this, 'get_attribute_label'), 10, 3);
         // remove_filter('woocommerce_short_description', array($this, 'pvt_add_text_short_descriptions_v2'), 50, 1);
+
+        // Remove arrangement filters
+        remove_filter('woocommerce_product_get_attributes', array($this, 'reorder_product_attributes'), 10);
+        remove_filter('woocommerce_product_get_terms', array($this, 'reorder_attribute_terms'), 10);
+        remove_filter('woocommerce_dropdown_variation_attribute_options_args', array($this, 'reorder_dropdown_options'), 10);
+        remove_filter('commercekit_as_get_attribute_terms', array($this, 'reorder_commercekit_terms'), 10);
+        remove_filter('zg_reorder_attr_terms', array($this, 'reorder_attr_terms_for_swatches'), 10);
     }
     function pvt_remove_all_quantity_fields($return, $product)
     {
         return true;
+    }
+
+            /**
+     * Setup arrangement filters for sections and options
+     */
+    private function setup_arrangement_filters($settings) {
+        // Store settings for use in filters
+        $this->arrangement_settings = $settings;
+
+        // Debug arrangement settings
+        $this->debug_arrangement('Setup arrangement filters', $settings);
+
+        // Validate arrangement settings to prevent conflicts
+        $this->validate_arrangement_settings();
+
+        // Add filters for section ordering
+        add_filter('woocommerce_product_get_attributes', array($this, 'reorder_product_attributes'), 10, 2);
+
+        // Add filters for option ordering within sections
+        add_filter('woocommerce_product_get_terms', array($this, 'reorder_attribute_terms'), 10, 4);
+        add_filter('woocommerce_dropdown_variation_attribute_options_args', array($this, 'reorder_dropdown_options'), 10, 1);
+        add_filter('commercekit_as_get_attribute_terms', array($this, 'reorder_commercekit_terms'), 10, 3);
+        add_filter('zg_reorder_attr_terms', array($this, 'reorder_attr_terms_for_swatches'), 10, 2);
+    }
+
+    /**
+     * Validate arrangement settings to prevent conflicts
+     */
+    private function validate_arrangement_settings() {
+        if (empty($this->arrangement_settings)) {
+            return;
+        }
+
+        $bundles_order = isset($this->arrangement_settings['bundles_order']) ? (int)$this->arrangement_settings['bundles_order'] : 2;
+        $controller_order = isset($this->arrangement_settings['controller_order']) ? (int)$this->arrangement_settings['controller_order'] : 1;
+        $front_bench_order = isset($this->arrangement_settings['front_bench_order']) ? (int)$this->arrangement_settings['front_bench_order'] : 3;
+
+        // Check for conflicts
+        $orders = array($bundles_order, $controller_order, $front_bench_order);
+        $unique_orders = array_unique($orders);
+
+        if (count($orders) !== count($unique_orders)) {
+            // Reset to default if there are conflicts
+            $this->arrangement_settings['bundles_order'] = '2';
+            $this->arrangement_settings['controller_order'] = '1';
+            $this->arrangement_settings['front_bench_order'] = '3';
+        }
+    }
+
+        /**
+     * Reorder product attributes based on arrangement settings
+     */
+    public function reorder_product_attributes($attributes, $product) {
+        if (empty($this->arrangement_settings) || empty($attributes)) {
+            return $attributes;
+        }
+
+        $bundles_order = isset($this->arrangement_settings['bundles_order']) ? (int)$this->arrangement_settings['bundles_order'] : 2;
+        $controller_order = isset($this->arrangement_settings['controller_order']) ? (int)$this->arrangement_settings['controller_order'] : 1;
+        $front_bench_order = isset($this->arrangement_settings['front_bench_order']) ? (int)$this->arrangement_settings['front_bench_order'] : 3;
+
+        // Create order mapping
+        $order_mapping = array();
+        $found_attributes = array();
+
+        // Find bundles attribute
+        foreach ($attributes as $key => $attribute) {
+            if (strpos($attribute->get_name(), 'bundles') !== false) {
+                $order_mapping[$bundles_order] = $key;
+                $found_attributes[] = 'bundles';
+                break;
+            }
+        }
+
+        // Find controller attribute
+        foreach ($attributes as $key => $attribute) {
+            if (strpos($attribute->get_name(), 'controller') !== false) {
+                $order_mapping[$controller_order] = $key;
+                $found_attributes[] = 'controller';
+                break;
+            }
+        }
+
+        // Find front bench attribute
+        foreach ($attributes as $key => $attribute) {
+            if (strpos($attribute->get_name(), 'front-bench') !== false) {
+                $order_mapping[$front_bench_order] = $key;
+                $found_attributes[] = 'front-bench';
+                break;
+            }
+        }
+
+        // If no target attributes found, return original attributes
+        if (empty($found_attributes)) {
+            $this->debug_arrangement('No target attributes found for reordering');
+            return $attributes;
+        }
+
+        $this->debug_arrangement('Found attributes for reordering', $found_attributes);
+
+        // Reorder attributes
+        $reordered_attributes = array();
+        for ($i = 1; $i <= 3; $i++) {
+            if (isset($order_mapping[$i])) {
+                $reordered_attributes[] = $attributes[$order_mapping[$i]];
+            }
+        }
+
+        // Add any remaining attributes
+        foreach ($attributes as $key => $attribute) {
+            if (!in_array($key, $order_mapping)) {
+                $reordered_attributes[] = $attribute;
+            }
+        }
+
+        return $reordered_attributes;
+    }
+
+    /**
+     * Debug method to log arrangement information
+     */
+    private function debug_arrangement($message, $data = null) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('ZG Variant Tiles Arrangement: ' . $message);
+            if ($data !== null) {
+                error_log('ZG Variant Tiles Data: ' . print_r($data, true));
+            }
+        }
+    }
+
+    /**
+     * Reorder attribute terms based on arrangement settings
+     */
+    public function reorder_attribute_terms($terms, $product, $taxonomy, $args) {
+        if (empty($this->arrangement_settings) || empty($terms)) {
+            return $terms;
+        }
+
+        $taxonomy_name = str_replace('pa_', '', $taxonomy);
+
+        // Handle bundles options
+        if (strpos($taxonomy_name, 'bundles') !== false) {
+            $bundles_order = isset($this->arrangement_settings['bundles_options_order']) ? $this->arrangement_settings['bundles_options_order'] : 'grill-only,basic-bundle,pro-bundle';
+            return $this->reorder_terms_by_slugs($terms, $bundles_order);
+        }
+
+        // Handle controller options
+        if (strpos($taxonomy_name, 'controller') !== false) {
+            $controller_order = isset($this->arrangement_settings['controller_options_order']) ? $this->arrangement_settings['controller_options_order'] : 'non-wireless,wireless-enabled';
+            return $this->reorder_terms_by_slugs($terms, $controller_order);
+        }
+
+        // Handle front bench options
+        if (strpos($taxonomy_name, 'front-bench') !== false) {
+            $front_bench_order = isset($this->arrangement_settings['front_bench_options_order']) ? $this->arrangement_settings['front_bench_options_order'] : 'wood,stainless-steel';
+            return $this->reorder_terms_by_slugs($terms, $front_bench_order);
+        }
+
+        return $terms;
+    }
+
+    /**
+     * Reorder attribute terms specifically for swatch generation
+     */
+    public function reorder_attr_terms_for_swatches($attr_terms, $args) {
+        if (empty($this->arrangement_settings) || empty($attr_terms)) {
+            return $attr_terms;
+        }
+
+        $attribute_name = $args['attribute'];
+
+        // Handle bundles options
+        if (strpos($attribute_name, 'bundles') !== false) {
+            $bundles_order = isset($this->arrangement_settings['bundles_options_order']) ? $this->arrangement_settings['bundles_options_order'] : 'grill-only,basic-bundle,pro-bundle';
+            return $this->reorder_attr_terms_by_slugs($attr_terms, $bundles_order);
+        }
+
+        // Handle controller options
+        if (strpos($attribute_name, 'controller') !== false) {
+            $controller_order = isset($this->arrangement_settings['controller_options_order']) ? $this->arrangement_settings['controller_options_order'] : 'non-wireless,wireless-enabled';
+            return $this->reorder_attr_terms_by_slugs($attr_terms, $controller_order);
+        }
+
+        // Handle front bench options
+        if (strpos($attribute_name, 'front-bench') !== false) {
+            $front_bench_order = isset($this->arrangement_settings['front_bench_options_order']) ? $this->arrangement_settings['front_bench_options_order'] : 'wood,stainless-steel';
+            return $this->reorder_attr_terms_by_slugs($attr_terms, $front_bench_order);
+        }
+
+        return $attr_terms;
+    }
+
+    /**
+     * Helper method to reorder attribute terms by their slugs
+     */
+    private function reorder_attr_terms_by_slugs($attr_terms, $order_string) {
+        $desired_order = explode(',', $order_string);
+        $reordered_terms = array();
+
+        // First, add terms in the desired order
+        foreach ($desired_order as $slug) {
+            foreach ($attr_terms as $term) {
+                if ($term->slug === $slug) {
+                    $reordered_terms[] = $term;
+                    break;
+                }
+            }
+        }
+
+        // Then add any remaining terms that weren't in the order string
+        foreach ($attr_terms as $term) {
+            if (!in_array($term->slug, $desired_order)) {
+                $reordered_terms[] = $term;
+            }
+        }
+
+        return $reordered_terms;
+    }
+
+    /**
+     * Helper method to reorder terms by their slugs
+     */
+    private function reorder_terms_by_slugs($terms, $order_string) {
+        $desired_order = explode(',', $order_string);
+        $reordered_terms = array();
+
+        // First, add terms in the desired order
+        foreach ($desired_order as $slug) {
+            foreach ($terms as $term) {
+                if ($term->slug === $slug) {
+                    $reordered_terms[] = $term;
+                    break;
+                }
+            }
+        }
+
+        // Then add any remaining terms that weren't in the order string
+        foreach ($terms as $term) {
+            if (!in_array($term->slug, $desired_order)) {
+                $reordered_terms[] = $term;
+            }
+        }
+
+        return $reordered_terms;
+    }
+
+    /**
+     * Reorder dropdown options based on arrangement settings
+     */
+    public function reorder_dropdown_options($args) {
+        if (empty($this->arrangement_settings) || empty($args['options'])) {
+            return $args;
+        }
+
+        $attribute_name = $args['attribute'];
+
+        // Handle bundles options
+        if (strpos($attribute_name, 'bundles') !== false) {
+            $bundles_order = isset($this->arrangement_settings['bundles_options_order']) ? $this->arrangement_settings['bundles_options_order'] : 'grill-only,basic-bundle,pro-bundle';
+            $args['options'] = $this->reorder_options_array($args['options'], $bundles_order);
+        }
+
+        // Handle controller options
+        if (strpos($attribute_name, 'controller') !== false) {
+            $controller_order = isset($this->arrangement_settings['controller_options_order']) ? $this->arrangement_settings['controller_options_order'] : 'non-wireless,wireless-enabled';
+            $args['options'] = $this->reorder_options_array($args['options'], $controller_order);
+        }
+
+        // Handle front bench options
+        if (strpos($attribute_name, 'front-bench') !== false) {
+            $front_bench_order = isset($this->arrangement_settings['front_bench_options_order']) ? $this->arrangement_settings['front_bench_options_order'] : 'wood,stainless-steel';
+            $args['options'] = $this->reorder_options_array($args['options'], $front_bench_order);
+        }
+
+        return $args;
+    }
+
+    /**
+     * Helper method to reorder options array
+     */
+    private function reorder_options_array($options, $order_string) {
+        $desired_order = explode(',', $order_string);
+        $reordered_options = array();
+
+        // First, add options in the desired order
+        foreach ($desired_order as $option) {
+            if (in_array($option, $options)) {
+                $reordered_options[] = $option;
+            }
+        }
+
+        // Then add any remaining options that weren't in the order string
+        foreach ($options as $option) {
+            if (!in_array($option, $desired_order)) {
+                $reordered_options[] = $option;
+            }
+        }
+
+        return $reordered_options;
+    }
+
+    /**
+     * Reorder CommerceKit attribute terms
+     */
+    public function reorder_commercekit_terms($terms, $product, $attribute_name) {
+        if (empty($this->arrangement_settings) || empty($terms)) {
+            return $terms;
+        }
+
+        // Handle bundles options
+        if (strpos($attribute_name, 'bundles') !== false) {
+            $bundles_order = isset($this->arrangement_settings['bundles_options_order']) ? $this->arrangement_settings['bundles_options_order'] : 'grill-only,basic-bundle,pro-bundle';
+            return $this->reorder_terms_by_slugs($terms, $bundles_order);
+        }
+
+        // Handle controller options
+        if (strpos($attribute_name, 'controller') !== false) {
+            $controller_order = isset($this->arrangement_settings['controller_options_order']) ? $this->arrangement_settings['controller_options_order'] : 'non-wireless,wireless-enabled';
+            return $this->reorder_terms_by_slugs($terms, $controller_order);
+        }
+
+        // Handle front bench options
+        if (strpos($attribute_name, 'front-bench') !== false) {
+            $front_bench_order = isset($this->arrangement_settings['front_bench_options_order']) ? $this->arrangement_settings['front_bench_options_order'] : 'wood,stainless-steel';
+            return $this->reorder_terms_by_slugs($terms, $front_bench_order);
+        }
+
+        return $terms;
     }
 
 
@@ -1848,6 +2331,10 @@ class ProductVariantTilesV4 extends  Widget_Base
         $item_wrp_class = '';
         $item_oos_text  = ''; //esc_html__('Out of stock', 'commercegurus-commercekit');
         $before_swatches = esc_html(do_action('before_product_swatch_' . $attribute_name, ''));
+
+        // Apply arrangement filter to attr_terms
+        $attr_terms = apply_filters('zg_reorder_attr_terms', $attr_terms, $args);
+
         $swatches_html  = sprintf('<div class="%s">%s<span class="cgkit-swatch-title">%s</span><ul class="cgkit-attribute-swatches %s %s" data-attribute="%s" data-no-selection="%s">', $attribute_css, $before_swatches, $as_quickadd_txt, ('swatch_' . $swatch_type), $item_wrp_class, $attribute_name, esc_html__('No selection', 'commercegurus-commercekit'));
         foreach ($attr_terms as $item) {
             // Processing bundle attributes
