@@ -1191,7 +1191,7 @@ jQuery(document).ready(function ($) {
   });
 
   $(document).on("click", '.cgkit-swatch[data-attribute-value="grill-only"]', function (ele) {
-    // Set global flag to prevent variation searching
+    // Set global flag to prevent variation searching only for image updates
     window.preventVariationSearch = true;
 
     var $clickedSwatch = $(ele.target);
@@ -1222,6 +1222,11 @@ jQuery(document).ready(function ($) {
       currentControllerValue = window.previousControllerValue;
     }
 
+    // Store the current controller value for future reference
+    if (currentControllerValue) {
+      window.previousControllerValue = currentControllerValue;
+    }
+
     // Handle grill-only selection WITHOUT affecting controller
     if (!$clickedSwatch.hasClass("cgkit-swatch-selected")) {
       // Remove selection from other bundle swatches ONLY
@@ -1232,12 +1237,24 @@ jQuery(document).ready(function ($) {
       $clickedSwatch.addClass("cgkit-swatch-selected");
       $("#pa_bundles").val("grill-only");
     } else {
+      // If already selected, ensure it stays selected
+      $clickedSwatch.addClass("cgkit-swatch-selected");
+      $("#pa_bundles").val("grill-only");
+    }
+
+    // Ensure the dropdown value is properly set and trigger change event
+    var $bundleDropdown = $("#pa_bundles");
+    if ($bundleDropdown.val() !== "grill-only") {
+      $bundleDropdown.val("grill-only").trigger("change");
     }
 
     // Set front bench to "none" and hide the front bench selection for grill-only
     $("#pa_front-bench").val("none");
     $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
     $(".single_add_to_cart_button").removeClass("disabled");
+
+    // Trigger change event to ensure proper state management
+    $("#pa_front-bench").trigger("change");
 
     // IMMEDIATELY ensure controller selection is maintained (prevent loss)
     if (currentControllerValue && currentControllerValue !== "") {
@@ -1265,15 +1282,28 @@ jQuery(document).ready(function ($) {
     } else {
     }
 
-    // Reset the preventVariationSearch flag after a delay
+    // Reset the preventVariationSearch flag after a shorter delay
     setTimeout(function () {
       window.preventVariationSearch = false;
+
+      // Ensure grill-only selection is maintained
+      var $grillOnlySwatch = $('.cgkit-swatch[data-attribute-value="grill-only"]');
+      if ($grillOnlySwatch.length && !$grillOnlySwatch.hasClass("cgkit-swatch-selected")) {
+        $grillOnlySwatch.addClass("cgkit-swatch-selected");
+        $("#pa_bundles").val("grill-only");
+      }
+
+      // Ensure front bench is properly set for grill-only
+      if ($("#pa_bundles").val() === "grill-only") {
+        $("#pa_front-bench").val("none");
+        $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
+      }
 
       // Update all bundle swatch images to match current variation when grill-only is selected
       if (currentControllerValue && currentControllerValue !== "") {
         updateAllBundleImagesForGrillOnly(currentControllerValue);
       }
-    }, 1000);
+    }, 300);
   });
 
   // Function to update all bundle swatch images when grill-only is selected
