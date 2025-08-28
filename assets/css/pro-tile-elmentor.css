@@ -6,7 +6,6 @@
   width: auto;
   top: 0;
   right: 0;
-  z-index: 9999;
 }
 .elementor-widget-productvarianttilesv3 .variable-item-span-button-offers {
   left: 0;
@@ -122,7 +121,6 @@ span.elementor-bundle-label-text.elementor-label-text {
   position: relative;
 }
 .tiles-seemore-link {
-  z-index: 9999999;
 }
 .variable-item-span.variable-item-span-button {
   display: inline-block;
@@ -170,11 +168,9 @@ ul.crosscell_products li .cross_content {
   margin: auto;
 }
 .variant_cross_cell.variant-loading {
-  z-index: 9999999;
 }
 .variant-loading::before {
   content: "";
-  z-index: 9999;
   position: absolute;
   border: 3px solid #ddd;
   border-top-color: #222;

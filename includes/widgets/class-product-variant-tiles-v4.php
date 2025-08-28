@@ -29,8 +29,8 @@ class ProductVariantTilesV4 extends  Widget_Base
     {
         parent::__construct($data, $args);
 
-            // Register styles with consistent versioning
-    $version = '1.0.1.' . time();
+            // Register styles with consistent versioning and cache busting
+    $version = '1.0.2.' . time();
         wp_register_style('pro-tiles-elementor', PROTILES_URL . 'assets/css/pro-tile-elmentor.css', array(), $version);
         wp_register_style('zg-savings-accordion', PROTILES_URL . 'assets/css/savings-accordion.css', array(), $version);
         wp_register_style('vt-stock-messages', PROTILES_URL . 'assets/css/stock-messages.css', array(), $version);
@@ -1159,15 +1159,6 @@ class ProductVariantTilesV4 extends  Widget_Base
                     }
                 }
             }
-
-            // BADGE LOGIC MOVED TO ELEMENTOR WIDGET CONTROLS
-            // RENDER OFFER LABEL BADGE FROM VARIANT TILE DATA
-            // if (isset($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label']) &&
-            //     !empty($_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'])) {
-            //
-            //     $offer_label = $_variations[$attribute_raw][$item_attri_val]['variation']['_vt_offer_label'];
-            //     $swatch_html .= '<span class="tile-offer" style="position: absolute !important; left: 0 !important; right: 0 !important; max-width: max-content !important; margin: 0 auto !important; top: -12px !important; background: var(--vt-accent) !important; color: white !important; font-weight: bold !important; border-radius: 9999px !important; padding: 4px 12px !important; font-size: 12px !important; text-align: center !important; border: 2px solid var(--vt-accent) !important; z-index: 9999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' . esc_html($offer_label) . '</span>';
-            // }
 
             // RENDER BADGE USING ELEMENTOR SETTINGS
             $swatch_html .= $this->render_tile_badge($attribute_raw, $item_attri_val, $_variations);
@@ -2574,31 +2565,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                 padding: 0 20px 20px 20px !important;
             }
 
-                        /* BADGE STYLING - FIXED POSITIONING */
-            .tile-offer {
-                position: absolute !important;
-                left: 0 !important;
-                right: 0 !important;
-                top: -12px !important;
-                max-width: max-content !important;
-                margin: 0 auto !important;
-                background: #BC3116 !important;
-                color: white !important;
-                font-weight: bold !important;
-                border-radius: 9999px !important;
-                padding: 4px 12px !important;
-                font-size: 12px !important;
-                text-align: center !important;
-                border: 2px solid #BC3116 !important;
-                z-index: 9999 !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                white-space: nowrap !important;
-                line-height: 1 !important;
-                transform: none !important;
-                transition: none !important;
-            }
+            /* BADGE STYLING - HANDLED IN CSS FILE */
             </style>
 
                                                                         <script>

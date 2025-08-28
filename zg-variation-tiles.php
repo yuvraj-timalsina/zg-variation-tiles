@@ -3,7 +3,7 @@
  * Plugin Name: ZG - Variation Tiles
  * Plugin URI: https://zgrills.com.au
  * Description: Display product variations as interactive tiles with savings calculations and included items accordion
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Z Grills
  * Author URI: https://zgrills.com.au
  * Text Domain: zg-variation-tiles
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'PROTILES_VERSION', '1.0.6' );
+define( 'PROTILES_VERSION', '1.0.7' );
 define( 'PROTILES_URL', plugin_dir_url( __FILE__ ) );
 define( 'PROTILES_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -47,6 +47,60 @@ add_action('init', function() {
     }
     delete_transient('protiles_variation_cache');
     delete_transient('protiles_settings_cache');
+
+    // Clear additional caches
+    if (function_exists('wp_cache_flush')) {
+        wp_cache_flush();
+    }
+
+    // Clear object cache if available
+    if (function_exists('wp_cache_delete_group')) {
+        wp_cache_delete_group('elementor');
+        wp_cache_delete_group('woocommerce');
+    }
+
+    // Clear transients
+    delete_transient('elementor_css_' . get_stylesheet());
+    delete_transient('elementor_css_' . get_template());
+});
+
+// Force CSS refresh on plugin load
+add_action('wp_enqueue_scripts', function() {
+    // Force refresh CSS files
+    wp_deregister_style('pro-tiles-elementor');
+    wp_deregister_style('zg-savings-accordion');
+    wp_deregister_style('vt-stock-messages');
+}, 1);
+
+// Add admin action to clear all caches
+add_action('admin_post_clear_protiles_cache', function() {
+    // Clear all possible caches
+    if (function_exists('wp_cache_flush')) {
+        wp_cache_flush();
+    }
+
+    // Clear transients
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_protiles_%'");
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_elementor_%'");
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_woocommerce_%'");
+
+    // Clear object cache
+    if (function_exists('wp_cache_delete_group')) {
+        wp_cache_delete_group('elementor');
+        wp_cache_delete_group('woocommerce');
+        wp_cache_delete_group('woo_variation_swatches');
+    }
+
+    wp_redirect(admin_url('admin.php?page=elementor&protiles_cache_cleared=1'));
+    exit;
+});
+
+// Add a simple test to verify CSS is loaded
+add_action('wp_footer', function() {
+    if (is_product()) {
+        echo '<!-- ZG Variation Tiles CSS Version: ' . PROTILES_VERSION . ' -->';
+    }
 });
 
 // WooCommerce HPOS Compatibility
