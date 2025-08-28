@@ -3,9 +3,7 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 
 /**
- * Admin Class
- *
- * Handles generic Admin functionality.
+ * Admin Class - Handles admin functionality for variation tiles
  *
  * @package PROTILES
  * @since 1.0.0
@@ -17,7 +15,7 @@ class Product_Tiles_Admin {
 
 	}
 
-			function admin_enqueue_scripts(){
+	function admin_enqueue_scripts(){
 		// Only enqueue on product edit pages
 		$screen = get_current_screen();
 		if ( $screen && in_array( $screen->id, array( 'product', 'edit-product' ) ) ) {
@@ -38,7 +36,7 @@ class Product_Tiles_Admin {
 		<?php
 	}
 
-		function protiles_variation_settings_fields( $loop, $variation_data, $variation ) {
+	function protiles_variation_settings_fields( $loop, $variation_data, $variation ) {
 
 	    $enable_tiles = get_post_meta( get_the_ID(), '_vt_enable_tiles', true ) === 'yes';
 	    if ( $enable_tiles ) {
@@ -181,31 +179,13 @@ class Product_Tiles_Admin {
 	    return $variation;
 	}
 
-	function add_vt_enable_tiles_field(){
-		echo '<div class="options_group">';
-		 woocommerce_wp_checkbox(
-	        array(
-	            'id'            => '_vt_enable_tiles',
-	            'label'         =>  __( 'Enable Variant Tile (CK augment)', 'woocommerce' ),
-	            'desc_tip'      => false,
-	            'value'         => get_post_meta( get_the_ID(), '_vt_enable_tiles', true ) ? 'yes' : '',
-	            'wrapper_class' => 'form-row',
-	        )
-	    );
-		echo '</div>';
-	}
 
-	function protiles_linked_products_data_custom_field_save($post_id ){
-		$enable = isset( $_POST['_vt_enable_tiles'] ) ? 'yes' : 'no';
-	    	update_post_meta( $post_id, '_vt_enable_tiles', $enable );
-	}
 	function init_hooks(){
 		// Removed legacy variation option field hooks
 		add_action( 'woocommerce_product_after_variable_attributes', array($this, 'protiles_variation_settings_fields'), 10, 3 );
 		add_action( 'woocommerce_save_product_variation', array($this, 'protiles_save_variation_settings_fields'), 10, 2 );
 		add_filter( 'woocommerce_available_variation', array($this, 'protiles_load_variation_settings_fields'), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 20 );
-		add_action( 'woocommerce_product_options_advanced', array($this, 'add_vt_enable_tiles_field'), 20 );
-		add_action( 'woocommerce_process_product_meta', array($this, 'protiles_linked_products_data_custom_field_save') );
+
 	}
 }

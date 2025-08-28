@@ -1961,6 +1961,12 @@ class ProductVariantTilesV4 extends  Widget_Base
                         } else {
                             updateBundleAndControllerImages();
                         }
+
+                        // Ensure cart button is enabled for grill-only even if no exact variation match
+                        if (bundleValue === 'grill-only' && controllerValue) {
+                            $('.single_add_to_cart_button').removeClass('disabled wc-variation-is-unavailable');
+                            $('.single_add_to_cart_button').addClass('wc-variation-selected');
+                        }
                     } else {
                         updateBundleAndControllerImages();
                     }
@@ -1974,6 +1980,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                                                 // Flag to prevent infinite loops in bundle changes
                 var isProcessingBundleChange = false;
+                var lastBundleValue = null;
 
                                                                 $(document).on('change', 'select[name="attribute_pa_bundles"]', function() {
                     // Prevent infinite loops but allow processing if it's been too long
@@ -1993,6 +2000,11 @@ class ProductVariantTilesV4 extends  Widget_Base
                         return;
                     }
 
+                    // Safety check - ensure bundleValue is defined
+                    if (!bundleValue) {
+                        return;
+                    }
+
                     lastBundleValue = bundleValue;
                     isProcessingBundleChange = true;
                     window.isProcessingVariationChange = true;
@@ -2000,6 +2012,11 @@ class ProductVariantTilesV4 extends  Widget_Base
                     // CRITICAL: Get controller from multiple sources to ensure we never lose it
                     var $selectedControllerSwatch = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.cgkit-swatch-selected, .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-swatch.zg-permanent-selected');
                     var currentControllerValue = $selectedControllerSwatch.length ? $selectedControllerSwatch.data('attribute-value') : $('select[name="attribute_pa_controller"]').val();
+
+                    // Safety check - ensure currentControllerValue is defined
+                    if (!currentControllerValue) {
+                        currentControllerValue = '';
+                    }
 
                     // Store in persistent memory immediately
                     if (currentControllerValue && currentControllerValue !== '') {
@@ -2009,6 +2026,11 @@ class ProductVariantTilesV4 extends  Widget_Base
                     // CRITICAL: Get bundle from multiple sources to ensure we never lose it
                     var $selectedBundleSwatch = $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch.cgkit-swatch-selected, .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-swatch.zg-permanent-selected');
                     var currentBundleValue = $selectedBundleSwatch.length ? $selectedBundleSwatch.data('attribute-value') : bundleValue;
+
+                    // Safety check - ensure currentBundleValue is defined
+                    if (!currentBundleValue) {
+                        currentBundleValue = bundleValue || '';
+                    }
 
                     // Store in persistent memory immediately
                     if (currentBundleValue && currentBundleValue !== '') {
@@ -2094,6 +2116,12 @@ class ProductVariantTilesV4 extends  Widget_Base
                     setTimeout(function() {
                         isProcessingBundleChange = false;
                         window.isProcessingVariationChange = false;
+
+                        // Ensure cart button is enabled for grill-only
+                        if (bundleValue === 'grill-only') {
+                            $('.single_add_to_cart_button').removeClass('disabled wc-variation-is-unavailable');
+                            $('.single_add_to_cart_button').addClass('wc-variation-selected');
+                        }
                     }, 300);
                 });
 
@@ -2703,6 +2731,16 @@ class ProductVariantTilesV4 extends  Widget_Base
                     subtree: true
                 });
 
+                // Periodic check to ensure cart button is enabled for grill-only
+                setInterval(function() {
+                    var currentBundle = $('select[name="attribute_pa_bundles"]').val();
+                    var currentController = $('select[name="attribute_pa_controller"]').val();
+
+                    if (currentBundle === 'grill-only' && currentController) {
+                        $('.single_add_to_cart_button').removeClass('disabled wc-variation-is-unavailable');
+                        $('.single_add_to_cart_button').addClass('wc-variation-selected');
+                    }
+                }, 2000);
 
             });
             </script>

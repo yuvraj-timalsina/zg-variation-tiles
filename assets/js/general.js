@@ -1,4 +1,9 @@
 jQuery(document).ready(function ($) {
+  // Global variable declarations to prevent undefined errors
+  if (typeof window.lastBundleValue === "undefined") {
+    window.lastBundleValue = null;
+  }
+
   function updateATCButtonPrice(variation) {
     // Update button text (Elementor button structure)
     var $buttonText = $(".single_add_to_cart_button .elementor-button-text");
@@ -6,8 +11,6 @@ jQuery(document).ready(function ($) {
       $buttonText.text("Add to Cart - $" + parseFloat(variation.display_price).toFixed(2));
     }
   }
-
-  // Badge function completely removed
 
   // Track last badge state to prevent unnecessary updates
   var lastBadgeState = {
@@ -753,7 +756,7 @@ jQuery(document).ready(function ($) {
         }
 
         // Update images on initial load to show correct variation images
-        if (bundleAttribute) {
+        if (bundleAttribute && selectedAttributes && typeof selectedAttributes === "object") {
           debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
         }
       }
@@ -779,6 +782,11 @@ jQuery(document).ready(function ($) {
 
   // Function to update bundle swatch images (improved to prevent flickering during fast switching)
   function updateBundleSwatchImages($form, selectedAttributes, bundleAttribute) {
+    // Validate parameters
+    if (!selectedAttributes || typeof selectedAttributes !== "object") {
+      return;
+    }
+
     // Only allow updates for bundle attributes, not controller or front bench
     if (bundleAttribute !== "attribute_pa_bundles" && bundleAttribute !== "attribute_pa_bundle") {
       return;
@@ -963,6 +971,11 @@ jQuery(document).ready(function ($) {
 
   // Debounced version for rapid switching
   var debouncedUpdateBundleSwatchImages = debounce(function ($form, selectedAttributes, bundleAttribute) {
+    // Check if selectedAttributes is defined
+    if (!selectedAttributes || typeof selectedAttributes !== "object") {
+      return;
+    }
+
     // Check global flag to prevent variation searching
     if (window.preventVariationSearch) {
       return;
@@ -1128,6 +1141,23 @@ jQuery(document).ready(function ($) {
       // Update all bundle swatch images to match current variation when grill-only is selected
       if (currentControllerValue && currentControllerValue !== "") {
         updateAllBundleImagesForGrillOnly(currentControllerValue);
+      }
+
+      // CRITICAL: Trigger variation check to ensure cart button is enabled
+      var $form = $(".variations_form");
+      if ($form.length) {
+        // Force variation check
+        $form.trigger("check_variations");
+
+        // Also trigger variation change to update prices
+        $form.trigger("woocommerce_variation_select_change");
+
+        // Ensure cart button is enabled for grill-only
+        setTimeout(function () {
+          $(".single_add_to_cart_button").removeClass("disabled");
+          // Call the grill-only variation handler
+          ensureGrillOnlyVariation();
+        }, 100);
       }
     }, 300);
   });
@@ -1480,6 +1510,9 @@ jQuery(document).ready(function ($) {
             // Final front bench hiding
             $("#pa_front-bench").val("none");
             $('ul[data-attribute="attribute_pa_front-bench"]').parents("tr").hide();
+
+            // Ensure grill-only variation is properly handled
+            ensureGrillOnlyVariation();
           }, 200);
         }
       }
@@ -1618,13 +1651,28 @@ jQuery(document).ready(function ($) {
   // Trigger on page load
   handleFutureproofMessage();
 
-  // Monitor badges, savings, and selection states - check every 2 seconds
+  // Monitor badges, savings, and selection states - check every 5 seconds (reduced frequency)
   setInterval(function () {
+    // Only run if not already processing
+    if (window.isEnsuringGrillOnly) {
+      return;
+    }
+
     // Remove badge monitoring - handled by state change detection
 
     // Continuously enforce selection states
     enforceSelectionStates();
-  }, 2000);
+
+    // Ensure grill-only variations are properly handled
+    ensureGrillOnlyVariation();
+
+    // Final check: if grill-only is selected, ensure cart button is enabled
+    var currentBundle = $(".variations_form").find('select[name="attribute_pa_bundles"]').val();
+    if (currentBundle === "grill-only") {
+      $(".single_add_to_cart_button").removeClass("disabled wc-variation-is-unavailable");
+      $(".single_add_to_cart_button").addClass("wc-variation-selected");
+    }
+  }, 5000); // Increased interval to 5 seconds
 
   // Initialize "Best Value" badge on page load
   $(document).ready(function () {
@@ -1674,7 +1722,10 @@ jQuery(document).ready(function ($) {
         currentSelections["attribute_pa_controller"] = window.previousControllerValue;
       }
 
-      debouncedUpdateBundleSwatchImages($(".variations_form"), currentSelections, "attribute_pa_bundles");
+      // Only call if currentSelections is valid
+      if (currentSelections && typeof currentSelections === "object") {
+        debouncedUpdateBundleSwatchImages($(".variations_form"), currentSelections, "attribute_pa_bundles");
+      }
 
       // Update badge
       updateBestValueBadge();
@@ -1862,6 +1913,12 @@ jQuery(document).ready(function ($) {
       currentSelections["attribute_pa_controller"] = window.previousControllerValue;
     }
 
+    // Check if this is a grill-only variation and ensure cart button is enabled
+    if (currentSelections["attribute_pa_bundles"] === "grill-only") {
+      $(".single_add_to_cart_button").removeClass("disabled wc-variation-is-unavailable");
+      $(".single_add_to_cart_button").addClass("wc-variation-selected");
+    }
+
     // Update ATC button price using central function
     updateATCButtonPrice(variation);
 
@@ -1903,7 +1960,7 @@ jQuery(document).ready(function ($) {
           bundleAttribute = "attribute_pa_bundle";
         }
 
-        if (bundleAttribute) {
+        if (bundleAttribute && currentSelections && typeof currentSelections === "object") {
           debouncedUpdateBundleSwatchImages($form, currentSelections, bundleAttribute);
         }
       }
@@ -1947,7 +2004,9 @@ jQuery(document).ready(function ($) {
                 selectedAttributes[attrName] = attrValue;
               }
             });
-            debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+            if (selectedAttributes && typeof selectedAttributes === "object") {
+              debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+            }
           }
         }
 
@@ -1987,8 +2046,23 @@ jQuery(document).ready(function ($) {
             selectedAttributes[attrName] = attrValue;
           }
         });
-        debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+        if (selectedAttributes && typeof selectedAttributes === "object") {
+          debouncedUpdateBundleSwatchImages($form, selectedAttributes, bundleAttribute);
+        }
       }
+    }
+  });
+
+  // Handle when no variation is found - ensure grill-only still works
+  $(document).on("hide_variation", function () {
+    var $form = $(".variations_form");
+    var currentBundle = $form.find('select[name="attribute_pa_bundles"]').val();
+    var currentController = $form.find('select[name="attribute_pa_controller"]').val();
+
+    // If grill-only is selected, force enable the cart button
+    if (currentBundle === "grill-only" && currentController) {
+      $(".single_add_to_cart_button").removeClass("disabled wc-variation-is-unavailable");
+      $(".single_add_to_cart_button").addClass("wc-variation-selected");
     }
   });
 
@@ -2123,5 +2197,62 @@ jQuery(document).ready(function ($) {
     }
   }
 
+  // Function to ensure grill-only variations are properly handled
+  function ensureGrillOnlyVariation() {
+    // Prevent infinite calls
+    if (window.isEnsuringGrillOnly) {
+      return;
+    }
+    window.isEnsuringGrillOnly = true;
+
+    var $form = $(".variations_form");
+    var currentBundle = $form.find('select[name="attribute_pa_bundles"]').val();
+    var currentController = $form.find('select[name="attribute_pa_controller"]').val();
+
+    if (currentBundle === "grill-only" && currentController) {
+      var variations = $form.data("product_variations");
+
+      if (variations) {
+        // Find the matching grill-only variation
+        var matchingVariation = null;
+        for (var i = 0; i < variations.length; i++) {
+          var variation = variations[i];
+
+          if (
+            variation.attributes &&
+            variation.attributes["attribute_pa_bundles"] === "grill-only" &&
+            variation.attributes["attribute_pa_controller"] === currentController
+          ) {
+            matchingVariation = variation;
+            break;
+          }
+        }
+
+        // If we found a matching variation, trigger it
+        if (matchingVariation) {
+          $form.trigger("found_variation", [matchingVariation]);
+        } else {
+          // If no exact match, force enable the cart button anyway
+          $(".single_add_to_cart_button").removeClass("disabled wc-variation-is-unavailable");
+          $(".single_add_to_cart_button").addClass("wc-variation-selected");
+        }
+      } else {
+        // If no variations data, still enable the cart button for grill-only
+        $(".single_add_to_cart_button").removeClass("disabled wc-variation-is-unavailable");
+        $(".single_add_to_cart_button").addClass("wc-variation-selected");
+      }
+    }
+
+    // Reset the flag after a short delay
+    setTimeout(function () {
+      window.isEnsuringGrillOnly = false;
+    }, 100);
+  }
+
   // Trigger initial variation update
+
+  // Global click handler for cart button
+  $(document).on("click", ".single_add_to_cart_button", function (e) {
+    // Cart button click handler - functionality maintained
+  });
 });

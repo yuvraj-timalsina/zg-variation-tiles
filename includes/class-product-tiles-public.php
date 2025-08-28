@@ -3,9 +3,7 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * Public Class
- *
- * Handles generic Frontend functionality.
+ * Public Class - Handles frontend functionality for variation tiles
  *
  * @package Product Variant Tiles
  * @since 1.0.0
@@ -22,12 +20,7 @@ class Product_Tiles_Public
 	}
 
 	/**
-	 * Set Administrations Seleted Attibutes in Product Variant Tiles
-	 *
-	 * Handles generic Frontend functionality.
-	 *
-	 * @package Product Variant Tiles
-	 * @since 1.0.1
+	 * Set selected attributes for product variant tiles
 	 */
 	function set_selected_attribute_args($args = array())
 	{
@@ -67,6 +60,7 @@ class Product_Tiles_Public
 		$variation = new WC_Product_Variation($variation_id);
 		return $variation->get_image_id();
 	}
+
 	function enqueue_styles()
 	{
 
@@ -84,12 +78,7 @@ class Product_Tiles_Public
 	}
 
 	/**
-	 * Cross Cell Product Variant Tiles
-	 *
-	 * Handles generic Frontend functionality.
-	 *
-	 * @package Product Variant Tiles
-	 * @since 1.0.1
+	 * Get cross-sell products for variants
 	 */
 	function variant_get_cross_products()
 	{
@@ -274,10 +263,7 @@ class Product_Tiles_Public
 			return $html;
 		}
 
-		$enable_vt_tiles = get_post_meta($product->get_id(), '_vt_enable_tiles', true);
-		if($enable_vt_tiles !== 'yes'){
-			return $html;
-		}
+
 
 		$is_continue = false;
 
@@ -780,6 +766,10 @@ class Product_Tiles_Public
 		add_action('wp_ajax_woocommerce_ajax_check_add_to_cart', array($this, 'woocommerce_ajax_check_add_to_cart'), 10);
 		add_action('wp_ajax_nopriv_woocommerce_ajax_check_add_to_cart', array($this, 'woocommerce_ajax_check_add_to_cart'), 10);
 		add_action('woocommerce_available_variation', array($this, 'variable_product_total_amount_qty_change'), 25, 3);
+
+		// Add hooks for grill-only cart validation
+		add_filter('woocommerce_add_to_cart_validation', array($this, 'ensure_grill_only_cart_validation'), 10, 4);
+		add_filter('woocommerce_available_variations', array($this, 'ensure_grill_only_in_available_variations'), 10, 2);
 	}
 
 	/**
@@ -858,11 +848,105 @@ class Product_Tiles_Public
 				$variation_data['is_purchasable'] = true;
 				$variation_data['variation_is_active'] = true;
 				$variation_data['variation_is_visible'] = true;
+
+				// Ensure the variation has a valid price
+				if ( empty( $variation_data['display_price'] ) ) {
+					$variation_data['display_price'] = $variation->get_price();
+				}
+				if ( empty( $variation_data['display_regular_price'] ) ) {
+					$variation_data['display_regular_price'] = $variation->get_regular_price();
+				}
+
 				break;
 			}
 		}
 
 		return $variation_data;
+	}
+
+	/**
+	 * Ensure grill-only variations are always considered valid for cart operations
+	 */
+	public function ensure_grill_only_cart_validation( $passed, $product_id, $quantity, $variation_id = 0 ) {
+		// Only process if this is a variation product
+		if ( $variation_id > 0 ) {
+			$variation = wc_get_product( $variation_id );
+			if ( $variation && $variation->is_type( 'variation' ) ) {
+				$attributes = $variation->get_variation_attributes();
+
+				// Check if this is a grill-only variation
+				foreach ( $attributes as $attr_name => $attr_value ) {
+					if ( strpos( $attr_name, 'bundles' ) !== false && $attr_value === 'grill-only' ) {
+						// Force validation to pass for grill-only variations
+						return true;
+					}
+				}
+			}
+		}
+
+		return $passed;
+	}
+
+	/**
+	 * Ensure grill-only variations are always included in available variations
+	 */
+	public function ensure_grill_only_in_available_variations( $variations, $product ) {
+		// Only process variable products
+		if ( ! $product->is_type( 'variable' ) ) {
+			return $variations;
+		}
+
+		// Get all variation IDs
+		$variation_ids = $product->get_children();
+
+		foreach ( $variation_ids as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+			if ( ! $variation || ! $variation->is_type( 'variation' ) ) {
+				continue;
+			}
+
+			$attributes = $variation->get_variation_attributes();
+			$is_grill_only = false;
+
+			// Check if this is a grill-only variation
+			foreach ( $attributes as $attr_name => $attr_value ) {
+				if ( strpos( $attr_name, 'bundles' ) !== false && $attr_value === 'grill-only' ) {
+					$is_grill_only = true;
+					break;
+				}
+			}
+
+			if ( $is_grill_only ) {
+				// Ensure this variation is included in available variations
+				$variation_data = array(
+					'variation_id' => $variation_id,
+					'attributes' => $variation->get_variation_attributes(),
+					'is_in_stock' => true,
+					'is_purchasable' => true,
+					'variation_is_active' => true,
+					'variation_is_visible' => true,
+					'display_price' => $variation->get_price(),
+					'display_regular_price' => $variation->get_regular_price(),
+					'price_html' => $variation->get_price_html(),
+					'availability_html' => wc_get_stock_html( $variation ),
+				);
+
+				// Add to variations array if not already present
+				$found = false;
+				foreach ( $variations as $existing_variation ) {
+					if ( $existing_variation['variation_id'] == $variation_id ) {
+						$found = true;
+						break;
+					}
+				}
+
+				if ( ! $found ) {
+					$variations[] = $variation_data;
+				}
+			}
+		}
+
+		return $variations;
 	}
 
 	function has_custom_widget($elements) {
