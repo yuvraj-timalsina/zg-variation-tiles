@@ -105,7 +105,7 @@ jQuery(document).ready(function ($) {
         // Only add badge if it doesn't already exist
         if ($bundleCard.length && $bundleCard.find(".tile-offer").length === 0) {
           var $badge = $(
-            '<span class="tile-offer" style="position: absolute !important; left: 0 !important; right: 0 !important; max-width: max-content !important; margin: 0 auto !important; top: -12px !important; background: var(--vt-accent) !important; color: white !important; font-weight: bold !important; border-radius: 9999px !important; padding: 4px 12px !important; font-size: 12px !important; text-align: center !important; border: 2px solid var(--vt-accent) !important; z-index: 9999 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
+            '<span class="tile-offer" style="position: absolute !important; left: 0 !important; right: 0 !important; max-width: max-content !important; margin: 0 auto !important; top: -12px !important; background: var(--vt-accent) !important; color: white !important; font-weight: bold !important; border-radius: 9999px !important; padding: 4px 12px !important; font-size: 12px !important; text-align: center !important; border: 2px solid var(--vt-accent) !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: nowrap !important; line-height: 1 !important;">' +
               variation._vt_offer_label +
               "</span>"
           );

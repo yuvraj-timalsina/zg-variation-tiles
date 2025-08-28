@@ -27,7 +27,7 @@ class Product_Tiles_Admin {
 
 	function protiles_variation_main_fields( $loop, $variation_data, $variation ){
 
-		$variable_is_zg_bundle = get_post_meta( $variation->ID, 'variable_is_zg_bundle', true );
+		$variable_is_zg_bundle = $variation->get_meta( 'variable_is_zg_bundle', true );
 		?>
 		<label class="tips">
 			<?php esc_html_e( 'ZG Bundle', 'woocommerce' ); ?>
@@ -38,7 +38,8 @@ class Product_Tiles_Admin {
 
 	function protiles_variation_settings_fields( $loop, $variation_data, $variation ) {
 
-	    $enable_tiles = get_post_meta( get_the_ID(), '_vt_enable_tiles', true ) === 'yes';
+	    $product = wc_get_product(get_the_ID());
+	    $enable_tiles = $product ? ($product->get_meta( '_vt_enable_tiles', true ) === 'yes') : false;
 	    if ( $enable_tiles ) {
 	    	?>
 	    	<div class="vt-variation-tile-section" style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; margin: 15px 0; position: relative;">
@@ -53,12 +54,12 @@ class Product_Tiles_Admin {
 	    				<div style="flex: 1; display: flex; flex-direction: column;">
 	    					<?php
 	    					// Image upload field
-	    					$image_id = get_post_meta( $variation->ID, '_vt_dd_image_id', true );
+	    					$image_id = $variation->get_meta( '_vt_dd_image_id', true );
 	    					$image_url = '';
 	    					$has_image = false;
 
 	    					if ( $image_id && wp_attachment_is_image( $image_id ) ) {
-	    						$image_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
+	    						$image_url = wp_get_attachment_image_url( $image_id, 'medium' );
 	    						$has_image = true;
 	    					}
 	    					?>
@@ -105,7 +106,7 @@ class Product_Tiles_Admin {
 	    						<input type="text"
 	    						       id="_vt_dd_preview<?php echo esc_attr( $loop ); ?>"
 	    						       name="_vt_dd_preview[<?php echo esc_attr( $loop ); ?>]"
-	    						       value="<?php echo esc_attr( get_post_meta( $variation->ID, '_vt_dd_preview', true ) ); ?>"
+	    						       value="<?php echo esc_attr( $variation->get_meta( '_vt_dd_preview', true ) ); ?>"
 	    						       class="short" />
 	    					</div>
 
@@ -115,7 +116,7 @@ class Product_Tiles_Admin {
 	    						       id="_vt_dd_text<?php echo esc_attr( $loop ); ?>"
 	    						       name="_vt_dd_text[<?php echo esc_attr( $loop ); ?>]"
 	    						       class="short"
-	    						       rows="11"><?php echo esc_textarea( get_post_meta( $variation->ID, '_vt_dd_text', true ) ); ?></textarea>
+	    						       rows="11"><?php echo esc_textarea( $variation->get_meta( '_vt_dd_text', true ) ); ?></textarea>
 	    					</div>
 	    				</div>
 	    			</div>
@@ -132,8 +133,13 @@ class Product_Tiles_Admin {
 	    }
 
 	    // Save new optional fields with proper sanitization
+	    $variation = wc_get_product($variation_id);
+	    if (!$variation) {
+	        return;
+	    }
+
 	    if ( isset( $_POST['_vt_dd_text'][ $loop ] ) ) {
-	    	update_post_meta( $variation_id, '_vt_dd_text', wp_kses_post( $_POST['_vt_dd_text'][ $loop ] ) );
+	    	$variation->update_meta_data( '_vt_dd_text', wp_kses_post( $_POST['_vt_dd_text'][ $loop ] ) );
 	    }
 
 	    // Save image ID - allow empty values to clear the image
@@ -143,37 +149,42 @@ class Product_Tiles_Admin {
 	    	if ( $image_id > 0 ) {
 	    		// Verify the image exists and is an image
 	    		if ( wp_attachment_is_image( $image_id ) ) {
-	    			update_post_meta( $variation_id, '_vt_dd_image_id', $image_id );
+	    			$variation->update_meta_data( '_vt_dd_image_id', $image_id );
 	    		} else {
-	    			delete_post_meta( $variation_id, '_vt_dd_image_id' );
+	    			$variation->delete_meta_data( '_vt_dd_image_id' );
 	    		}
 	    	} else {
 	    		// Clear the image if ID is 0 or empty
-	    		delete_post_meta( $variation_id, '_vt_dd_image_id' );
+	    		$variation->delete_meta_data( '_vt_dd_image_id' );
 	    	}
 	    }
 
 	    if ( isset( $_POST['_vt_dd_preview'][ $loop ] ) ) {
-	    	update_post_meta( $variation_id, '_vt_dd_preview', sanitize_textarea_field( $_POST['_vt_dd_preview'][ $loop ] ) );
+	    	$variation->update_meta_data( '_vt_dd_preview', sanitize_textarea_field( $_POST['_vt_dd_preview'][ $loop ] ) );
 	    }
+
+	    $variation->save();
 
 	}
 
 	function protiles_load_variation_settings_fields( $variation ) {
-	    $variation['offer_label'] = get_post_meta( $variation[ 'variation_id' ], 'offer_label', true );
+	    $variation_obj = wc_get_product($variation['variation_id']);
+	    if ($variation_obj) {
+	        $variation['offer_label'] = $variation_obj->get_meta( 'offer_label', true );
 
-	    // Add dropdown data for frontend JavaScript
-	    $variation['_vt_dd_text'] = get_post_meta( $variation[ 'variation_id' ], '_vt_dd_text', true );
-	    $variation['_vt_dd_preview'] = get_post_meta( $variation[ 'variation_id' ], '_vt_dd_preview', true );
+	        // Add dropdown data for frontend JavaScript
+	        $variation['_vt_dd_text'] = $variation_obj->get_meta( '_vt_dd_text', true );
+	        $variation['_vt_dd_preview'] = $variation_obj->get_meta( '_vt_dd_preview', true );
 
-	    // Add image data for frontend
-	    $image_id = get_post_meta( $variation[ 'variation_id' ], '_vt_dd_image_id', true );
-	    if ( $image_id && wp_attachment_is_image( $image_id ) ) {
-	        $variation['_vt_dd_image_url'] = wp_get_attachment_image_url( $image_id, 'thumbnail' );
-	        $variation['_vt_dd_image_id'] = $image_id;
-	    } else {
-	        $variation['_vt_dd_image_url'] = '';
-	        $variation['_vt_dd_image_id'] = '';
+	        // Add image data for frontend
+	        $image_id = $variation_obj->get_meta( '_vt_dd_image_id', true );
+	        if ( $image_id && wp_attachment_is_image( $image_id ) ) {
+	            $variation['_vt_dd_image_url'] = wp_get_attachment_image_url( $image_id, 'large' );
+	            $variation['_vt_dd_image_id'] = $image_id;
+	        } else {
+	            $variation['_vt_dd_image_url'] = '';
+	            $variation['_vt_dd_image_id'] = '';
+	        }
 	    }
 
 	    return $variation;

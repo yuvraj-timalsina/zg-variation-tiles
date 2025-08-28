@@ -1623,7 +1623,7 @@ class ProductVariantTiles extends  Widget_Base
 					'order'         => 'asc',
 					'post_parent'   => $product->get_ID() // get parent post-ID
 				);
-				$variations = get_posts($args);
+				$variations = $product->get_available_variations();
 				$pro_title = $product->get_title();
 				$pro_terms = [];
 				if (!empty($variations)) {
@@ -1885,7 +1885,7 @@ class ProductVariantTiles extends  Widget_Base
 					'order'         => 'asc',
 					'post_parent'   => $product->get_ID() // get parent post-ID
 				);
-				$variations = get_posts($args);
+				$variations = $product->get_available_variations();
 				$pro_title = $product->get_title();
 				$pro_terms = [];
 				if (!empty($variations)) {

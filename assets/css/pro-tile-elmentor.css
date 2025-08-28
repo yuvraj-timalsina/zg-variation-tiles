@@ -1078,6 +1078,16 @@ li.cgkit-attribute-swatch {
   border-radius: 8px;
   background: #efefef;
 }
+
+/* High-resolution accordion images */
+.zg-accordion-image {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  max-width: 100% !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
 .vt-accordion > summary {
   cursor: pointer;
   padding: 10px 12px;
@@ -1111,7 +1121,6 @@ li.cgkit-attribute-swatch {
   font-size: 12px !important;
   text-align: center !important;
   border: 2px solid var(--vt-accent) !important; /* Same color as background */
-  z-index: 9999 !important;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;

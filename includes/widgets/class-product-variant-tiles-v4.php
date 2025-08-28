@@ -933,7 +933,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         $product_id  = $arg_product->get_id();
 
         $commercekit_options = get_option('commercekit', array());
-        $attribute_swatches  = get_post_meta($product_id, 'commercekit_attribute_swatches', true);
+        $attribute_swatches  = $arg_product->get_meta('commercekit_attribute_swatches', true);
         if (!is_array($attribute_swatches)) {
             $attribute_swatches = array();
         }
@@ -1024,7 +1024,8 @@ class ProductVariantTilesV4 extends  Widget_Base
             foreach ($variations as $id => $variation) {
                 if (isset($variation['attributes']) && count($variation['attributes'])) {
                     // Use CommerceKit's variation image (same as old plugin)
-                    $variation_img_id = isset($variation['cgkit_image_id']) ? $variation['cgkit_image_id'] : get_post_thumbnail_id($variation['variation_id']);
+                    $variation_obj = wc_get_product($variation['variation_id']);
+                    $variation_img_id = isset($variation['cgkit_image_id']) ? $variation['cgkit_image_id'] : ($variation_obj ? $variation_obj->get_image_id() : 0);
                     foreach ($variation['attributes'] as $a_key => $a_value) {
                         $a_key = str_ireplace('attribute_', '', $a_key);
 
@@ -1051,7 +1052,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     }
                 }
             }
-            $cgkit_image_gallery = get_post_meta($product_id, 'commercekit_image_gallery', true);
+            $cgkit_image_gallery = $arg_product->get_meta('commercekit_image_gallery', true);
             if (is_array($cgkit_image_gallery)) {
                 $cgkit_image_gallery = array_filter($cgkit_image_gallery);
             }
@@ -1373,13 +1374,13 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
         // Attach custom meta for accordion - only the fields actually used in JavaScript
-        $variation_data['_vt_dd_text']     = get_post_meta($variation->get_id(), '_vt_dd_text', true);
-        $variation_data['_vt_dd_preview']  = get_post_meta($variation->get_id(), '_vt_dd_preview', true);
+        $variation_data['_vt_dd_text']     = $variation->get_meta('_vt_dd_text', true);
+        $variation_data['_vt_dd_preview']  = $variation->get_meta('_vt_dd_preview', true);
 
         // Add variant tile image data
-        $dd_image_id = get_post_meta($variation->get_id(), '_vt_dd_image_id', true);
+        $dd_image_id = $variation->get_meta('_vt_dd_image_id', true);
         if ($dd_image_id && wp_attachment_is_image($dd_image_id)) {
-            $variation_data['_vt_dd_image_url'] = wp_get_attachment_image_url($dd_image_id, 'medium');
+            $variation_data['_vt_dd_image_url'] = wp_get_attachment_image_url($dd_image_id, 'large');
         } else {
             $variation_data['_vt_dd_image_url'] = '';
         }
@@ -2249,7 +2250,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                     .html(`
                         .zg-permanent-selected {
                             border: 2px solid #ff0000 !important;
-                            background-color: #fff5f5 !important;
+                            background-color: #f3d8d3 !important;
                             box-shadow: 0 0 10px rgba(255, 0, 0, 0.3) !important;
                         }
                         .zg-permanent-selected .tile-title {
@@ -2912,13 +2913,14 @@ class ProductVariantTilesV4 extends  Widget_Base
         );
 
         // Get variation-specific dropdown data
-        $dd_text = get_post_meta($variation_id, '_vt_dd_text', true);
-        $dd_preview = get_post_meta($variation_id, '_vt_dd_preview', true);
-        $dd_image_id = get_post_meta($variation_id, '_vt_dd_image_id', true);
+        $variation_obj = wc_get_product($variation_id);
+        $dd_text = $variation_obj ? $variation_obj->get_meta('_vt_dd_text', true) : '';
+        $dd_preview = $variation_obj ? $variation_obj->get_meta('_vt_dd_preview', true) : '';
+        $dd_image_id = $variation_obj ? $variation_obj->get_meta('_vt_dd_image_id', true) : '';
 
         // Get image data
         if ($dd_image_id && wp_attachment_is_image($dd_image_id)) {
-            $data['accordion_image'] = wp_get_attachment_image($dd_image_id, 'medium', false, array('class' => 'zg-accordion-image'));
+            $data['accordion_image'] = wp_get_attachment_image($dd_image_id, 'large', false, array('class' => 'zg-accordion-image'));
         }
 
         if (!empty($dd_text)) {

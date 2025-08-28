@@ -3,7 +3,7 @@
  * Plugin Name: ZG - Variation Tiles
  * Plugin URI: https://zgrills.com.au
  * Description: Display product variations as interactive tiles with savings calculations and included items accordion
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Z Grills
  * Author URI: https://zgrills.com.au
  * Text Domain: zg-variation-tiles
@@ -13,6 +13,7 @@
  * Requires PHP: 7.4
  * WC requires at least: 3.0
  * WC tested up to: 8.0
+ * WC HPOS Compatible: Yes
  */
 
 // Prevent direct access
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'PROTILES_VERSION', '1.0.5' );
+define( 'PROTILES_VERSION', '1.0.6' );
 define( 'PROTILES_URL', plugin_dir_url( __FILE__ ) );
 define( 'PROTILES_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -51,6 +52,6 @@ add_action('init', function() {
 // WooCommerce HPOS Compatibility
 add_action('before_woocommerce_init', function() {
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_orders_table', __FILE__, true);
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
     }
 });

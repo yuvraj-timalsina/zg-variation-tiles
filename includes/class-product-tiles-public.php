@@ -43,7 +43,7 @@ class Product_Tiles_Public
 
 	public function disable_variable_price_range($price, $product)
 	{
-		$variable_pricing = get_post_meta($product->get_id(), 'variable_pricing', true);
+		$variable_pricing = $product->get_meta('variable_pricing', true);
 		if ($variable_pricing == 'yes') {
 			$min_var_reg_price = $product->get_variation_regular_price('min', true);
 			$min_var_sale_price = $product->get_variation_sale_price('min', true);
@@ -84,7 +84,8 @@ class Product_Tiles_Public
 	{
 
 		$variation_id = $_POST['variation_id'];
-		$cross_cell = get_post_meta($variation_id, 'zg_variation_cross_sell_id', true);
+		$variation = wc_get_product($variation_id);
+		$cross_cell = $variation ? $variation->get_meta('zg_variation_cross_sell_id', true) : '';
 		$settings = $_POST['settings'];
 
 		if (!empty($settings['icon']) || !empty($settings['cross_cell_product_price_icon']['value'])) :
@@ -124,7 +125,8 @@ class Product_Tiles_Public
 		$quantity = empty($_POST['quantity']) ? 1 : wc_stock_amount($_POST['quantity']);
 		$variation_id = absint($_POST['variation_id']);
 		$passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
-		$product_status = get_post_status($product_id);
+		$product = wc_get_product($product_id);
+		$product_status = $product ? $product->get_status() : '';
 		$other_products = $_POST['other_products'];
 
 		if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity, $variation_id) && 'publish' === $product_status) {
@@ -147,7 +149,8 @@ class Product_Tiles_Public
 		if (!empty($other_products)) {
 			foreach ($other_products as $oproduct_id) {
 				$oproduct_id = apply_filters('woocommerce_add_to_cart_product_id', absint($oproduct_id));
-				$p_status =  get_post_status($oproduct_id);
+				$oproduct = wc_get_product($oproduct_id);
+				$p_status = $oproduct ? $oproduct->get_status() : '';
 				$p_validation = apply_filters('woocommerce_add_to_cart_validation', true, $oproduct_id, 1);
 				if ($p_validation && WC()->cart->add_to_cart(absint($oproduct_id), 1) !== false) {
 					if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
@@ -203,7 +206,8 @@ class Product_Tiles_Public
 				foreach (WC()->cart->get_cart() as $cart_item) {
 					if ($cart_item['product_id'] === $product_id && $cart_item['variation_id'] == $variation_id) {
 						$oproduct_id = apply_filters('woocommerce_add_to_cart_product_id', absint($oproduct_id));
-						$p_status =  get_post_status($oproduct_id);
+						$oproduct = wc_get_product($oproduct_id);
+						$p_status = $oproduct ? $oproduct->get_status() : '';
 						$p_validation = apply_filters('woocommerce_add_to_cart_validation', true, $oproduct_id, 1);
 						if ($p_validation && WC()->cart->add_to_cart(absint($oproduct_id), 1) !== false) {
 							if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
@@ -1065,8 +1069,9 @@ class Product_Tiles_Public
 		);
 
 		// Get variation-specific dropdown data
-		$dd_text = get_post_meta($variation_id, '_vt_dd_text', true);
-		$dd_preview = get_post_meta($variation_id, '_vt_dd_preview', true);
+		$variation = wc_get_product($variation_id);
+		$dd_text = $variation ? $variation->get_meta('_vt_dd_text', true) : '';
+		$dd_preview = $variation ? $variation->get_meta('_vt_dd_preview', true) : '';
 
 		if (!empty($dd_text)) {
 			$data['accordion_title'] = "What's included?";

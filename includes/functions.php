@@ -32,8 +32,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
      */
 	function is_variation_product_enbled($variation_id){
 		if($variation_id > 0){
-			$status = get_post_status($variation_id);
-			if($status == 'publish'){
+			$variation = wc_get_product($variation_id);
+			if($variation && $variation->get_status() == 'publish'){
 				return true;
 			}
 		}
@@ -45,16 +45,15 @@ if ( !defined( 'ABSPATH' ) ) exit;
      */
 	function display_variation_price( $term, $option, $attribute, $product  ) {
  		$variation_id = get_variation_id( $term, $option, $attribute, $product  );
-		$parent = wp_get_post_parent_id( $variation_id);
+		$variation = wc_get_product( $variation_id );
 
-	    if ( $parent > 0 ) {
-	         $_product = wc_get_product( $variation_id);
-	       	 $price_sale = get_post_meta($variation_id, '_sale_price', true);
+	    if ( $variation && $variation->get_parent_id() > 0 ) {
+	       	 $price_sale = $variation->get_sale_price();
 	       	 if($price_sale > 0){
-	       	 	$data['sale'] = '$' . number_format( $_product->get_sale_price(), 0 );
+	       	 	$data['sale'] = '$' . number_format( $price_sale, 0 );
 
 	       	 }
-	       	 	$data['regular'] = '$' . number_format( $_product->get_regular_price(), 0 );
+	       	 	$data['regular'] = '$' . number_format( $variation->get_regular_price(), 0 );
 	    }
 	    return $data;
 	}
@@ -65,7 +64,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	function variation_custom_field( $term, $option, $attribute, $product, $field  ) {
 		$variation_id = get_variation_id( $term, $option, $attribute, $product  );
  		if (  $variation_id > 0 ) {
-	      return get_post_meta($variation_id, $field, true);
+	      $variation = wc_get_product($variation_id);
+	      if($variation) {
+	          return $variation->get_meta($field, true);
+	      }
 	   }
 	   return '';
 	}
@@ -76,4 +78,30 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 	function zg_images_url( $file = '' ) {
 		return untrailingslashit( plugin_dir_url( PROTILES_DIR ) . 'images' ) . $file;
+	}
+
+	/**
+	 * Check if post is WooCommerce order (HPOS compatible)
+	 *
+	 * @param int $post_id Post id.
+	 *
+	 * @return bool $bool True|false.
+	 */
+	if ( ! function_exists( 'zg_is_wc_order' ) ) {
+		function zg_is_wc_order( $post_id = 0 ) {
+			$bool = false;
+			if ( class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' ) ) {
+				if ( 'shop_order' === \Automattic\WooCommerce\Utilities\OrderUtil::get_order_type( $post_id ) ) {
+					$bool = true;
+				}
+			} else {
+				// Fallback for older WooCommerce versions
+				$post_type = get_post_type( $post_id );
+				if ( 'shop_order' === $post_type ) {
+					$bool = true;
+				}
+			}
+
+			return $bool;
+		}
 	}
