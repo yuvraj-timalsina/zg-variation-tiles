@@ -1,0 +1,51 @@
+/* Stock Message Styles */
+.vt-stock-message-container {
+  text-align: center;
+  width: 100%;
+}
+
+.vt-stock-message {
+  margin-top: 10px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.stock-dot {
+  margin-right: 8px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.stock-dot.in-stock {
+  background-color: #4caf50;
+}
+
+.stock-dot.low-stock {
+  background-color: #ffc107;
+}
+
+/* Variant Tiles Arrangement Styles */
+.zg-variant-tiles-arranged .variations {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.zg-variant-tiles-arranged .variations .value {
+  margin-bottom: 0;
+}
+
+.zg-variant-tiles-arranged .variations .label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
