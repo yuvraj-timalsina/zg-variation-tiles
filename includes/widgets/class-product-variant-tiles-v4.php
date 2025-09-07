@@ -434,7 +434,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         if (!empty($settings['product_id'])) {
             $product_id = $settings['product_id'];
         } elseif (wp_doing_ajax()) {
-            $product_id = $_POST['post_id'];
+            $product_id = absint($_POST['post_id'] ?? 0);
         } else {
             $product_id = get_queried_object_id();
         }
@@ -634,12 +634,7 @@ class ProductVariantTilesV4 extends  Widget_Base
      * Debug method to log arrangement information
      */
     private function debug_arrangement($message, $data = null) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('ZG Variant Tiles Arrangement: ' . $message);
-            if ($data !== null) {
-                error_log('ZG Variant Tiles Data: ' . print_r($data, true));
-            }
-        }
+        // Debug function removed for production
     }
 
     /**
@@ -1128,7 +1123,6 @@ class ProductVariantTilesV4 extends  Widget_Base
 
             // Bundle names are being generated correctly
 
-            // print_r($_variations[$attribute_raw][$item_attri_val]['variation']);
             $swatch_html = '';
                                                 // Generate basic swatch HTML independently (bypass CommerceKit)
             $swatch_html = $this->generate_swatch_html_independent($swatch_type, $attribute_swatches[$attribute_id][$item->term_id], $item, $image_label);

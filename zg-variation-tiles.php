@@ -3,7 +3,7 @@
  * Plugin Name: ZG - Variation Tiles
  * Plugin URI: https://zgrills.com.au
  * Description: Display product variations as interactive tiles with savings calculations and included items accordion
- * Version: 1.0.7
+ * Version: 1.1.0
  * Author: Z Grills
  * Author URI: https://zgrills.com.au
  * Text Domain: zg-variation-tiles
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'PROTILES_VERSION', '1.0.7' );
+define( 'PROTILES_VERSION', '1.1.0' );
 define( 'PROTILES_URL', plugin_dir_url( __FILE__ ) );
 define( 'PROTILES_DIR', plugin_dir_path( __FILE__ ) );
 

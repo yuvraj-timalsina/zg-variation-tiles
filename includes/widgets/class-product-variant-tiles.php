@@ -1407,7 +1407,7 @@ class ProductVariantTiles extends  Widget_Base
 		if (!empty($settings['product_id'])) {
 			$product_id = $settings['product_id'];
 		} elseif (wp_doing_ajax()) {
-			$product_id = $_POST['post_id'];
+			$product_id = absint($_POST['post_id'] ?? 0);
 		} else {
 			$product_id = get_queried_object_id();
 		}

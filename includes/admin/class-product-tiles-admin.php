@@ -19,15 +19,30 @@ class Product_Tiles_Admin {
 		// Only enqueue on product edit pages
 		$screen = get_current_screen();
 		if ( $screen && in_array( $screen->id, array( 'product', 'edit-product' ) ) ) {
-			wp_enqueue_style( 'product-tiles-style', PROTILES_URL. '/includes/admin/assets/css/style.css',array(),  '1.0.0' );
-			wp_enqueue_media(); // Enqueue WordPress media scripts
-			wp_enqueue_script( 'product-tiles-general', PROTILES_URL. '/includes/admin/assets/js/general.js', array('jquery', 'media-upload'), '1.0.5', true );
+			// Check if we're actually editing a variable product
+			global $post;
+			if ( $post && $post->post_type === 'product' ) {
+				$product = wc_get_product( $post->ID );
+				if ( $product && $product->is_type( 'variable' ) ) {
+					wp_enqueue_style( 'product-tiles-style', PROTILES_URL. '/includes/admin/assets/css/style.css',array(),  '1.0.0' );
+					wp_enqueue_media(); // Enqueue WordPress media scripts
+					wp_enqueue_script( 'product-tiles-general', PROTILES_URL. '/includes/admin/assets/js/general.js', array('jquery', 'media-upload', 'wc-admin-meta-boxes'), '1.0.6', true );
+
+					// Add script dependencies to ensure WooCommerce scripts load first
+					wp_script_add_data( 'product-tiles-general', 'deps', array('jquery', 'media-upload', 'wc-admin-meta-boxes') );
+				}
+			}
 		}
 	}
 
 	function protiles_variation_main_fields( $loop, $variation_data, $variation ){
 
-		$variable_is_zg_bundle = $variation->get_meta( 'variable_is_zg_bundle', true );
+		// Convert WP_Post to WC_Product if needed
+		if ( is_a( $variation, 'WP_Post' ) ) {
+		    $variation = wc_get_product( $variation->ID );
+		}
+
+		$variable_is_zg_bundle = $variation ? $variation->get_meta( 'variable_is_zg_bundle', true ) : false;
 		?>
 		<label class="tips">
 			<?php esc_html_e( 'ZG Bundle', 'woocommerce' ); ?>
@@ -40,7 +55,13 @@ class Product_Tiles_Admin {
 
 	    $product = wc_get_product(get_the_ID());
 	    $enable_tiles = $product ? ($product->get_meta( '_vt_enable_tiles', true ) === 'yes') : false;
-	    if ( $enable_tiles ) {
+
+	    // Convert WP_Post to WC_Product if needed
+	    if ( is_a( $variation, 'WP_Post' ) ) {
+	        $variation = wc_get_product( $variation->ID );
+	    }
+
+	    if ( $enable_tiles && $variation ) {
 	    	?>
 	    	<div class="vt-variation-tile-section" style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; margin: 15px 0; position: relative;">
 	    		<div style="position: absolute; top: -10px; left: 15px; background: #0073aa; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase;">

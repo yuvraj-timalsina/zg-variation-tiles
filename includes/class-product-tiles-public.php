@@ -82,29 +82,52 @@ class Product_Tiles_Public
 	 */
 	function variant_get_cross_products()
 	{
+		// TODO: Add proper nonce verification when frontend is updated
+		// if (!wp_verify_nonce($_POST['nonce'] ?? '', 'zg_variation_tiles_nonce')) {
+		// 	wp_die('Security check failed');
+		// }
 
-		$variation_id = $_POST['variation_id'];
+		// Sanitize and validate input data
+		$variation_id = absint($_POST['variation_id'] ?? 0);
+		if (!$variation_id) {
+			echo '';
+			die;
+		}
+
 		$variation = wc_get_product($variation_id);
-		$cross_cell = $variation ? $variation->get_meta('zg_variation_cross_sell_id', true) : '';
-		$settings = $_POST['settings'];
+		if (!$variation) {
+			echo '';
+			die;
+		}
 
-		if (!empty($settings['icon']) || !empty($settings['cross_cell_product_price_icon']['value'])) :
-			$icon .= '<span class="elementor-align-icon-left"><i class="' . esc_attr($settings['cross_cell_product_price_icon']['value']) . '" aria-hidden="true"></i>';
-			$icon .= '</span>';
-		endif;
+		$cross_cell = $variation->get_meta('zg_variation_cross_sell_id', true);
+		$settings = wp_parse_args($_POST['settings'] ?? array(), array());
 
-		if (!empty($cross_cell)) {
+		$icon = '';
+		if (!empty($settings['icon']) || !empty($settings['cross_cell_product_price_icon']['value'])) {
+			$icon_value = $settings['cross_cell_product_price_icon']['value'] ?? $settings['icon'] ?? '';
+			$icon = '<span class="elementor-align-icon-left"><i class="' . esc_attr($icon_value) . '" aria-hidden="true"></i></span>';
+		}
+
+		$data = '';
+		if (!empty($cross_cell) && is_array($cross_cell)) {
 			$data = '<ul class="crosscell_products">';
 			foreach ($cross_cell as $product_id) {
-				$_product = get_product($product_id);
-				$data .= '<li class="crosscell_items" data-product_id="' . $_product->get_id() . '" data-price="' . $_product->get_price() . '">';
-				$data .= '<div class="cross_img" style="background:url(' . wp_get_attachment_url($_product->get_image_id()) . ')"></div>';
-				$data .=  '<div class="cross_content"><h4>' . $_product->get_title() . '</h4>';
-				$data .=  '<p class="cross_price">' . $icon . $_product->get_price_html() . '</p>';
-				$data .=  '</div></li>';
+				$product_id = absint($product_id);
+				if (!$product_id) continue;
+
+				$_product = wc_get_product($product_id);
+				if (!$_product) continue;
+
+				$data .= '<li class="crosscell_items" data-product_id="' . esc_attr($_product->get_id()) . '" data-price="' . esc_attr($_product->get_price()) . '">';
+				$data .= '<div class="cross_img" style="background:url(' . esc_url(wp_get_attachment_url($_product->get_image_id())) . ')"></div>';
+				$data .= '<div class="cross_content"><h4>' . esc_html($_product->get_title()) . '</h4>';
+				$data .= '<p class="cross_price">' . $icon . $_product->get_price_html() . '</p>';
+				$data .= '</div></li>';
 			}
 			$data .= '</ul>';
 		}
+
 		echo $data;
 		wp_reset_postdata();
 		die;
@@ -120,53 +143,64 @@ class Product_Tiles_Public
 	 */
 	function woocommerce_ajax_add_to_cart()
 	{
+		// TODO: Add proper nonce verification when frontend is updated
+		// if (!wp_verify_nonce($_POST['nonce'] ?? '', 'zg_variation_tiles_nonce')) {
+		// 	wp_die('Security check failed');
+		// }
 
-		$product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
+		// Sanitize and validate input data
+		$product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id'] ?? 0));
 		$quantity = empty($_POST['quantity']) ? 1 : wc_stock_amount($_POST['quantity']);
-		$variation_id = absint($_POST['variation_id']);
+		$variation_id = absint($_POST['variation_id'] ?? 0);
+		$other_products = array_map('absint', $_POST['other_products'] ?? array());
+
+		if (!$product_id) {
+			echo wp_send_json(array('error' => 'Invalid product ID'));
+			die;
+		}
+
 		$passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
 		$product = wc_get_product($product_id);
 		$product_status = $product ? $product->get_status() : '';
-		$other_products = $_POST['other_products'];
 
 		if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity, $variation_id) && 'publish' === $product_status) {
-
 			do_action('woocommerce_ajax_added_to_cart', $product_id);
 
 			if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
 				wc_add_to_cart_message(array($product_id => $quantity), true);
 			}
 		} else {
-
 			$data = array(
 				'error' => true,
 				'product_url' => apply_filters('woocommerce_cart_redirect_after_error', get_permalink($product_id), $product_id)
 			);
-
 			echo wp_send_json($data);
 		}
 
+		// Handle additional products
 		if (!empty($other_products)) {
 			foreach ($other_products as $oproduct_id) {
 				$oproduct_id = apply_filters('woocommerce_add_to_cart_product_id', absint($oproduct_id));
+				if (!$oproduct_id) continue;
+
 				$oproduct = wc_get_product($oproduct_id);
 				$p_status = $oproduct ? $oproduct->get_status() : '';
 				$p_validation = apply_filters('woocommerce_add_to_cart_validation', true, $oproduct_id, 1);
-				if ($p_validation && WC()->cart->add_to_cart(absint($oproduct_id), 1) !== false) {
-					if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
-						wc_add_to_cart_message(array($oproduct_id => 1), true);
-					}
-				} else {
 
-					$data = array(
-						'error' => true,
-						'product_url' =>  $oproduct_id
-					);
-
-					echo wp_send_json($data);
-				}
+						if ($p_validation && WC()->cart->add_to_cart(absint($oproduct_id), 1) !== false) {
+							if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
+								wc_add_to_cart_message(array($oproduct_id => 1), true);
+							}
+						} else {
+							$data = array(
+								'error' => true,
+								'product_url' => $oproduct_id
+							);
+							echo wp_send_json($data);
+						}
 			}
 		}
+
 		WC_AJAX::get_refreshed_fragments();
 		wp_die();
 	}
@@ -180,17 +214,26 @@ class Product_Tiles_Public
 	 */
 	function woocommerce_ajax_check_add_to_cart()
 	{
-		$product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
-		$variation_id = absint($_POST['variation_id']);
-		$oproduct_id = $_POST['other_products'];
+		// TODO: Add proper nonce verification when frontend is updated
+		// if (!wp_verify_nonce($_POST['nonce'] ?? '', 'zg_variation_tiles_nonce')) {
+		// 	wp_die('Security check failed');
+		// }
 
-		if ($_POST['mode'] == 'delete') {
+		// Sanitize and validate input data
+		$product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id'] ?? 0));
+		$variation_id = absint($_POST['variation_id'] ?? 0);
+		$oproduct_id = absint($_POST['other_products'] ?? 0);
+		$mode = sanitize_text_field($_POST['mode'] ?? '');
+
+		if (!$product_id) {
+			echo wp_send_json(array('error' => 'Invalid product ID'));
+			die;
+		}
+
+		if ($mode === 'delete') {
 			if (!WC()->cart->is_empty()) {
-
 				foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-
 					if ($cart_item['product_id'] == $oproduct_id) {
-
 						if ((float)$cart_item['quantity'] > 1) {
 							$qty = (float)$cart_item['quantity'] - 1;
 							WC()->cart->set_quantity($cart_item['key'], $qty);
@@ -206,19 +249,24 @@ class Product_Tiles_Public
 				foreach (WC()->cart->get_cart() as $cart_item) {
 					if ($cart_item['product_id'] === $product_id && $cart_item['variation_id'] == $variation_id) {
 						$oproduct_id = apply_filters('woocommerce_add_to_cart_product_id', absint($oproduct_id));
+						if (!$oproduct_id) {
+							echo wp_send_json(array('error' => 'Invalid other product ID'));
+							die;
+						}
+
 						$oproduct = wc_get_product($oproduct_id);
 						$p_status = $oproduct ? $oproduct->get_status() : '';
 						$p_validation = apply_filters('woocommerce_add_to_cart_validation', true, $oproduct_id, 1);
+
 						if ($p_validation && WC()->cart->add_to_cart(absint($oproduct_id), 1) !== false) {
 							if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
 								wc_add_to_cart_message(array($oproduct_id => 1), true);
 							}
 							WC_AJAX::get_refreshed_fragments();
 						} else {
-
 							$data = array(
 								'error' => true,
-								'product_url' =>  $oproduct_id
+								'product_url' => $oproduct_id
 							);
 							echo wp_send_json($data);
 						}
@@ -230,7 +278,7 @@ class Product_Tiles_Public
 				echo 'fail';
 			}
 		}
-		die;
+		wp_die();
 	}
 
 	function variable_product_total_amount_qty_change($data, $product, $variation)

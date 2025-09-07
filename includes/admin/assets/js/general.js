@@ -1,9 +1,23 @@
 jQuery(document).ready(function ($) {
-  if ($(".variations-defaults strong").length) {
-    let label = $(".variations-defaults strong").html();
-    $(".variations-defaults strong").html(label.replace("Default Form Values", "Default Product Variant"));
+  // Only run on product edit pages to avoid conflicts
+  if (!$("body").hasClass("post-type-product") || !$("#woocommerce-product-data").length) {
+    return;
   }
-  $("#variable_pricing").on("change", function () {
+
+  // Wait for WooCommerce to fully initialize before running our code
+  $(document.body).on("woocommerce_variations_loaded", function () {
+    // Only run our customizations after WooCommerce variations are loaded
+    if ($(".variations-defaults strong").length) {
+      let label = $(".variations-defaults strong").html();
+      $(".variations-defaults strong").html(label.replace("Default Form Values", "Default Product Variant"));
+    }
+  });
+
+  // Use more specific selectors and ensure we don't interfere with WooCommerce's event handling
+  $(document.body).on("change", "#variable_pricing", function (e) {
+    // Prevent event bubbling to avoid conflicts
+    e.stopPropagation();
+
     if ($(this).prop("checked") == true) {
       $("#variable_pricing_0").val("yes");
     } else if ($(this).prop("checked") == false) {
@@ -14,7 +28,10 @@ jQuery(document).ready(function ($) {
   });
 
   function variable_manage_gz_bundle(event) {
-    $("input.variable_is_zg_bundle").trigger("change");
+    // Use setTimeout to ensure this runs after WooCommerce's handlers
+    setTimeout(function () {
+      $("input.variable_is_zg_bundle").trigger("change");
+    }, 100);
   }
 
   function variable_is_zg_bundle() {
@@ -24,17 +41,23 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  $("input.variable_is_downloadable, input.variable_is_virtual, input.variable_manage_stock").trigger("change");
+  // Only trigger these after WooCommerce variations are loaded
+  $(document.body).on("woocommerce_variations_loaded", function () {
+    $("input.variable_is_downloadable, input.variable_is_virtual, input.variable_manage_stock").trigger("change");
+  });
 
+  // Use more specific event binding to avoid conflicts
   $(document.body).on("woocommerce_variations_loaded", variable_manage_gz_bundle);
   $(document.body).on("woocommerce_variations_added", variable_manage_gz_bundle);
   $(document.body).on("woocommerce_variations_removed", variable_manage_gz_bundle);
 
-  $("#variable_product_options").on("change", "input.variable_is_zg_bundle", variable_is_zg_bundle);
+  // Use more specific selector to avoid interfering with WooCommerce's event handling
+  $(document.body).on("change", "#variable_product_options input.variable_is_zg_bundle", variable_is_zg_bundle);
 
   // Enhanced Variant Tile Media Upload Functionality
   $(document).on("click", ".vt-media-upload-btn", function (e) {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
 
     var loop = $(this).data("loop");
     var imageIdField = $("#_vt_dd_image_id" + loop);
@@ -96,6 +119,7 @@ jQuery(document).ready(function ($) {
   // Edit media functionality - opens WordPress media editor
   $(document).on("click", ".vt-media-edit-btn", function (e) {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
 
     var loop = $(this).data("loop");
     var imageIdField = $("#_vt_dd_image_id" + loop);
@@ -159,6 +183,7 @@ jQuery(document).ready(function ($) {
   // Remove media functionality
   $(document).on("click", ".vt-media-remove-btn", function (e) {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
 
     var loop = $(this).data("loop");
     var imageIdField = $("#_vt_dd_image_id" + loop);
