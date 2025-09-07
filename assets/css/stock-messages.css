@@ -34,12 +34,6 @@
 }
 
 /* Variant Tiles Arrangement Styles */
-.zg-variant-tiles-arranged .variations {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .zg-variant-tiles-arranged .variations .value {
   margin-bottom: 0;
 }

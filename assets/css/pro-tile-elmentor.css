@@ -666,8 +666,17 @@ li.cgkit-attribute-swatch {
     .cgkit-attribute-swatch.cgkit-image
     button.swatch.cgkit-swatch
     img {
-    margin-bottom: 5px;
-    height: 160px !important; /* Smaller image height on mobile */
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
 
   .cgkit-attribute-swatch button.swatch.cgkit-swatch {
@@ -894,7 +903,7 @@ li.cgkit-attribute-swatch {
 .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
   border-radius: 8px !important;
   overflow: hidden !important;
@@ -904,18 +913,26 @@ li.cgkit-attribute-swatch {
   border: 1px solid #e0e0e0 !important;
   min-height: 280px !important; /* Prevent layout shifts - accommodate image + title + price */
   box-sizing: border-box !important; /* Ensure padding/border included in sizing */
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important; /* Remove any gaps between flex items */
 }
 .cgkit-attribute-swatch.cgkit-image .cgkit-swatch img {
   display: block;
   width: 100% !important;
-  height: 200px !important; /* Fixed height to prevent layout shifts */
+  height: 100% !important; /* Fill available container height */
   max-width: 100% !important;
-  object-fit: cover;
+  min-width: 100% !important;
+  object-fit: cover !important; /* Fill container completely */
+  object-position: center !important;
   border-radius: 8px 8px 0 0 !important;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
   overflow: hidden !important;
   flex-shrink: 0 !important; /* Prevent image from shrinking */
+  box-sizing: border-box !important;
+  border: none !important;
+  position: relative !important;
 }
 
 /* Title and price area */
@@ -1324,6 +1341,86 @@ li.cgkit-attribute-swatch {
 
 /* ===== RESPONSIVE DESIGN FOR VARIATION SWATCH CARDS ===== */
 
+/* Medium Mobile/Tablet (430px to 768px) - Fix image height display */
+@media (min-width: 430px) and (max-width: 768px) {
+  /* Bundle card sizing for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 280px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+  }
+
+  /* Bundle images for medium mobile/tablet - ensure full height is visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Title sizing for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 20px !important;
+    max-height: 32px !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 6px !important;
+    padding: 6px 10px 2px !important;
+  }
+
+  /* Price container for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 40px !important;
+    max-height: 60px !important;
+    padding: 4px 12px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Price elements for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 12px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 16px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+}
+
 /* Medium-Large Desktop (1000px to 1500px) - Fix price visibility */
 @media (min-width: 1000px) and (max-width: 1500px) {
   /* Bundle card sizing - ensure prices are visible with vertical stacking */
@@ -1331,12 +1428,22 @@ li.cgkit-attribute-swatch {
     min-height: 300px !important;
   }
 
-  /* Bundle images - reduce height to make room for prices */
+  /* Bundle images - ensure full width and height, fill container completely */
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
     .cgkit-attribute-swatch.cgkit-image
     button.swatch.cgkit-swatch
     img {
-    height: 120px !important;
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
 
   /* Price container - ensure adequate space for vertical stacking */
@@ -1424,14 +1531,16 @@ li.cgkit-attribute-swatch {
   /* Bundle card sizing for mobile - ensure prices are visible */
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
     min-height: 260px !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Bundle images for mobile - reduced height to make room for prices */
-  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
-    .cgkit-attribute-swatch.cgkit-image
-    button.swatch.cgkit-swatch
-    img {
-    height: 120px !important;
+  /* Ensure mobile containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
   }
 
   /* Title and price sizing for mobile */
@@ -1483,13 +1592,6 @@ li.cgkit-attribute-swatch {
     img {
     height: 120px !important;
   }
-
-  /* Badge positioning for mobile */
-  .tile-offer {
-    font-size: 8px !important;
-    padding: 2px 6px !important;
-    top: -6px !important;
-  }
 }
 
 /* Extra Small Devices (Small Mobile) - Up to 480px */
@@ -1503,14 +1605,34 @@ li.cgkit-attribute-swatch {
   /* Bundle card sizing for small mobile - ensure prices are visible */
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
     min-height: 240px !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Bundle images for small mobile - reduced height to make room for prices */
+  /* Ensure small mobile containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+  }
+
+  /* Bundle images for small mobile - ensure full width and height, fill container completely */
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
     .cgkit-attribute-swatch.cgkit-image
     button.swatch.cgkit-swatch
     img {
-    height: 100px !important;
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
 
   /* Title and price sizing for small mobile */
@@ -1561,9 +1683,9 @@ li.cgkit-attribute-swatch {
 
   /* Badge positioning for small mobile */
   .tile-offer {
-    font-size: 7px !important;
-    padding: 1px 4px !important;
-    top: -4px !important;
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    top: -8px !important;
   }
 }
 
@@ -1582,7 +1704,17 @@ li.cgkit-attribute-swatch {
     .cgkit-attribute-swatch.cgkit-image
     button.swatch.cgkit-swatch
     img {
-    height: 110px !important;
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
 }
 
