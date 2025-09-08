@@ -1098,8 +1098,6 @@ li.cgkit-attribute-swatch {
   height: auto !important;
   display: block !important;
   max-width: 100% !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 .vt-accordion > summary {
   cursor: pointer;

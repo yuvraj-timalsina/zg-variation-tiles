@@ -42,26 +42,37 @@ function register_frontend_scripts() {
 
 // Clear caches on plugin update
 add_action('init', function() {
-    if (function_exists('wp_cache_flush_group')) {
-        wp_cache_flush_group('woo_variation_swatches');
-    }
-    delete_transient('protiles_variation_cache');
-    delete_transient('protiles_settings_cache');
+    // Only clear cache once per session to avoid performance issues
+    if (!get_transient('protiles_cache_cleared_' . PROTILES_VERSION)) {
+        if (function_exists('wp_cache_flush_group')) {
+            wp_cache_flush_group('woo_variation_swatches');
+        }
+        delete_transient('protiles_variation_cache');
+        delete_transient('protiles_settings_cache');
 
-    // Clear additional caches
-    if (function_exists('wp_cache_flush')) {
-        wp_cache_flush();
-    }
+        // Clear additional caches
+        if (function_exists('wp_cache_flush')) {
+            wp_cache_flush();
+        }
 
-    // Clear object cache if available
-    if (function_exists('wp_cache_delete_group')) {
-        wp_cache_delete_group('elementor');
-        wp_cache_delete_group('woocommerce');
-    }
+        // Clear object cache if available
+        if (function_exists('wp_cache_delete_group')) {
+            wp_cache_delete_group('elementor');
+            wp_cache_delete_group('woocommerce');
+        }
 
-    // Clear transients
-    delete_transient('elementor_css_' . get_stylesheet());
-    delete_transient('elementor_css_' . get_template());
+        // Clear transients
+        delete_transient('elementor_css_' . get_stylesheet());
+        delete_transient('elementor_css_' . get_template());
+
+        // Clear WooCommerce variation caches
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wc_var_%'");
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wc_av_%'");
+
+        // Set flag to prevent repeated clearing
+        set_transient('protiles_cache_cleared_' . PROTILES_VERSION, true, HOUR_IN_SECONDS);
+    }
 });
 
 // Force CSS refresh on plugin load

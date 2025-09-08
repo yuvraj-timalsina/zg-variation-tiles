@@ -574,34 +574,7 @@ jQuery(document).ready(function ($) {
       $(".single_add_to_cart_button").before(badgeHtml);
     }
 
-    if (variation && variation.vt_dd_preview && variation.vt_dd_text) {
-      var accordionHtml =
-        '<div id="vt-accordion-container" class="vt-accordion-container">' +
-        '<div class="vt-accordion-header">' +
-        variation.vt_dd_preview +
-        " <span class='vt-accordion-icon'>+</span>" +
-        "</div>" +
-        '<div class="vt-accordion-content" style="display: none;">' +
-        variation.vt_dd_text;
-
-      accordionHtml += "</div></div>";
-
-      $(".single_add_to_cart_button").before(accordionHtml);
-
-      // Add click handler for accordion
-      $("#vt-accordion-container .vt-accordion-header").on("click", function () {
-        var $content = $(this).next(".vt-accordion-content");
-        var $icon = $(this).find(".vt-accordion-icon");
-
-        if ($content.is(":visible")) {
-          $content.slideUp();
-          $icon.text("+");
-        } else {
-          $content.slideDown();
-          $icon.text("-");
-        }
-      });
-    }
+    // Old accordion code removed - now handled by Elementor widget
   });
 
   // Hide None Buttons

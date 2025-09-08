@@ -1359,8 +1359,15 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function vt_enrich_variation_payload($variation_data, $product, $variation){
         // Attach custom meta for accordion - only the fields actually used in JavaScript
-        $variation_data['_vt_dd_text']     = $variation->get_meta('_vt_dd_text', true);
-        $variation_data['_vt_dd_preview']  = $variation->get_meta('_vt_dd_preview', true);
+        $dd_text = $variation->get_meta('_vt_dd_text', true);
+        $dd_preview = $variation->get_meta('_vt_dd_preview', true);
+
+        $variation_data['_vt_dd_text'] = $dd_text;
+        $variation_data['_vt_dd_preview'] = $dd_preview;
+
+        // Debug: Log what the widget is receiving
+        error_log( 'VT Widget Debug - Variation ' . $variation->get_id() . ' _vt_dd_text: ' . substr($dd_text, 0, 100) );
+        error_log( 'VT Widget Debug - Variation ' . $variation->get_id() . ' _vt_dd_preview: ' . substr($dd_preview, 0, 100) );
 
         // Add variant tile image data
         $dd_image_id = $variation->get_meta('_vt_dd_image_id', true);
@@ -2877,6 +2884,10 @@ class ProductVariantTilesV4 extends  Widget_Base
         $variation_obj = wc_get_product($variation_id);
         $dd_text = $variation_obj ? $variation_obj->get_meta('_vt_dd_text', true) : '';
         $dd_preview = $variation_obj ? $variation_obj->get_meta('_vt_dd_preview', true) : '';
+
+        // Debug: Log what we're getting in get_variation_data
+        error_log( 'VT get_variation_data Debug - Variation ' . $variation_id . ' _vt_dd_text: ' . substr($dd_text, 0, 100) );
+        error_log( 'VT get_variation_data Debug - Variation ' . $variation_id . ' _vt_dd_preview: ' . substr($dd_preview, 0, 100) );
         $dd_image_id = $variation_obj ? $variation_obj->get_meta('_vt_dd_image_id', true) : '';
 
         // Get image data
@@ -2914,7 +2925,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         ?>
         <!-- Variant Tiles Accordion -->
         <div class="zg-accordion-container" style="background: #efefef; border: 1px solid #e9ecef; border-radius: 8px;">
-            <div class="zg-accordion-header" style="padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <div class="zg-accordion-header" style="padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
                 <span style="font-weight: 600; font-size: 16px; color: #212529;">What's included?</span>
                 <span class="zg-accordion-icon dashicons dashicons-arrow-down-alt2" style="font-size: 16px; color: #212529;"></span>
             </div>
