@@ -1460,6 +1460,10 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                                     <script type="text/javascript">
             jQuery(document).ready(function($) {
+                // Only run on product pages
+                if (!$('body').hasClass('single-product') && !$('body').hasClass('woocommerce-page')) {
+                    return;
+                }
 
                 // Accordion toggle with excerpt/description switching
                 $('.zg-accordion-header').on('click', function() {
@@ -2571,6 +2575,10 @@ class ProductVariantTilesV4 extends  Widget_Base
 
                                                                         <script>
             jQuery(document).ready(function($) {
+                // Only run on product pages
+                if (!$('body').hasClass('single-product') && !$('body').hasClass('woocommerce-page')) {
+                    return;
+                }
                 // Badge configuration from Elementor settings
                 var badgeConfig = {
                     'wireless-enabled': {

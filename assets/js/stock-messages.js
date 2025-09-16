@@ -6,6 +6,10 @@
 
   // Initialize when DOM is ready
   $(document).ready(function () {
+    // Only run on product pages
+    if (!$("body").hasClass("single-product") && !$("body").hasClass("woocommerce-page")) {
+      return;
+    }
     initializeVariantTilesArrangement();
   });
 

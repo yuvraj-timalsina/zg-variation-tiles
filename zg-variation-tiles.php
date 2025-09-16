@@ -77,10 +77,13 @@ add_action('init', function() {
 
 // Force CSS refresh on plugin load
 add_action('wp_enqueue_scripts', function() {
-    // Force refresh CSS files
-    wp_deregister_style('pro-tiles-elementor');
-    wp_deregister_style('zg-savings-accordion');
-    wp_deregister_style('vt-stock-messages');
+    // Only run on product pages and admin
+    if (is_product() || is_admin()) {
+        // Force refresh CSS files
+        wp_deregister_style('pro-tiles-elementor');
+        wp_deregister_style('zg-savings-accordion');
+        wp_deregister_style('vt-stock-messages');
+    }
 }, 1);
 
 // Add admin action to clear all caches

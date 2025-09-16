@@ -7,6 +7,10 @@
   "use strict";
 
   $(document).ready(function () {
+    // Only run on product pages
+    if (!$("body").hasClass("single-product") && !$("body").hasClass("woocommerce-page")) {
+      return;
+    }
     // Initialize accordion functionality
     initAccordion();
 

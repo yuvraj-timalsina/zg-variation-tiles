@@ -1,4 +1,9 @@
 jQuery(document).ready(function ($) {
+  // Only run on product pages
+  if (!$("body").hasClass("single-product") && !$("body").hasClass("woocommerce-page")) {
+    return;
+  }
+
   // Global variable declarations to prevent undefined errors
   if (typeof window.lastBundleValue === "undefined") {
     window.lastBundleValue = null;
