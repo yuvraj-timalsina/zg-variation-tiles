@@ -78,11 +78,6 @@ ul.select2-choices:after {
   margin-bottom: 15px;
 }
 
-.woocommerce_variation .form-field label {
-  display: block;
-  margin-bottom: 5px;
-}
-
 /* Variant Tile Section Styling */
 .vt-variation-tile-section {
   box-shadow: 0 2px 8px rgba(0, 115, 170, 0.1);
