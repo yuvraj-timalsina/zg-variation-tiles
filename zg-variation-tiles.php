@@ -34,10 +34,14 @@ if( !defined( 'PROTILES_ADMIN' ) ) {
 require_once( PROTILES_DIR . '/includes/class-product-tiles-plugin-loaded.php' );
 Product_Tiles_Plugin_loaded::instance();
 
+// Load variation price updates
+require_once( PROTILES_DIR . '/includes/class-variation-price.php' );
+
 // Register frontend scripts
 add_action( 'elementor/frontend/after_register_scripts', 'register_frontend_scripts', 5 );
 function register_frontend_scripts() {
     wp_register_script( 'pro-tiles-general', PROTILES_URL.'assets/js/general.js', array( 'jquery', 'elementor-frontend' ), PROTILES_VERSION, true );
+    wp_register_script( 'variation-price', PROTILES_URL.'assets/js/variation-price.js', array( 'jquery', 'wc-add-to-cart-variation' ), PROTILES_VERSION, true );
 }
 
 // Clear caches on plugin update

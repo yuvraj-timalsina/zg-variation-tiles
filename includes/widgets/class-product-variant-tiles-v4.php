@@ -95,7 +95,7 @@ class ProductVariantTilesV4 extends  Widget_Base
 
     public function get_script_depends()
     {
-        return ['pro-tiles-general', 'zg-savings-accordion', 'vt-stock-messages'];
+        return ['pro-tiles-general', 'zg-savings-accordion', 'vt-stock-messages', 'variation-price'];
     }
 
     public function get_name()
