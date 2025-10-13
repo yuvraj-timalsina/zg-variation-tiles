@@ -787,6 +787,207 @@ li.cgkit-attribute-swatch {
   --vt-muted: #8a8f98;
 }
 
+/* === UNIVERSAL VARIATION TILES STYLING === */
+/* Ensure consistent styling across ALL products using variation tiles */
+
+/* Universal swatch selection styling - applies to all variation tile widgets */
+.cgkit-attribute-swatch button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  pointer-events: none !important;
+  background-color: var(--vt-accent-100) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Ensure default selections are visible on page load */
+.cgkit-attribute-swatch.selected .cgkit-swatch,
+.cgkit-attribute-swatch.active .cgkit-swatch {
+  background-color: var(--vt-accent-100) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal button swatch selection styling */
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background-color: var(--vt-accent-100) !important;
+  color: var(--vt-text) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal image swatch selection styling */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal hover states */
+.cgkit-attribute-swatch button.swatch.cgkit-swatch:hover {
+  border-color: var(--vt-accent) !important;
+  box-shadow: 0 2px 8px rgba(186, 49, 22, 0.2) !important;
+}
+
+/* Universal button hover states */
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch:hover {
+  background: #faf2ef !important;
+  border-color: var(--vt-accent) !important;
+}
+
+/* Universal image hover states */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch:hover {
+  border-color: var(--vt-accent) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+/* === PAYMENT METHOD AND PIZZA OVEN TILES === */
+/* Ensure payment method and pizza oven tiles show proper selection states */
+
+/* Payment method tiles styling */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  border: 1px solid var(--vt-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100%;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: var(--vt-text);
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
+/* Pizza oven tiles styling */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  border: 1px solid var(--vt-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100%;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: var(--vt-text);
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
+/* === BUTTON TOGGLE STYLE CLASS === */
+/* Applied dynamically to ensure consistent styling */
+.cgkit-attribute-swatches.button-toggle-style {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0 !important;
+  width: 100% !important;
+  border: 1px solid var(--vt-border) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700 !important;
+  color: var(--vt-text) !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000 !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
 /* Controller + Front Bench: full-width modern toggle */
 .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"],
 .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] {

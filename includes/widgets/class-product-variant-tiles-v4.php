@@ -68,6 +68,11 @@ class ProductVariantTilesV4 extends  Widget_Base
             // Use product's default attributes if set
             if (isset($default_attributes[$attribute_name])) {
                 $args['selected'] = $default_attributes[$attribute_name];
+            } else {
+                // Fallback: use first available option if no default is set
+                if (!empty($args['options']) && is_array($args['options'])) {
+                    $args['selected'] = $args['options'][0];
+                }
             }
         }
 
@@ -438,7 +443,7 @@ class ProductVariantTilesV4 extends  Widget_Base
         } else {
             $product_id = get_queried_object_id();
         }
-        $this->add_render_attribute('_wrapper', 'class', 'summary product');
+        $this->add_render_attribute('_wrapper', 'class', 'summary product elementor-widget-productvarianttilesv4');
 
         $product = wc_get_product($product_id);
         $this->render_form_button($product);
@@ -1110,7 +1115,10 @@ class ProductVariantTilesV4 extends  Widget_Base
                 $custom_selected = true;
             }
 
-
+            // Additional check: if no default is set, select the first option
+            if (!$custom_selected && !isset($args['selected']) && $item === $attr_terms[0]) {
+                $custom_selected = true;
+            }
 
             // $is_selected = (isset($args['selected']) && sanitize_title( $args['selected'] ) == $item_attri_val ) ? true : false;
 
