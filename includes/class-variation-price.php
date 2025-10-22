@@ -29,7 +29,8 @@ class ZG_Variation_Price {
         if (is_product()) {
             global $product;
 
-            if ($product && $product->is_type('variable')) {
+            // Ensure $product is a valid WooCommerce product object
+            if ($product && is_object($product) && method_exists($product, 'is_type') && $product->is_type('variable')) {
                 wp_enqueue_script('wc-add-to-cart-variation');
                 wp_enqueue_script('variation-price');
             }

@@ -1562,6 +1562,8 @@ class ProductVariantTilesV4 extends  Widget_Base
                     var currentControllerValue = $('select[name="attribute_pa_controller"]').val();
                     var bundleValue = $('select[name="attribute_pa_bundles"]').val();
                     var frontBenchValue = $('select[name="attribute_pa_front-bench"]').val();
+                    var pizzaOvenValue = $('select[name="attribute_pa_pizza-oven"]').val();
+                    var paymentMethodValue = $('select[name="attribute_pa_payment-method"]').val();
 
                     // CRITICAL: Always try to get controller from visual swatch if dropdown is empty
                     if (!currentControllerValue || currentControllerValue === '') {
@@ -1602,6 +1604,24 @@ class ProductVariantTilesV4 extends  Widget_Base
                         window.lastValidFrontBenchSelection = frontBenchValue;
                     }
 
+                    // PERSISTENT PIZZA OVEN MEMORY - Never loses pizza oven selection
+                    if (pizzaOvenValue && pizzaOvenValue !== '') {
+                        window.persistentPizzaOvenSelection = pizzaOvenValue;
+                    }
+                    // Always preserve the persistent selection, even if current dropdown is empty
+                    if (window.persistentPizzaOvenSelection) {
+                        window.preservedPizzaOvenValue = window.persistentPizzaOvenSelection;
+                    }
+
+                    // PERSISTENT PAYMENT METHOD MEMORY - Never loses payment method selection
+                    if (paymentMethodValue && paymentMethodValue !== '') {
+                        window.persistentPaymentMethodSelection = paymentMethodValue;
+                    }
+                    // Always preserve the persistent selection, even if current dropdown is empty
+                    if (window.persistentPaymentMethodSelection) {
+                        window.preservedPaymentMethodValue = window.persistentPaymentMethodSelection;
+                    }
+
                     resetAccordionContent();
 
                     // Restore selections after reset
@@ -1633,6 +1653,16 @@ class ProductVariantTilesV4 extends  Widget_Base
                             $('select[name="attribute_pa_front-bench"]').val(window.lastValidFrontBenchSelection);
                         }
 
+                        // Restore pizza oven if it was lost
+                        if (window.preservedPizzaOvenValue && $('select[name="attribute_pa_pizza-oven"]').val() === '') {
+                            $('select[name="attribute_pa_pizza-oven"]').val(window.preservedPizzaOvenValue);
+                        }
+
+                        // Restore payment method if it was lost
+                        if (window.preservedPaymentMethodValue && $('select[name="attribute_pa_payment-method"]').val() === '') {
+                            $('select[name="attribute_pa_payment-method"]').val(window.preservedPaymentMethodValue);
+                        }
+
                         // Sync visual state for all attributes
                         var $form = $('form.variations_form');
                         $form.find('.variations select').each(function() {
@@ -1640,7 +1670,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                             var attribute = $select.attr('name');
                             var value = $select.val();
 
-                            if (value && (attribute === 'attribute_pa_bundles' || attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench')) {
+                            if (value && (attribute === 'attribute_pa_bundles' || attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench' || attribute === 'attribute_pa_pizza-oven' || attribute === 'attribute_pa_payment-method')) {
                                 var $swatches = $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch');
                                 $swatches.removeClass('cgkit-swatch-selected zg-permanent-selected');
                                 $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch[data-attribute-value="' + value + '"]').addClass('cgkit-swatch-selected zg-permanent-selected');
@@ -1898,7 +1928,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                             var attribute = $select.attr('name');
                             var value = $select.val();
 
-                            if (value && (attribute === 'attribute_pa_bundles' || attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench')) {
+                            if (value && (attribute === 'attribute_pa_bundles' || attribute === 'attribute_pa_controller' || attribute === 'attribute_pa_front-bench' || attribute === 'attribute_pa_pizza-oven' || attribute === 'attribute_pa_payment-method')) {
                                 var $swatches = $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch');
                                 $swatches.removeClass('cgkit-swatch-selected zg-permanent-selected');
                                 $('.cgkit-attribute-swatches[data-attribute="' + attribute + '"] .cgkit-swatch[data-attribute-value="' + value + '"]').addClass('cgkit-swatch-selected zg-permanent-selected');
@@ -2236,6 +2266,168 @@ class ProductVariantTilesV4 extends  Widget_Base
                     }, 300);
                 });
 
+                // Flag to prevent infinite loops in pizza oven changes
+                var isProcessingPizzaOvenChange = false;
+
+                $(document).on('change', 'select[name="attribute_pa_pizza-oven"]', function() {
+                    // Prevent infinite loops
+                    if (isProcessingPizzaOvenChange) {
+                        return;
+                    }
+
+                    // Prevent infinite loops by checking global flag
+                    if (window.isProcessingVariationChange) {
+                        return;
+                    }
+
+                    isProcessingPizzaOvenChange = true;
+                    window.isProcessingVariationChange = true;
+
+                    var pizzaOvenValue = $(this).val();
+
+
+                    // Get current variation data and update images
+                    var $form = $('form.variations_form');
+                    if ($form.length) {
+                        var variations = $form.data('product_variations');
+                        if (variations && variations.length > 0) {
+                            // Find current variation based on selected attributes
+                            var selectedAttributes = {};
+                            $form.find('.variations select').each(function() {
+                                var $select = $(this);
+                                var attribute = $select.attr('name');
+                                var attrValue = $select.val();
+                                if (attrValue) {
+                                    selectedAttributes[attribute] = attrValue;
+                                }
+                            });
+
+
+                            // Find matching variation
+                            var currentVariation = null;
+                            for (var i = 0; i < variations.length; i++) {
+                                var variation = variations[i];
+                                var isMatch = true;
+                                for (var attr in selectedAttributes) {
+                                    if (variation.attributes[attr] !== selectedAttributes[attr]) {
+                                        isMatch = false;
+                                        break;
+                                    }
+                                }
+                                if (isMatch) {
+                                    currentVariation = variation;
+                                    break;
+                                }
+                            }
+
+                            if (!currentVariation) {
+                            }
+
+                            // Update images for bundle and controller swatches
+                            if (currentVariation) {
+                                updateBundleAndControllerImages(currentVariation);
+                                // Also force immediate update for Grill Only if it's selected
+                                if (selectedAttributes['attribute_pa_bundles'] === 'grill-only') {
+                                    setTimeout(function() {
+                                        forceUpdateBundleImages(currentVariation);
+                                    }, 5); // Even faster for Trimal Series 1
+                                }
+                            } else {
+                                updateBundleAndControllerImages();
+                            }
+                        } else {
+                            updateBundleAndControllerImages();
+                        }
+                    }
+
+                    // Reset the processing flag after a short delay
+                    setTimeout(function() {
+                        isProcessingPizzaOvenChange = false;
+                        window.isProcessingVariationChange = false;
+                    }, 100);
+                });
+
+                // Flag to prevent infinite loops in payment method changes
+                var isProcessingPaymentMethodChange = false;
+
+                $(document).on('change', 'select[name="attribute_payment-method"]', function() {
+                    // Prevent infinite loops
+                    if (isProcessingPaymentMethodChange) {
+                        return;
+                    }
+
+                    // Prevent infinite loops by checking global flag
+                    if (window.isProcessingVariationChange) {
+                        return;
+                    }
+
+                    isProcessingPaymentMethodChange = true;
+                    window.isProcessingVariationChange = true;
+
+                    var paymentMethodValue = $(this).val();
+
+
+                    // Get current variation data and update images
+                    var $form = $('form.variations_form');
+                    if ($form.length) {
+                        var variations = $form.data('product_variations');
+                        if (variations && variations.length > 0) {
+                            // Find current variation based on selected attributes
+                            var selectedAttributes = {};
+                            $form.find('.variations select').each(function() {
+                                var $select = $(this);
+                                var attribute = $select.attr('name');
+                                var attrValue = $select.val();
+                                if (attrValue) {
+                                    selectedAttributes[attribute] = attrValue;
+                                }
+                            });
+
+
+                            // Find matching variation
+                            var currentVariation = null;
+                            for (var i = 0; i < variations.length; i++) {
+                                var variation = variations[i];
+                                var isMatch = true;
+                                for (var attr in selectedAttributes) {
+                                    if (variation.attributes[attr] !== selectedAttributes[attr]) {
+                                        isMatch = false;
+                                        break;
+                                    }
+                                }
+                                if (isMatch) {
+                                    currentVariation = variation;
+                                    break;
+                                }
+                            }
+
+                            if (!currentVariation) {
+                            }
+
+                            // Update images for bundle and controller swatches
+                            if (currentVariation) {
+                                updateBundleAndControllerImages(currentVariation);
+                                // Also force immediate update for Grill Only if it's selected
+                                if (selectedAttributes['attribute_pa_bundles'] === 'grill-only') {
+                                    setTimeout(function() {
+                                        forceUpdateBundleImages(currentVariation);
+                                    }, 5); // Even faster for Trimal Series 1
+                                }
+                            } else {
+                                updateBundleAndControllerImages();
+                            }
+                        } else {
+                            updateBundleAndControllerImages();
+                        }
+                    }
+
+                    // Reset the processing flag after a short delay
+                    setTimeout(function() {
+                        isProcessingPaymentMethodChange = false;
+                        window.isProcessingVariationChange = false;
+                    }, 100);
+                });
+
                 // Handle when variation is reset - REMOVED DUPLICATE HANDLER
                 // The main reset_data handler above already handles this properly
 
@@ -2423,11 +2615,101 @@ class ProductVariantTilesV4 extends  Widget_Base
                     // This will be handled by the initial PHP content
                 }
 
+                // DIRECT: Function to force immediate image update (bypasses debounce)
+                function forceUpdateBundleImages(variation) {
+
+                    // Get current form and selected attributes
+                    var $form = $('form.variations_form');
+                    var selectedAttributes = {};
+
+                    // Get all selected attribute values
+                    $form.find('.variations select').each(function() {
+                        var $select = $(this);
+                        var attribute = $select.attr('name');
+                        var value = $select.val();
+                        if (value) {
+                            selectedAttributes[attribute] = value;
+                        }
+                    });
+
+                    // Get variations data
+                    var variations = $form.data('product_variations');
+                    if (!variations) {
+                        return;
+                    }
+
+                    // Update ONLY bundle swatch images
+                    $('.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch.cgkit-image').each(function() {
+                        var $swatch = $(this);
+                        var attribute = $swatch.closest('.cgkit-attribute-swatches').data('attribute');
+                        var swatchValue = $swatch.data('attribute-value') || $swatch.find('button').data('attribute-value');
+
+                        if (!swatchValue) {
+                            return;
+                        }
+
+                        // Create target combination for this swatch with ALL other selected attributes
+                        var targetCombination = {};
+                        for (var attr in selectedAttributes) {
+                            if (attr !== attribute) {
+                                targetCombination[attr] = selectedAttributes[attr];
+                            }
+                        }
+                        targetCombination[attribute] = swatchValue;
+
+                        // Special handling for Grill Only
+                        if (swatchValue === 'grill-only') {
+                            targetCombination['attribute_pa_front-bench'] = 'none';
+                        }
+
+                        // Find matching variation
+                        var matchingVariation = null;
+                        for (var i = 0; i < variations.length; i++) {
+                            var var_data = variations[i];
+                            var isMatch = true;
+
+                            for (var attr in targetCombination) {
+                                var expectedValue = targetCombination[attr];
+                                var actualValue = var_data.attributes[attr];
+
+                                if (actualValue !== expectedValue) {
+                                    isMatch = false;
+                                    break;
+                                }
+                            }
+
+                            if (isMatch) {
+                                matchingVariation = var_data;
+                                break;
+                            }
+                        }
+
+                        // Update image if matching variation found
+                        if (matchingVariation && matchingVariation.image) {
+                            var $swatchImg = $swatch.find('img');
+                            if ($swatchImg.length) {
+                                var oldSrc = $swatchImg.attr('src');
+                                $swatchImg.attr('src', matchingVariation.image.src);
+                                $swatchImg.attr('srcset', matchingVariation.image.srcset || '');
+                                $swatchImg.attr('sizes', matchingVariation.image.sizes || '');
+                                $swatchImg.attr('alt', matchingVariation.image.alt || '');
+
+
+                            }
+                        }
+                    });
+                }
+
                 // OPTIMIZED: Function to update only bundle and controller images (prevents front bench flickering)
                 function updateBundleAndControllerImages(variation) {
-                    // Prevent calls that are too frequent (less than 200ms apart)
+
+                    // Check if this is Trimal Series 1 (has payment-method attribute)
+                    var isTrimalSeries1 = $('select[name="attribute_payment-method"]').length > 0;
+
+                    // Prevent calls that are too frequent - more lenient for Trimal Series 1
                     var now = Date.now();
-                    if (now - lastUpdateAllSwatchImagesCall < 200) {
+                    var debounceTime = isTrimalSeries1 ? 5 : 10; // Even faster for Trimal Series 1
+                    if (now - lastUpdateAllSwatchImagesCall < debounceTime) {
                         return;
                     }
                     lastUpdateAllSwatchImagesCall = now;
@@ -2495,38 +2777,90 @@ class ProductVariantTilesV4 extends  Widget_Base
                             // Special handling for Grill Only - it should always use "none" for front bench
                             if (swatchValue === 'grill-only') {
                                 targetCombination['attribute_pa_front-bench'] = 'none';
+                                // For Grill Only, we need to be more flexible with payment method matching
+                                // Try to find any grill-only variation first, then match the closest one
                             }
 
                             // Find matching variation
                             var matchingVariation = null;
-                            for (var i = 0; i < variations.length; i++) {
-                                var var_data = variations[i];
-                                var isMatch = true;
 
-                                for (var attr in targetCombination) {
-                                    var expectedValue = targetCombination[attr];
-                                    var actualValue = var_data.attributes[attr];
+                            // Special flexible matching for Grill Only
+                            if (swatchValue === 'grill-only') {
 
-                                    if (actualValue !== expectedValue) {
-                                        isMatch = false;
+                                // First, try exact match
+                                for (var i = 0; i < variations.length; i++) {
+                                    var var_data = variations[i];
+                                    var isMatch = true;
+
+                                    for (var attr in targetCombination) {
+                                        var expectedValue = targetCombination[attr];
+                                        var actualValue = var_data.attributes[attr];
+
+                                        if (actualValue !== expectedValue) {
+                                            isMatch = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (isMatch) {
+                                        matchingVariation = var_data;
                                         break;
                                     }
                                 }
 
-                                if (isMatch) {
-                                    matchingVariation = var_data;
-                                    break;
+                                // If no exact match, find the closest grill-only variation
+                                if (!matchingVariation) {
+
+                                    for (var i = 0; i < variations.length; i++) {
+                                        var var_data = variations[i];
+
+                                        // Must be grill-only bundle
+                                        if (var_data.attributes['attribute_pa_bundles'] === 'grill-only') {
+                                            // Must match pizza oven setting
+                                            if (var_data.attributes['attribute_pa_pizza-oven'] === targetCombination['attribute_pa_pizza-oven']) {
+                                                matchingVariation = var_data;
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
+                            } else {
+                                // Normal matching for other swatches
+                                for (var i = 0; i < variations.length; i++) {
+                                    var var_data = variations[i];
+                                    var isMatch = true;
+
+                                    for (var attr in targetCombination) {
+                                        var expectedValue = targetCombination[attr];
+                                        var actualValue = var_data.attributes[attr];
+
+                                        if (actualValue !== expectedValue) {
+                                            isMatch = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (isMatch) {
+                                        matchingVariation = var_data;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!matchingVariation) {
+                                // No matching variation found
                             }
 
                             // Update image if matching variation found
                             if (matchingVariation && matchingVariation.image) {
                                 var $swatchImg = $swatch.find('img');
                                 if ($swatchImg.length) {
+                                    var oldSrc = $swatchImg.attr('src');
                                     $swatchImg.attr('src', matchingVariation.image.src);
                                     $swatchImg.attr('srcset', matchingVariation.image.srcset || '');
                                     $swatchImg.attr('sizes', matchingVariation.image.sizes || '');
                                     $swatchImg.attr('alt', matchingVariation.image.alt || '');
+
                                 }
                             }
                         });
@@ -2534,7 +2868,7 @@ class ProductVariantTilesV4 extends  Widget_Base
                         // Reset the flag when execution completes
                         isUpdatingBundleImages = false;
 
-                    }, 100); // 100ms debounce delay
+                    }, isTrimalSeries1 ? 10 : 20); // Faster for Trimal Series 1 (10ms) vs others (20ms)
                 }
             });
             </script>
