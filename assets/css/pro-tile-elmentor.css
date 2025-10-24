@@ -1622,12 +1622,6 @@ li.cgkit-attribute-swatch {
 
 /* Medium-Large Desktop (1000px to 1500px) - Fix price visibility */
 @media (min-width: 1000px) and (max-width: 1500px) {
-  /* Bundle card sizing - ensure prices are visible with vertical stacking */
-  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
-    min-height: 300px !important;
-  }
-
-  /* Bundle images - ensure full width and height, fill container completely */
   .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
     .cgkit-attribute-swatch.cgkit-image
     button.swatch.cgkit-swatch
