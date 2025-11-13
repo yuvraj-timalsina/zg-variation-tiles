@@ -1,0 +1,1899 @@
+.woocommerce table.variations {
+  table-layout: fixed;
+}
+.variable-item-span-button-offers {
+  position: absolute;
+  width: auto;
+  top: 0;
+  right: 0;
+}
+.elementor-widget-productvarianttilesv3 .variable-item-span-button-offers {
+  left: 0;
+}
+.woo-variation-swatches.elementor-page .variable-items-wrapper .variable-item:not(.radio-variable-item).selected,
+.woo-variation-swatches .variable-items-wrapper .variable-item .variable-item-contents {
+  display: block !important;
+  position: relative;
+}
+
+.woo-variation-swatches .variable-items-wrapper,
+.variable-item-span-button-price.s-price {
+  text-align: left;
+}
+.woocommerce-variation-description {
+  display: block !important;
+}
+.woo-variation-swatches.wvs-show-label .variations td {
+  border: none;
+}
+
+.elementor-text-content-wrapper {
+  /*display: -webkit-box;*/
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: left;
+  -ms-flex-pack: left;
+  justify-content: left;
+}
+.elementor-text-content-wrapper .elementor-bundle-text-icon,
+.elementor-text-content-wrapper .elementor-text-icon {
+  display: flex;
+}
+.elementor-text-icon.elementor-align-icon-left,
+.elementor-bundle-text-icon.elementor-align-icon-left,
+.elementor-expand-text-icon.elementor-align-icon-left {
+  -webkit-box-ordinal-group: 6;
+  -ms-flex-order: 5;
+  order: 5;
+}
+.elementor-text-icon.elementor-align-icon-right,
+.elementor-bundle-text-icon.elementor-align-icon-right,
+.elementor-expand-text-icon.elementor-align-icon-right {
+  -webkit-box-ordinal-group: 16;
+  -ms-flex-order: 15;
+  order: 15;
+}
+.elementor-label-text {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -webkit-box-ordinal-group: 11;
+  -ms-flex-order: 10;
+  order: 10;
+  display: inline-block;
+}
+.variations .label label,
+.woo-selected-variation-item-name,
+.variable-item .variable-item-span-button-price .reg-price,
+.variable-item .variable-item-span-button-price .sale-price,
+.variable-item .variable-item-span.variable-item-span-button,
+.woocommerce-variation-description label,
+.woocommerce-variation-description {
+  font-weight: 900;
+  font-family: "Inter";
+  font-size: 16px;
+  color: #212529;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Ensure strong elements within variation labels have 900 weight */
+.variations .label label strong,
+.woo-selected-variation-item-name strong,
+.woocommerce-variation-description label strong {
+  font-weight: 900 !important;
+  font-family: "Inter";
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.woo-selected-variation-item-name {
+  display: none;
+}
+.variable-item .variable-item-span-button-price.s-price .reg-price {
+  font-weight: 600;
+  font-family: "Inter";
+  font-size: 14px;
+}
+.variable-item .variable-item-span-button-offers {
+  font-weight: 600;
+  font-family: "Inter";
+  font-size: 9px;
+  line-height: 12.78px;
+}
+
+span.elementor-bundle-label-text.elementor-label-text {
+  text-transform: capitalize;
+}
+.woocommerce-variation.single_variation {
+  text-align: left;
+}
+.variable-item-image {
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  width: 100%;
+  height: 50vh;
+}
+.variable-item-wrap {
+  width: 100%;
+  position: relative;
+}
+.tiles-seemore-link {
+}
+.variable-item-span.variable-item-span-button {
+  display: inline-block;
+  text-align: left;
+}
+.variable-item-span-button-price {
+  display: inline-block;
+  text-align: right;
+  line-height: 10px;
+}
+.variable-items-wrapper:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 15px;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  right: 0;
+}
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button::before {
+  border: 0;
+}
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button:hover::before {
+  border-radius: 10px;
+  border: 1px solid #353c4e;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+}
+.elementor-kit-7675 button.owl-prev:hover,
+.elementor-kit-7675 button.owl-next:hover {
+  box-shadow: none;
+}
+ul.crosscell_products li {
+  list-style: none;
+  position: relative;
+  display: flex;
+}
+ul.crosscell_products li .cross_img {
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+ul.crosscell_products li .cross_content {
+  margin: auto;
+}
+.variant_cross_cell.variant-loading {
+}
+.variant-loading::before {
+  content: "";
+  position: absolute;
+  border: 3px solid #ddd;
+  border-top-color: #222;
+  border-radius: 50%;
+  height: 35px;
+  width: 35px;
+  top: calc(50% - 10px);
+  left: 50%;
+  -webkit-transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
+  -webkit-animation: circle-loading 0.55s linear infinite;
+  animation: circle-loading 0.55s linear infinite;
+}
+.variant-loading {
+  width: 100%;
+  position: relative;
+}
+.variant-style {
+  height: 100px;
+}
+/*.variable-items-wrapper{
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+    -webkit-transition: opacity 1s ease;
+}*/
+.variable-items-wrapper.slick-initialized {
+  visibility: visible;
+  opacity: 1;
+}
+.woo-variation-swatches.wvs-style-squared
+  .elementor-widget-container
+  .variable-items-wrapper
+  .variable-item.button-variable-item.product-variant-tiles-v1 {
+  padding-top: 0px;
+}
+.woo-variation-swatches.wvs-style-squared
+  .elementor-widget-container
+  .variable-items-wrapper
+  .variable-item.button-variable-item.product-variant-tiles-v2 {
+  padding: 0px;
+}
+button.slick-next.slick-arrow.slick-disabled:hover,
+button.slick-prev.slick-arrow:hover {
+  box-shadow: none;
+}
+.slick-dots li button:hover {
+  background-color: transparent;
+}
+span.elementor-expand-text-icon {
+  margin: auto;
+}
+.cross_content h4 {
+  font-size: 15px;
+}
+.variable-items-wrapper .variable-item:not(.radio-variable-item) {
+  display: block;
+  padding: 0px;
+}
+.crosscell_products li .cross_content .cross_price .woocommerce-Price-amount {
+  font-size: 18px;
+}
+.tiles-seemore-link {
+  z-index: 999;
+}
+
+body.single-product
+  .dialog-widget.dialog-lightbox-widget.dialog-type-buttons.dialog-type-lightbox.elementor-popup-modal {
+  position: relative;
+}
+.button-variable-wrapper {
+  touch-action: auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+}
+.woo-variation-items-wrapper .owl-carousel .owl-nav button.owl-prev,
+.woo-variation-items-wrapper .owl-carousel .owl-nav button.owl-next {
+  background-color: #ccc;
+  border-radius: 20px;
+  opacity: 0.6;
+  position: absolute;
+  width: 22px;
+  height: 22px;
+}
+.elementor-widget-productvarianttilesv3 .woo-variation-items-wrapper .owl-carousel .owl-nav button.owl-prev,
+.elementor-widget-productvarianttilesv3 .woo-variation-items-wrapper .owl-carousel .owl-nav button.owl-next {
+  background-color: #ccc;
+  border-radius: 20px;
+  opacity: 0.6;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  font-size: 11px;
+}
+.owl-carousel .owl-nav button.owl-prev {
+  left: 5px;
+  top: 40%;
+}
+.owl-carousel .owl-nav button.owl-next {
+  right: 5px;
+  top: 40%;
+}
+.woo-variation-items-wrapper .owl-theme .owl-dots .owl-dot.active span,
+.woo-variation-items-wrapper .owl-theme .owl-dots .owl-dot:hover span {
+  background: #3c4b71;
+  box-shadow: none !important;
+}
+.woo-variation-items-wrapper .owl-carousel button.owl-dot {
+  box-shadow: none;
+}
+.wvs-show-label .variations th {
+  display: block;
+  width: 100% !important;
+}
+.woo-variation-items-wrapper .owl-carousel .owl-dots {
+  width: 100% !important;
+}
+.woo-variation-swatches.wvs-show-label .variations td {
+  border: none;
+  display: block;
+}
+table.variations,
+table.variations th {
+  border: none;
+}
+.variable-item-span-search {
+  width: auto;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+.variable-item-span-search
+  span.elementor-text-content-wrapper.elementor-text-content-wrapper.elementor-text-content-wrapper {
+  border-radius: 10px;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  align-items: center;
+}
+.variable-item-span-search span.elementor-bundle-label-text.elementor-label-text {
+  margin-top: 12px;
+  margin-right: -17px;
+}
+.woocommerce button.button.added::after,
+.woocommerce input.button.added::after {
+  display: none;
+}
+.owl-carousel.off {
+  display: flex;
+}
+
+.tiles-seemore-link:hover i {
+  transform: scale(1.3);
+  transition: all 500ms ease;
+  -webkit-transform: scale(1.3);
+  -moz-transform: scale(1.3);
+  -ms-transform: scale(1.3);
+  -o-transform: scale(1.3);
+}
+.variable-items-wrapper .variable-item.button-variable-item.selected {
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.elementor-widget-productvarianttilesv3.variable-item .variable-item-span-button-offers {
+  font-size: 9px;
+  line-height: 12.78px;
+  font-weight: 600;
+}
+.elementor-widget-productvarianttilesv3 .variable-item .variable-item-span-button-price.s-price .reg-price,
+.elementor-widget-productvarianttilesv3 .variable-item .variable-item-span-button-price .reg-price,
+.variable-item .variable-item-span.variable-item-span-button {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 600;
+}
+
+.variation-radios.flex[data-type="pa_controller"] .flex-shrink-0 {
+  width: 50%;
+}
+
+.variation-radios.flex[data-type="pa_controller"] .variable-item {
+  border: 0;
+}
+
+.variation-radios.flex[data-type="pa_controller"] .offer-label {
+  display: none;
+}
+
+ul.variable-items-wrapper.wvs-style-squared {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75em;
+}
+
+ul.variable-items-wrapper.wvs-style-squared > li {
+  position: relative;
+  margin: 0 auto !important;
+}
+ul.variable-items-wrapper.wvs-style-squared li.active {
+  border-color: #ba3116 !important;
+  box-shadow: #ccc 0 0 5px 1px;
+  background-color: #bc311638;
+}
+.product .cart .single_add_to_cart_button.elementor-button {
+  position: relative;
+}
+
+label.variable-item {
+  text-transform: none !important;
+  font-family: "Inter", sans-serif;
+}
+.elementor-widget-product-variant-tiles .label,
+.elementor-widget-productvarianttilesv3 .label {
+  display: none !important;
+}
+@media screen and (max-width: 768px) {
+  ul.variable-items-wrapper.wvs-style-squared {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  ul.variable-items-wrapper.wvs-style-squared > li {
+    width: 100% !important;
+    text-align: center;
+  }
+  ul.variable-items-wrapper.wvs-style-squared > li[data-value="pro-bundle"] {
+    order: 3;
+  }
+}
+/* V4 */
+/* Badge CSS removed */
+span.raw-badge {
+  clear: both;
+  display: block;
+  margin: -5px auto 0px;
+  padding-bottom: 5px;
+  /*     padding: 0; */
+  line-height: 12px;
+  font-size: 11px;
+}
+.elementor-widget-productvarianttilesv4 button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  pointer-events: none;
+  background-color: #f0d7d3;
+}
+
+/* CommerceKit Swatch Styling */
+.cgkit-as-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+}
+
+.cgkit-attribute-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+}
+
+/* Bundle swatches - always 3 in a row */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important; /* Allow badges to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
+  width: 100% !important;
+  height: auto;
+  max-width: 100% !important;
+  padding: 0 !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Only transition border and shadow */
+  box-shadow: none !important;
+  overflow: visible !important; /* Allow badge to show outside */
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+/* Bundle Images */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+  .cgkit-attribute-swatch.cgkit-image
+  button.swatch.cgkit-swatch
+  img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.cgkit-attribute-swatch {
+  margin: 0;
+  padding: 0;
+  width: auto !important;
+  max-width: 100% !important;
+  overflow: visible !important; /* Allow badge to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+/* Ensure li containers have proper positioning for badges */
+li.cgkit-attribute-swatch {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.cgkit-attribute-swatch button.swatch.cgkit-swatch {
+  border: 2px solid #ddd;
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Only transition border and shadow, not all properties */
+  min-width: 120px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: auto !important; /* Allow natural height */
+  flex-shrink: 0 !important; /* Prevent shrinking */
+}
+
+/* General swatch hover - but bundle cards have their own styling */
+.cgkit-attribute-swatch button.swatch.cgkit-swatch:hover {
+  border-color: #ba3116;
+  box-shadow: 0 2px 8px rgba(186, 49, 22, 0.2);
+}
+
+/* Image swatch hover effects (CommerceKit style) */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch:hover {
+  border-color: var(--vt-accent);
+  transition: border-color 0.3s ease; /* Only transition border color */
+}
+
+/* Image swatch selected state (CommerceKit style) */
+
+/* Image Swatch Styling */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch {
+  padding: 0 !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  border-radius: 4px;
+  margin-bottom: 0;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.cgkit-attribute-swatch.cgkit-image .tile-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+  margin-top: 5px;
+}
+
+.cgkit-attribute-swatch.cgkit-image .tile-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vt-text);
+  text-align: center;
+  margin-top: 5px;
+}
+
+/* Badge CSS removed */
+
+.cgkit-attribute-swatch.cgkit-image .sale-badge-price {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background: #28a745;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Button Swatch Styling */
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch {
+  min-width: auto;
+  min-height: auto;
+  /* padding: 8px 16px; */
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background-color: #ba3116;
+  color: white;
+  border-color: #ba3116;
+}
+
+/* Color Swatch Styling */
+.cgkit-attribute-swatch.cgkit-color button.swatch.cgkit-swatch {
+  min-width: 60px;
+  min-height: 60px;
+  padding: 5px;
+}
+
+.cgkit-attribute-swatch.cgkit-color .color-div {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.cgkit-attribute-swatch.cgkit-color button.swatch.cgkit-swatch.cgkit-swatch-selected .color-div {
+  border-color: #ba3116;
+  box-shadow: 0 0 0 2px rgba(186, 49, 22, 0.3);
+}
+
+/* No Image Placeholder */
+.no-image-placeholder {
+  width: 100px;
+  height: 100px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+  padding: 10px;
+}
+
+.single_add_to_cart_button {
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cgkit-attribute-swatches {
+    gap: 8px;
+  }
+
+  /* Bundle swatches - maintain 3 columns on mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* Ensure consistent sizing on mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 240px !important; /* Slightly smaller on mobile */
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch button.swatch.cgkit-swatch {
+    min-height: 200px;
+    padding: 5px;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  .cgkit-attribute-swatch button.swatch.cgkit-swatch {
+    min-width: 150px;
+    min-height: 150px;
+    padding: 0;
+  }
+
+  .cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch {
+    min-width: 180px;
+    min-height: 180px;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+  }
+
+  .cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch img {
+    max-height: none;
+    max-width: none;
+    width: 100%;
+    height: auto;
+    margin-bottom: 0;
+  }
+
+  /* Ensure price and title elements don't cause layout shifts on mobile */
+  .tile-price,
+  .tile-title {
+    min-height: 20px !important;
+    max-height: 30px !important; /* Smaller max height on mobile */
+  }
+}
+/* Controller (button) as full-width toggle switch */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  /* padding: 14px 16px !important; */
+  border: none !important;
+  border-right: 1px solid #e3e3e3 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Remove right divider on last segment */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+/* Selected state like a modern toggle */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: #f3d8d3 !important;
+  box-shadow: inset 0 0 0 2px #ba3116 !important;
+  color: #000;
+}
+
+/* Hover state */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #faf2ef !important;
+}
+
+/* Ensure internal contents don’t break layout */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch
+  * {
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* === VT Design Overrides (match reference) === */
+:root {
+  --vt-accent: #ba3116;
+  --vt-accent-100: #f3d8d3;
+  --vt-border: #e3e3e3;
+  --vt-text: #222;
+  --vt-muted: #8a8f98;
+}
+
+/* === UNIVERSAL VARIATION TILES STYLING === */
+/* Ensure consistent styling across ALL products using variation tiles */
+
+/* Universal swatch selection styling - applies to all variation tile widgets */
+.cgkit-attribute-swatch button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  pointer-events: none !important;
+  background-color: var(--vt-accent-100) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Ensure default selections are visible on page load */
+.cgkit-attribute-swatch.selected .cgkit-swatch,
+.cgkit-attribute-swatch.active .cgkit-swatch {
+  background-color: var(--vt-accent-100) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal button swatch selection styling */
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background-color: var(--vt-accent-100) !important;
+  color: var(--vt-text) !important;
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal image swatch selection styling */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  border-color: var(--vt-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+}
+
+/* Universal hover states */
+.cgkit-attribute-swatch button.swatch.cgkit-swatch:hover {
+  border-color: var(--vt-accent) !important;
+  box-shadow: 0 2px 8px rgba(186, 49, 22, 0.2) !important;
+}
+
+/* Universal button hover states */
+.cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch:hover {
+  background: #faf2ef !important;
+  border-color: var(--vt-accent) !important;
+}
+
+/* Universal image hover states */
+.cgkit-attribute-swatch.cgkit-image button.swatch.cgkit-swatch:hover {
+  border-color: var(--vt-accent) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+/* === PAYMENT METHOD AND PIZZA OVEN TILES === */
+/* Ensure payment method and pizza oven tiles show proper selection states */
+
+/* Payment method tiles styling */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  border: 1px solid var(--vt-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100%;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: var(--vt-text);
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_payment-method"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
+/* Pizza oven tiles styling */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  border: 1px solid var(--vt-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100%;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: var(--vt-text);
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_pizza-oven"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
+/* === BUTTON TOGGLE STYLE CLASS === */
+/* Applied dynamically to ensure consistent styling */
+.cgkit-attribute-swatches.button-toggle-style {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0 !important;
+  width: 100% !important;
+  border: 1px solid var(--vt-border) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700 !important;
+  color: var(--vt-text) !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000 !important;
+}
+
+.cgkit-attribute-swatches.button-toggle-style .cgkit-attribute-swatch.cgkit-button button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+
+/* Controller + Front Bench: full-width modern toggle */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"],
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100% !important;
+  border: 1px solid var(--vt-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"] .cgkit-attribute-swatch.cgkit-button,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] .cgkit-attribute-swatch.cgkit-button {
+  margin: 0 !important;
+  width: 100%;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  color: var(--vt-text);
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+  .cgkit-attribute-swatch.cgkit-button:last-child
+  button.swatch.cgkit-swatch {
+  border-right: none !important;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch.cgkit-swatch-selected {
+  background: var(--vt-accent-100) !important;
+  box-shadow: inset 0 0 0 2px var(--vt-accent) !important;
+  color: #000;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch:hover {
+  background: #eee !important;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_controller"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch
+  *,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+  .cgkit-attribute-swatch.cgkit-button
+  button.swatch.cgkit-swatch
+  * {
+  pointer-events: none;
+}
+
+/* Bundles: 3-up grid, card style - Fixed layout to prevent shifting */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  align-items: start !important; /* Align items to top to prevent stretching */
+}
+
+/* Ensure each swatch item has consistent sizing */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+  margin: 0 auto;
+  width: 100% !important;
+  height: auto !important;
+}
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch {
+  width: 100%;
+  padding: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative !important;
+}
+/* Bundle swatch hover and selected states */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch .cgkit-swatch:hover {
+  background: #fafafa !important;
+  border-color: #ccc;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  transform: none;
+  transition: all 0.2s ease;
+}
+
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+  .cgkit-attribute-swatch
+  .cgkit-swatch.cgkit-swatch-selected {
+  box-shadow: none;
+  transform: none;
+}
+
+/* Bundle image fit full inside - Fixed layout to prevent shifting */
+.cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  border: 1px solid #e0e0e0 !important;
+  min-height: 280px !important; /* Prevent layout shifts - accommodate image + title + price */
+  box-sizing: border-box !important; /* Ensure padding/border included in sizing */
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important; /* Remove any gaps between flex items */
+}
+.cgkit-attribute-swatch.cgkit-image .cgkit-swatch img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important; /* Fill available container height */
+  max-width: 100% !important;
+  min-width: 100% !important;
+  object-fit: cover !important; /* Fill container completely */
+  object-position: center !important;
+  border-radius: 8px 8px 0 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important; /* Prevent image from shrinking */
+  box-sizing: border-box !important;
+  border: none !important;
+  position: relative !important;
+}
+
+/* Title and price area */
+.cgkit-attribute-swatches .tile-title {
+  display: block;
+  padding: 8px 12px 2px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 8px;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  word-wrap: break-word !important;
+  border-radius: 0 0 8px 8px !important;
+}
+.cgkit-attribute-swatches .tile-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px 12px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  word-wrap: break-word !important;
+  border-radius: 0 0 8px 8px !important;
+}
+.cgkit-attribute-swatches .tile-price .price del {
+  color: var(--vt-muted);
+  font-size: 12px;
+  margin-right: 0;
+  white-space: nowrap;
+}
+.cgkit-attribute-swatches .tile-price .price ins {
+  color: var(--vt-text);
+  font-weight: 800;
+  font-size: 18px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.price-preffix {
+  display: none !important;
+}
+
+/* Badge CSS removed */
+
+.product .cart .single_add_to_cart_button.elementor-button {
+  width: 100% !important;
+  background: var(--vt-accent) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  height: 48px !important;
+  line-height: 48px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 6px 14px rgba(186, 49, 22, 0.25) !important;
+}
+.product .cart .single_add_to_cart_button.elementor-button:hover {
+  filter: brightness(0.95);
+}
+
+/* Prevent overflow and keep within parent */
+.cgkit-as-wrap,
+.cgkit-attribute-swatches,
+.cgkit-attribute-swatch,
+.cgkit-attribute-swatch .cgkit-swatch {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
+}
+
+/* Ensure all possible parent containers allow badge overflow */
+.cgkit-as-wrap,
+.cgkit-attribute-swatches,
+.cgkit-attribute-swatch,
+li.cgkit-attribute-swatch,
+.cgkit-attribute-swatch button.swatch.cgkit-swatch {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Specific override for any grid containers */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important; /* Allow badges to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+.cgkit-attribute-swatch {
+  margin: 0;
+  padding: 0;
+  width: auto !important;
+  max-width: 100% !important;
+  overflow: visible !important; /* Allow badge to show outside */
+  position: relative !important; /* Ensure positioning context for badges */
+}
+
+/* Ensure li containers have proper positioning for badges */
+li.cgkit-attribute-swatch {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Futureproof message visibility control */
+.select-wireless-txt {
+  display: none;
+}
+.select-wireless-txt.show-txt {
+  display: block;
+}
+
+/* Proper swatch selection and disabled states */
+.cgkit-swatch.cgkit-swatch-selected {
+  pointer-events: none !important;
+  cursor: default !important;
+  opacity: 1 !important;
+}
+
+.cgkit-swatch.cgkit-swatch-selected:hover {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.cgkit-swatch.cgkit-swatch-selected:active {
+  pointer-events: none !important;
+}
+
+/* Neutralize sticky summary coming from theme on PDP */
+@media (min-width: 993px) {
+  .single-product .product .summary {
+    position: static !important;
+    top: auto !important;
+    align-self: auto !important;
+  }
+}
+
+/* Override button margin to fix alignment */
+.cart .single_add_to_cart_button {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+/* === /VT Design Overrides === */
+
+/* VT accordion under selected bundle */
+.vt-accordion {
+  margin: 10px 0;
+  border: 1px solid var(--vt-border);
+  border-radius: 8px;
+  background: #efefef;
+}
+
+/* High-resolution accordion images */
+.zg-accordion-image {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  max-width: 100% !important;
+}
+.vt-accordion > summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #222;
+  list-style: none;
+}
+.vt-accordion[open] > summary {
+  border-bottom: 1px solid var(--vt-border);
+}
+.vt-accordion .vt-accordion-content {
+  padding: 12px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* "Best Value" Badge for specific combination only - Using old plugin's working approach */
+.tile-offer {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-width: max-content !important;
+  margin: 0 auto !important;
+  top: -12px !important;
+  background: var(--vt-accent) !important;
+  color: white !important;
+  font-weight: bold !important;
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  border: 2px solid var(--vt-accent) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  z-index: 2;
+}
+
+/* Tile title (bundle name) - Fixed layout to prevent shifting */
+.tile-title {
+  display: block !important;
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  line-height: 1.2;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 20px !important;
+  max-height: 40px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Let CommerceKit handle tile-title and tile-price styling naturally */
+
+/* Ensure tile-title is visible for bundle swatches - Fixed layout to prevent shifting */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  color: #333333 !important;
+  min-height: 20px !important;
+  max-height: 40px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Tile price - Fixed layout to prevent shifting */
+.tile-price {
+  display: block !important;
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.2;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 24px !important;
+  max-height: 32px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Bundle-specific price styling - Fixed layout to prevent shifting */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+  text-align: center;
+  margin-top: 10px;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 24px !important;
+  max-height: 32px !important;
+  line-height: 1.2 !important;
+  transition: opacity 0.2s ease !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Hide the "Total:" prefix in prices */
+.tile-price .price-preffix {
+  display: none !important;
+}
+
+/* Ensure swatch button content is visible */
+.cgkit-swatch .tile-title,
+.cgkit-swatch .tile-price {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Force display for bundle swatches specifically */
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title,
+.cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure tile elements are visible */
+.cgkit-attribute-swatches .tile-title,
+.cgkit-attribute-swatches .tile-price {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tile-price del {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+  margin-right: 4px;
+}
+
+.tile-price ins {
+  font-size: 16px;
+  color: var(--vt-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Price styling to prevent layout shifts */
+.tile-price {
+  word-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+/* Ensure price content is properly contained */
+.tile-price .price {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Prevent price elements from causing layout shifts */
+.tile-price del,
+.tile-price ins {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Let CommerceKit handle price styling naturally */
+
+/* Accordion pricing lines */
+.vt-acc-pricing {
+  margin-bottom: 8px;
+}
+
+.vt-acc-pricing .vt-msrp {
+  color: #6b7280;
+  font-style: italic;
+}
+.vt-acc-pricing .vt-now {
+  font-weight: 800;
+  color: var(--vt-accent);
+}
+
+
+/* Hide stock messages completely - remove all stock status displays */
+.vt-stock-message-container,
+#vt-in-stock-message,
+#vt-low-stock-message,
+.vt-stock-message,
+.stock-dot {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Add border for selected image swatches */
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch-selected::before {
+  border: 2px solid var(--vt-accent) !important;
+  border-radius: 8px !important;
+}
+
+/* Override product.min.css padding for last variation row */
+.product .summary table.variations tr:last-child .value {
+  padding-bottom: 0.2rem !important;
+}
+
+/* Add border for image swatches without ::before */
+.cgkit-as-wrap .cgkit-attribute-swatches .cgkit-attribute-swatch.cgkit-image > button.cgkit-swatch {
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+
+/* ===== RESPONSIVE DESIGN FOR VARIATION SWATCH CARDS ===== */
+
+/* Medium Mobile/Tablet (430px to 768px) - Fix image height display */
+@media (min-width: 430px) and (max-width: 768px) {
+  /* Bundle card sizing for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 280px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+  }
+
+  /* Bundle images for medium mobile/tablet - ensure full height is visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Title sizing for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 20px !important;
+    max-height: 32px !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 6px !important;
+    padding: 6px 10px 2px !important;
+  }
+
+  /* Price container for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 40px !important;
+    max-height: 60px !important;
+    padding: 4px 12px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Price elements for medium mobile/tablet */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 12px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 16px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Medium-Large Desktop (1000px to 1500px) - Fix price visibility */
+@media (min-width: 1000px) and (max-width: 1500px) {
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Price container - ensure adequate space for vertical stacking */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 50px !important;
+    max-height: 70px !important;
+    padding: 4px 12px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Price elements - ensure both are visible and stack vertically */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 12px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 16px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ensure main bundle card container has adequate height for vertical prices */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    min-height: 300px !important;
+  }
+
+  /* Title sizing - compact to leave room for prices */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 20px !important;
+    max-height: 32px !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 6px !important;
+    padding: 6px 10px 2px !important;
+  }
+}
+
+/* Ensure prices are always visible on mobile - global override */
+@media (max-width: 767px) {
+  .cgkit-attribute-swatches .tile-price {
+    min-height: 40px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .cgkit-attribute-swatches .tile-price del,
+  .cgkit-attribute-swatches .tile-price ins,
+  .cgkit-attribute-swatches .tile-price .price {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Small Devices (Mobile) - Up to 767px */
+@media (max-width: 767px) {
+  /* Bundle swatches - 3 columns with tight spacing */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  /* Bundle card sizing for mobile - ensure prices are visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 260px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure mobile containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+  }
+
+  /* Title and price sizing for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 16px !important;
+    max-height: 32px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 40px !important;
+    max-height: 60px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 4px 8px 8px !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: center !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Price elements for mobile - ensure both are visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 11px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 14px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Front bench swatches for mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"] {
+    gap: 8px;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 120px !important;
+  }
+}
+
+/* Extra Small Devices (Small Mobile) - Up to 480px */
+@media (max-width: 480px) {
+  /* Bundle swatches - 3 columns with minimal spacing */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  /* Bundle card sizing for small mobile - ensure prices are visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 240px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure small mobile containers have no gaps */
+  .cgkit-attribute-swatch.cgkit-image .cgkit-swatch {
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+  }
+
+  /* Bundle images for small mobile - ensure full width and height, fill container completely */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Title and price sizing for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-title {
+    min-height: 14px !important;
+    max-height: 28px !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 3px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price {
+    min-height: 36px !important;
+    max-height: 50px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    padding: 3px 6px 6px !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    align-items: center !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Price elements for small mobile - ensure both are visible */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price del {
+    font-size: 10px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .tile-price ins {
+    font-size: 13px !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Front bench swatches for small mobile */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_front-bench"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100px !important;
+  }
+
+  /* Badge positioning for small mobile */
+  .tile-offer {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    top: -8px !important;
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  /* Bundle swatches in landscape */
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] {
+    gap: 10px;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"] .cgkit-attribute-swatch {
+    min-height: 180px !important;
+  }
+
+  .cgkit-attribute-swatches[data-attribute="attribute_pa_bundles"]
+    .cgkit-attribute-swatch.cgkit-image
+    button.swatch.cgkit-swatch
+    img {
+    height: 100% !important; /* Fill available container height */
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important; /* Fill container completely */
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+}

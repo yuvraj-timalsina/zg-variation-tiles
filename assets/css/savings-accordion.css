@@ -1,0 +1,270 @@
+/* Accordion Styles - Updated to match old plugin styling */
+.zg-included-items-accordion {
+  background-color: #efefef;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0.8rem 0 15px 0;
+}
+
+/* Responsive margin for accordion container */
+.zg-accordion-container {
+  margin-bottom: 0.8rem;
+}
+
+/* Remove top padding from accordion excerpt */
+.zg-accordion-excerpt {
+  padding-top: 0 !important;
+}
+
+/* Reduce font size for savings section inside accordion content */
+.zg-accordion-savings {
+  font-size: 13px !important;
+}
+
+.zg-accordion-savings strong {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-savings-amount {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-current-price {
+  font-size: 14px !important;
+}
+
+.zg-accordion-savings .zg-msrp-text {
+  font-size: 11px !important;
+}
+
+/* Remove margin-top for mobile screens */
+@media (max-width: 767px) {
+  .zg-accordion-container {
+    margin-top: 0 !important;
+  }
+
+  .zg-included-items-accordion {
+    margin: 0 0 15px 0 !important;
+  }
+}
+
+.zg-accordion-header {
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #efefef;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  border-radius: 10px 10px 0 0;
+}
+
+.zg-accordion-header:hover {
+  background-color: #efefef;
+}
+
+.zg-accordion-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #212529;
+}
+
+.zg-accordion-icon {
+  font-size: 16px;
+  color: #6c757d;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.zg-accordion-header.active {
+  background-color: #efefef;
+}
+
+.zg-accordion-header.active .zg-accordion-icon {
+  transform: rotate(180deg);
+}
+
+.zg-accordion-content {
+  overflow: hidden;
+  padding: 10px 20px 15px;
+  background-color: #efefef;
+  border-radius: 0 0 10px 10px;
+}
+
+.zg-accordion-content.active {
+  max-height: 200px;
+  background-color: #efefef;
+}
+
+.zg-accordion-content-inner {
+  padding: 15px 20px;
+  background-color: #efefef;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  margin: 10px 0;
+}
+
+.zg-accordion-text {
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+/* Simple two-column layout for lists */
+.zg-accordion-content div ol,
+.zg-accordion-content div ul,
+.zg-accordion-text ol,
+.zg-accordion-text ul {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+  list-style: decimal !important;
+  padding-left: 20px !important;
+  margin: 0 0 15px 0 !important;
+}
+
+.zg-accordion-preview {
+  color: #6c757d;
+  font-size: 13px;
+  font-style: italic;
+  border-top: 1px solid #f1f3f4;
+  padding-top: 10px;
+}
+
+/* Total Savings Styles - Updated to match old plugin */
+.zg-total-savings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  font-family: "Inter";
+}
+
+.zg-savings-label {
+  font-weight: 900;
+  font-size: 16px;
+  color: #212529;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: "Inter";
+}
+
+.zg-savings-amount {
+  font-weight: 700;
+  font-size: 18px;
+  color: #dc3545;
+  font-family: "Inter";
+}
+
+.zg-savings-msrp {
+  font-weight: 400;
+  font-size: 14px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Target the savings section in the accordion */
+
+.zg-accordion-savings strong {
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  color: #000000 !important;
+}
+
+.zg-accordion-savings .zg-savings-amount {
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  color: #dc3545 !important;
+}
+
+.zg-accordion-savings .zg-msrp-text {
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  color: #6c757d !important;
+  font-style: italic !important;
+}
+
+.zg-accordion-savings .zg-current-price {
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  color: #dc3545 !important;
+  margin-top: 5px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .zg-accordion-header {
+    padding: 12px 15px;
+  }
+
+  .zg-accordion-title {
+    font-size: 14px;
+  }
+
+  .zg-included-items-list {
+    padding: 12px 15px;
+  }
+
+  .zg-included-item {
+    font-size: 13px;
+  }
+
+  .zg-savings-label {
+    font-size: 16px;
+  }
+
+  .zg-savings-amount {
+    font-size: 16px;
+  }
+
+  .zg-savings-msrp {
+    font-size: 12px;
+  }
+
+  .zg-accordion-content div ol,
+  .zg-accordion-content div ul,
+  .zg-accordion-text ol,
+  .zg-accordion-text ul {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .zg-included-items-accordion {
+    border: 2px solid #000;
+  }
+
+  .zg-accordion-header {
+    background-color: #fff;
+    border-bottom: 1px solid #000;
+  }
+
+  .zg-savings-amount {
+    color: #000;
+  }
+}
+
+/* Hide WooCommerce variation error messages */
+.woocommerce-error,
+.woocommerce-info,
+.woocommerce-message {
+  display: none !important;
+}
+
+.woocommerce-no-matching-variations {
+  display: none !important;
+}
+
+/* Hide only the main form variation price, keep swatch card prices */
+.single_variation_wrap .woocommerce-variation-price {
+  display: none !important;
+}

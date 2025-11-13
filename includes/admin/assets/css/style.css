@@ -1,0 +1,206 @@
+p.form-field.variable_pricing_field.form-row {
+  padding: 5px 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+.form-field.variable_pricing_field.form-row label {
+  font-weight: bolder;
+  padding-right: 20px;
+}
+body.wc-wp-version-gte-53 .select2.select2-container .select2-selection--multiple {
+  background-color: #fff;
+}
+ul.select2-choices {
+  padding-right: 30px !important;
+}
+
+ul.select2-choices:after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 5px solid #333;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+/* Variant Tile Image Upload Styles */
+.vt-image-upload-container {
+  margin: 10px 0;
+}
+
+.vt-image-upload-container .button {
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.vt-image-preview {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.vt-image-preview img {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.vt-remove-image-btn {
+  background-color: #dc3232 !important;
+  border-color: #dc3232 !important;
+  color: #fff !important;
+}
+
+.vt-remove-image-btn:hover {
+  background-color: #c92626 !important;
+  border-color: #c92626 !important;
+}
+
+/* Form field styling improvements */
+.form-field._vt_dd_image_id_field label {
+  font-weight: 600;
+  color: #23282d;
+}
+
+.form-field._vt_dd_image_id_field .description {
+  color: #666;
+  font-style: italic;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Ensure proper spacing in variation forms */
+.woocommerce_variation .form-field {
+  margin-bottom: 15px;
+}
+
+/* Variant Tile Section Styling */
+.vt-variation-tile-section {
+  box-shadow: 0 2px 8px rgba(0, 115, 170, 0.1);
+  transition: all 0.3s ease;
+}
+
+.vt-variation-tile-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 115, 170, 0.15);
+}
+
+.vt-field-group {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.vt-field-group:last-child {
+  margin-bottom: 0;
+}
+
+.vt-field-group > label {
+  color: #23282d;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.vt-field-group input[type="text"],
+.vt-field-group textarea {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.vt-media-upload-container {
+  width: 100%;
+}
+
+.vt-field-group .description {
+  color: #666;
+  font-style: italic;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Enhanced Media Upload Styling */
+.vt-media-upload-container {
+  margin-top: 10px;
+}
+
+.vt-media-preview {
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.vt-media-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vt-media-item img {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.vt-media-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.vt-media-actions .button {
+  display: inline-flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  vertical-align: middle;
+}
+.vt-media-actions .dashicons {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 1.4 !important;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.vt-media-upload-btn {
+  background: #0073aa !important;
+  border-color: #0073aa !important;
+  color: white !important;
+}
+
+.vt-media-upload-btn:hover {
+  background: #005a87 !important;
+  border-color: #005a87 !important;
+}
+
+.vt-media-edit-btn {
+  background: #f7f7f7 !important;
+  border-color: #ccc !important;
+  color: #555 !important;
+}
+
+.vt-media-edit-btn:hover {
+  background: #eee !important;
+  border-color: #999 !important;
+}
+
+.vt-media-remove-btn {
+  background: #dc3232 !important;
+  border-color: #dc3232 !important;
+  color: white !important;
+}
+
+.vt-media-remove-btn:hover {
+  background: #a00 !important;
+  border-color: #a00 !important;
+}
